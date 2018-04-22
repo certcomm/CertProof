@@ -1,0 +1,12 @@
+*.log
+
+# npm folders
+**/.npmcache
+**/.npmtmp
+**/npmcache
+**/npmtmp
+**/node_modules
+
+*.iml
+.idea
+
