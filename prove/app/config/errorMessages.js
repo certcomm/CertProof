@@ -13,7 +13,7 @@ module.exports.errors = {
 "1011":"Invalid ttnGlobal Structure",
 "1012":"Invalid Writer Structure",
 "1013":"Missing Governor",
-"1014 Invalid Creator Structure",
+"1014": "Invalid Creator Structure",
 "1015":"Unknown Change Type",
 "1016":"Invalid or Missing Change Num",
 "1017":"Invalid Section Structure",

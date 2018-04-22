@@ -1,4 +1,5 @@
 var Constants = require("../config/constants.js");
+var errorMessages = require("../config/errorMessages.js");
 const crypto = require('crypto');
 
 module.exports = {
@@ -30,21 +31,22 @@ module.exports = {
     computeSha256Hash: function(data) {
         return crypto.createHash('sha256').update(data).digest('hex');
     },
-    ensureHashMatches: function(errorCode, data, expectedHash, msgPrefix) {
+    ensureHashMatches: function(errorCode, data, expectedHash, msgContext) {
         if(expectedHash==Constants.default.zeroBytesHash && data.length==0) {
-            console.log(msgPrefix + " proof skipped as 0 bytes");
+            console.log(msgContext + " proof skipped as 0 bytes");
             return;            
         }
         var hashFromContent = this.computeSha256Hash(data)
         if(hashFromContent!=expectedHash) {
-            throw new Error(msgPrefix + "doesn't match, expected=" + expectedHash + ", actual=" + hashFromContent);                            
+            var errorMessage = errorMessages.errors[errorCode]
+            throw {name: errorCode, message: errorMessage + " " + msgContext + " doesn't match, expected=" + expectedHash + ", actual=" + hashFromContent};                            
         } else {
-            console.log(msgPrefix + " proved");                            
+            console.log(msgContext + " proved");                            
         }
     },
-    ensureSacSchemaVersionSupported: function(sacSchemaVersion) {
+    ensureSacSchemaVersionSupported: function(sacSchemaVersion) { 
         if(sacSchemaVersion<Constants.default.supportedSacSchemaVersion) {
-            throw new Error("Found sacSchemaVersion:" + sacSchemaVersion+" but only version higher than " + Constants.default.supportedSacSchemaVersion + " are supported");                            
+            throw {name:"2008", message:"Found sacSchemaVersion:" + sacSchemaVersion+" but only version higher than " + Constants.default.supportedSacSchemaVersion + " are supported"};                            
         } 
     }    
 }

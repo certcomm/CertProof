@@ -72,7 +72,7 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
 
                 evidenceUtils.ensureFileExists(this.entries, Constants.default.manifestJsonFileName)
                 var sacManifestData = zip.entryDataSync(Constants.default.manifestJsonFileName);
-                evidenceUtils.ensureHashMatches(sacManifestData, incManifestJson.sacHash, "sacHash for cnum:" + cnum);
+                evidenceUtils.ensureHashMatches("1005", sacManifestData, incManifestJson.sacHash, "sacHash for cnum:" + cnum);
 
                 var sacManifestJson = JSON.parse(sacManifestData.toString('utf-8'));
                 tmailJsonUtils.ensureJsonHas(sacManifestJson, "sacSchemaVersion", "changeset","ssac", "ssacHash");
@@ -101,7 +101,7 @@ function proveComment(reject, cnum, changeset, zip) {
         var commentLeafHash = changeset.commentLeafHash;
         evidenceUtils.ensureFileExists(this.entries, "comments/" + commentLeafHash +".html");
         var commentData = zip.entryDataSync("comments/" + commentLeafHash +".html")
-        evidenceUtils.ensureHashMatches(commentData, commentLeafHash, "CommentLeafHash for cnum"+ cnum);
+        evidenceUtils.ensureHashMatches("1001", commentData, commentLeafHash, "CommentLeafHash for cnum"+ cnum);
     }
     console.log("Proved comment for cnum:"+ cnum);                            
 }
@@ -118,7 +118,7 @@ function proveAttachments(reject, cnum, changeset, zip) {
             var attachmentFilePath = "attachments/" + attachmentLeafHash + extension;
             evidenceUtils.ensureFileExists(this.entries, attachmentFilePath);
             var attachmentData = zip.entryDataSync(attachmentFilePath);
-            evidenceUtils.ensureHashMatches(attachmentData, attachmentLeafHash, "AttachmentLeafHash for cnum:" + cnum+ ", attachmentNum:" + attachment.attachmentNum);
+            evidenceUtils.ensureHashMatches("1003", attachmentData, attachmentLeafHash, "AttachmentLeafHash for cnum:" + cnum+ ", attachmentNum:" + attachment.attachmentNum);
         }
     }   
     console.log("Proved attachments for cnum:"+ cnum);                            
@@ -128,7 +128,7 @@ function proveSsac(reject, cnum, ssacHash, zip) {
     console.log("Proving ssac for cnum:"+ cnum);                            
     evidenceUtils.ensureFileExists(this.entries, Constants.default.ssacManifestJsonFileName)
     var ssacData = zip.entryDataSync(Constants.default.ssacManifestJsonFileName);
-    evidenceUtils.ensureHashMatches(ssacData, ssacHash, "ssacHash for cnum:" + cnum);
+    evidenceUtils.ensureHashMatches("1004", ssacData, ssacHash, "ssacHash for cnum:" + cnum);
     var ssac = JSON.parse(ssacData.toString('utf-8'));
     if((typeof ssac.sections)!="undefined") {
         for(sectionIdx in ssac.sections) {
@@ -145,7 +145,7 @@ function proveSsac(reject, cnum, ssacHash, zip) {
                 var sectionFilePath = "sections/" + sectionLeafHash + extension;
                 evidenceUtils.ensureFileExists(this.entries, sectionFilePath);
                 var sectionData = zip.entryDataSync(sectionFilePath);
-                evidenceUtils.ensureHashMatches(sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
+                evidenceUtils.ensureHashMatches("1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
                 this.sectionsHashesSeen[sectionLeafHash]=true;
             }
         }
