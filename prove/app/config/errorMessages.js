@@ -7,7 +7,7 @@ module.exports.errors = {
 "1005":"SAC manifest does not hash to SAC manifest hash should cause FAIL",
 "1006":"Unsupported schema version should cause FAIL",
 "1007":"Invalid JSON Structure",
-"1008":"Unknown TMail Type",
+"1008":"Unknown Thread Type",
 "1009":"Missing Subject",
 "1010":"Missing ttnGlobal",
 "1011":"Invalid ttnGlobal Structure",

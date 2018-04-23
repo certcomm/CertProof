@@ -1,5 +1,5 @@
 var Constants = require("./config/constants.js");
-var tmailJsonUtils = require("./util/tmailJsonUtils.js");
+var cpJsonUtils = require("./util/cpJsonUtils.js");
 var evidenceUtils = require("./util/evidenceUtils.js");
 var fs = require('fs-extra');
 var path = require('path');
@@ -68,14 +68,14 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
             try {
                 evidenceUtils.ensureFileExists(this.entries, Constants.default.incManifestJsonFileName)
                 var incManifestJson = JSON.parse(zip.entryDataSync(Constants.default.incManifestJsonFileName).toString('utf-8'));
-                tmailJsonUtils.ensureJsonHas(incManifestJson, "sacHash");
+                cpJsonUtils.ensureJsonHas(incManifestJson, "sacHash");
 
                 evidenceUtils.ensureFileExists(this.entries, Constants.default.manifestJsonFileName)
                 var sacManifestData = zip.entryDataSync(Constants.default.manifestJsonFileName);
                 evidenceUtils.ensureHashMatches("1005", sacManifestData, incManifestJson.sacHash, "sacHash for cnum:" + cnum);
 
                 var sacManifestJson = JSON.parse(sacManifestData.toString('utf-8'));
-                tmailJsonUtils.ensureJsonHas(sacManifestJson, "sacSchemaVersion", "changeset","ssac", "ssacHash");
+                cpJsonUtils.ensureJsonHas(sacManifestJson, "sacSchemaVersion", "changeset","ssac", "ssacHash");
                 evidenceUtils.ensureSacSchemaVersionSupported(sacManifestJson.sacSchemaVersion)
 
                 var changeset = sacManifestJson.changeset;
@@ -111,7 +111,7 @@ function proveAttachments(reject, cnum, changeset, zip) {
     if((typeof changeset.attachments)!="undefined") {
         for(attachmentIdx in changeset.attachments) {
             attachment = changeset.attachments[attachmentIdx];
-            tmailJsonUtils.ensureJsonHas(attachment, "attachmentLeafHash","attachmentNum", "title")
+            cpJsonUtils.ensureJsonHas(attachment, "attachmentLeafHash","attachmentNum", "title")
             console.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum);
             var attachmentLeafHash = attachment.attachmentLeafHash;
             var extension = path.extname(attachment.title);
@@ -133,12 +133,12 @@ function proveSsac(reject, cnum, ssacHash, zip) {
     if((typeof ssac.sections)!="undefined") {
         for(sectionIdx in ssac.sections) {
             section = ssac.sections[sectionIdx];
-            tmailJsonUtils.ensureJsonHas(section, "sectionLeafHash","type", "title")
+            cpJsonUtils.ensureJsonHas(section, "sectionLeafHash","type", "title")
             var sectionLeafHash = section.sectionLeafHash;
             if(this.sectionsHashesSeen[sectionLeafHash]=="undefined") {
                 var extension = ".txt"
                 if(section.type=="file") {
-                    tmailJsonUtils.ensureJsonHas(section, "fileSectionOriginalName")
+                    cpJsonUtils.ensureJsonHas(section, "fileSectionOriginalName")
                     extension = path.extname(section.fileSectionOriginalName);
                 } 
                 
