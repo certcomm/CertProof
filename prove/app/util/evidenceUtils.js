@@ -10,9 +10,10 @@ module.exports = {
         }
         return false;        
     },
-    ensureFileExists: function(entries, fileName) {
+    ensureFileExists: function(errorCode, entries, fileName) {
         if(!entries[fileName]) {
-            throw new Error("Invalid Zip as it does not contains " + fileName);
+            var errorMessage = errorMessages.errors[errorCode]
+            throw {name: errorCode, message: errorMessage + ", invalid Zip as it does not contains " + fileName};                            
         }
     },
 
@@ -25,7 +26,6 @@ module.exports = {
         } else {
             filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
         } 
-        this.ensureFileExists(entries, filename)
         return filename;
     },
     computeSha256Hash: function(data) {
@@ -44,9 +44,20 @@ module.exports = {
             console.log(msgContext + " proved");                            
         }
     },
-    ensureSacSchemaVersionSupported: function(sacSchemaVersion) { 
-        if(sacSchemaVersion<Constants.default.supportedSacSchemaVersion) {
-            throw {name:"2008", message:"Found sacSchemaVersion:" + sacSchemaVersion+" but only version higher than " + Constants.default.supportedSacSchemaVersion + " are supported"};                            
-        } 
-    }    
+    ensureSacSchemaVersionSupported: function(schemaVersion) { 
+        schemaVersionSupported("sac", "1006", schemaVersion, Constants.default.supportedSchemaVersions.sac);
+    },
+    ensureEvidenceSchemaVersionSupported: function(schemaVersion) { 
+        schemaVersionSupported("evidence", "2008", schemaVersion, Constants.default.supportedSchemaVersions.evidence);
+    },
+    ensureIncEvidenceSchemaVersionSupported: function(schemaVersion) { 
+        schemaVersionSupported("incEvidence", "1006", schemaVersion, Constants.default.supportedSchemaVersions.incEvidence);
+    },                
+}
+
+function schemaVersionSupported(schemaType, errorCode, schemaVersion, expectedSchemaVersion) {
+    if(schemaVersion<expectedSchemaVersion) {
+        throw {name:errorCode, message:"Found " + schemaType + " SchemaVersion:" + schemaVersion+" but only version higher than " + expectedSchemaVersion + " are supported"};                            
+    } 
+    console.log(schemaType + " version validated");
 }

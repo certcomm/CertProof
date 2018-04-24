@@ -9,6 +9,10 @@ module.exports.default = {
 	ssacManifestJsonFileName: "ssacManifest.json",
 	incManifestJsonFileName: "incEvidenceManifest.json",
 	errorFileName: "Errors.txt",
-	supportedSacSchemaVersion:9,
+	supportedSchemaVersions: {
+		sac:10,
+		incEvidence:5,
+		evidence : 3
+	},
 	zeroBytesHash:"0000277125cdf08f863f790be510148a7e55116cc485b816852d56afe2940000"
 }

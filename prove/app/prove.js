@@ -33,7 +33,7 @@ function extractEvidence(evidenceFileName) {
                this.evidenceData = zip.entryDataSync(Constants.default.routeEvidenceJsonFileName).toString('utf-8');
                resolve({
                 entries: this.entries,
-                evidenceJson:JSON.parse(this.evidenceData)
+                evidenceJson:cpJsonUtils.parseJson(this.evidenceData)
                });
             } else {
                 reject("Invalid zip missing "+ Constants.default.routeEvidenceJsonFileName);
@@ -46,6 +46,8 @@ function extractEvidence(evidenceFileName) {
 
 function proveEvidence(extractResponse) {
     var evidenceJson = extractResponse.evidenceJson
+    cpJsonUtils.ensureJsonHas(evidenceJson, "ttn", "ttnGlobal", "highestCnum", "evidenceSchemaVersion", "hasDigitalSignature", "hasCBlockInfo", "governor");
+    evidenceUtils.ensureEvidenceSchemaVersionSupported(evidenceJson.evidenceSchemaVersion)
     this.sectionsHashesSeen = {}
     return proveIncEvidence(evidenceJson,entries, 1);
 }
@@ -55,6 +57,7 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
         var ttn = evidenceJson.ttn;
         var highestcnum = evidenceJson.highestCnum;      
         var incEvidenceFileName = evidenceUtils.getIncEvidenceFileName(evidenceJson, mainZipEntries, ttn, cnum)
+        evidenceUtils.ensureFileExists("2001", mainZipEntries, incEvidenceFileName);
         const zip = new StreamZip({
             file: Constants.default.extractedEvidenceFolder+incEvidenceFileName,
             storeEntries: true
@@ -66,16 +69,18 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
                 return;
             }
             try {
-                evidenceUtils.ensureFileExists(this.entries, Constants.default.incManifestJsonFileName)
-                var incManifestJson = JSON.parse(zip.entryDataSync(Constants.default.incManifestJsonFileName).toString('utf-8'));
-                cpJsonUtils.ensureJsonHas(incManifestJson, "sacHash");
+                evidenceUtils.ensureFileExists("1024", this.entries, Constants.default.incManifestJsonFileName)
+                var incManifestJson = cpJsonUtils.parseJson(zip.entryDataSync(Constants.default.incManifestJsonFileName).toString('utf-8'));
+                cpJsonUtils.ensureJsonHas(incManifestJson, "sacHash","incEvidenceSchemaVersion");
+                evidenceUtils.ensureIncEvidenceSchemaVersionSupported(incManifestJson.incEvidenceSchemaVersion)
 
-                evidenceUtils.ensureFileExists(this.entries, Constants.default.manifestJsonFileName)
+                evidenceUtils.ensureFileExists("2012", this.entries, Constants.default.manifestJsonFileName)
                 var sacManifestData = zip.entryDataSync(Constants.default.manifestJsonFileName);
                 evidenceUtils.ensureHashMatches("1005", sacManifestData, incManifestJson.sacHash, "sacHash for cnum:" + cnum);
 
-                var sacManifestJson = JSON.parse(sacManifestData.toString('utf-8'));
-                cpJsonUtils.ensureJsonHas(sacManifestJson, "sacSchemaVersion", "changeset","ssac", "ssacHash");
+                var sacManifestJson = cpJsonUtils.parseJson(sacManifestData.toString('utf-8'));
+                cpJsonUtils.ensureJsonHas(sacManifestJson, "governor", "ttn", "ttnGlobal", "certified", "subject", "threadType", "sacSchemaVersion"
+                                                            , "changeset","ssac", "ssacHash", "wsac");
                 evidenceUtils.ensureSacSchemaVersionSupported(sacManifestJson.sacSchemaVersion)
 
                 var changeset = sacManifestJson.changeset;
@@ -99,7 +104,7 @@ function proveComment(reject, cnum, changeset, zip) {
     console.log("Proving comment for cnum:"+ cnum);                            
     if((typeof changeset.commentLeafHash)!="undefined") {
         var commentLeafHash = changeset.commentLeafHash;
-        evidenceUtils.ensureFileExists(this.entries, "comments/" + commentLeafHash +".html");
+        evidenceUtils.ensureFileExists("1001", this.entries, "comments/" + commentLeafHash +".html");
         var commentData = zip.entryDataSync("comments/" + commentLeafHash +".html")
         evidenceUtils.ensureHashMatches("1001", commentData, commentLeafHash, "CommentLeafHash for cnum"+ cnum);
     }
@@ -116,7 +121,7 @@ function proveAttachments(reject, cnum, changeset, zip) {
             var attachmentLeafHash = attachment.attachmentLeafHash;
             var extension = path.extname(attachment.title);
             var attachmentFilePath = "attachments/" + attachmentLeafHash + extension;
-            evidenceUtils.ensureFileExists(this.entries, attachmentFilePath);
+            evidenceUtils.ensureFileExists("1003", this.entries, attachmentFilePath);
             var attachmentData = zip.entryDataSync(attachmentFilePath);
             evidenceUtils.ensureHashMatches("1003", attachmentData, attachmentLeafHash, "AttachmentLeafHash for cnum:" + cnum+ ", attachmentNum:" + attachment.attachmentNum);
         }
@@ -126,10 +131,10 @@ function proveAttachments(reject, cnum, changeset, zip) {
 
 function proveSsac(reject, cnum, ssacHash, zip) {
     console.log("Proving ssac for cnum:"+ cnum);                            
-    evidenceUtils.ensureFileExists(this.entries, Constants.default.ssacManifestJsonFileName)
+    evidenceUtils.ensureFileExists("1004", this.entries, Constants.default.ssacManifestJsonFileName)
     var ssacData = zip.entryDataSync(Constants.default.ssacManifestJsonFileName);
     evidenceUtils.ensureHashMatches("1004", ssacData, ssacHash, "ssacHash for cnum:" + cnum);
-    var ssac = JSON.parse(ssacData.toString('utf-8'));
+    var ssac = cpJsonUtils.parseJson(ssacData.toString('utf-8'));
     if((typeof ssac.sections)!="undefined") {
         for(sectionIdx in ssac.sections) {
             section = ssac.sections[sectionIdx];
@@ -143,7 +148,7 @@ function proveSsac(reject, cnum, ssacHash, zip) {
                 } 
                 
                 var sectionFilePath = "sections/" + sectionLeafHash + extension;
-                evidenceUtils.ensureFileExists(this.entries, sectionFilePath);
+                evidenceUtils.ensureFileExists("1002", this.entries, sectionFilePath);
                 var sectionData = zip.entryDataSync(sectionFilePath);
                 evidenceUtils.ensureHashMatches("1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
                 this.sectionsHashesSeen[sectionLeafHash]=true;

@@ -19,14 +19,17 @@ module.exports.errors = {
 "1017":"Invalid Section Structure",
 "1018":"Unknown CERT-OP-TYPE",
 "1019":"Invalid Added Writer Structure",
-"1020":"Invalid Section structure",
+"1020":"Invalid Section Structure",
 "1021":"Creator Writer that is absent from Writer SAC",
 "1022":"CBlockInfo if present does not match its hash",
 "1023":"Digital Signature if present is not valid",
+"1024":"Missing incremental manifest file",
+"1025":"Invalid JSON, Schema validation failed",
+
  //Across Multiple Incremental Evidence 
 "2001":"Missing or non-contiguous change num",
 "2002":"Inconsistent TTN",
-"2003":"Inconsistent Global TTN",
+"2003":"Inconsistent TTN Global",
 "2004":"Modified Section that did not exist or was deleted",
 "2005":"Deleted Section that did not exist or was deleted",
 "2006":"Narrowed Writer SAC across changeset",
@@ -35,6 +38,7 @@ module.exports.errors = {
 "2009":"Inconsistent Digital Signature presence",
 "2010":"Inconsistent CBlockInfo presence",
 "2011":"Inconsistent governor",
+"2012":"Missing manifest file",
 // Blockchain Tests 
 "3001":"#SAC in incremental evidence does not match #SAC on Blockchain using Merkel path",
 "3002":"#SSAC in incremental evidence does not match #SSAC on Blockchain using Merkel path",
