@@ -92,15 +92,22 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
                 cpJsonUtils.ensureJsonHas("1010",sacManifestJson, "ttnGlobal");
                 cpJsonUtils.ensureJsonHas("1009",sacManifestJson, "subject");
                 cpJsonUtils.ensureJsonHas("1013",sacManifestJson, "governor");
-                cpJsonUtils.ensureJsonHas("1020",sacManifestJson, "ttn", "certified", "threadType", "sacSchemaVersion"
+                cpJsonUtils.ensureJsonHas("1020",sacManifestJson, "ttn", "certified", "sacSchemaVersion"
                                                             , "changeset","ssac", "ssacHash", "wsac");
                 evidenceUtils.assertEquals("2003", sacManifestJson.ttnGlobal, this.ttnGlobal);
                 evidenceUtils.assertEquals("2002", sacManifestJson.ttn, this.ttn);                
                 evidenceUtils.assertEquals("2011", sacManifestJson.governor, this.governor);                
-                evidenceUtils.ensureSacSchemaVersionSupported(sacManifestJson.sacSchemaVersion)
+                evidenceUtils.ensureSacSchemaVersionSupported(sacManifestJson.sacSchemaVersion);
+                evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
                 validateWriters(cnum, sacManifestJson);
 
                 var changeset = sacManifestJson.changeset;
+                evidenceUtils.ensureChangeTypeSupported(changeset.changeType);
+                
+                if(sacManifestJson.certified) {
+                    evidenceUtils.ensureCertOpTypeSupported(changeset.certOpType);
+                }
+
                 proveComment(cnum, changeset, zip);
                 proveAttachments(cnum, changeset, zip);
                 proveSsac(cnum, sacManifestJson.ssacHash, zip);
