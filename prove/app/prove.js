@@ -50,8 +50,9 @@ function proveEvidence(extractResponse) {
     cpJsonUtils.ensureJsonHas("1013", evidenceJson, "governor");
     cpJsonUtils.ensureJsonHas("1020", evidenceJson, "ttn", "highestCnum", "evidenceSchemaVersion", "hasDigitalSignature", "hasCBlockInfo");
     evidenceUtils.ensureEvidenceSchemaVersionSupported(evidenceJson.evidenceSchemaVersion)
-    this.sectionsHashesSeen = {}
-    this.currentSectionNums = {}
+    this.sectionsHashesSeen = new Set()
+    this.currentSectionNums = new Set()
+    this.currentWriters = new Set()
     this.ttn = evidenceJson.ttn;
     this.ttnGlobal = evidenceJson.ttnGlobal;
     this.governor = evidenceJson.governor;
@@ -129,19 +130,18 @@ function proveChangeset(cnum, sacManifestJson, zip) {
         errorMessages.throwError("1016", "changeNum:" + changeNum);
     }
 
-    for(var sectionIdx in changeset.sections) {
-        var section = changeset.sections[sectionIdx];
+    for(var section of  changeset.sections) {
         cpJsonUtils.ensureJsonHas("1017", section, "sectionNum","sectionChangeType")
         var sectionChangeType = section.sectionChangeType;
         var sectionNum = section.sectionNum;
         if(sectionChangeType=="added") {
-            this.currentSectionNums[sectionNum]=true;
+            this.currentSectionNums.add(sectionNum);
         } else if(sectionChangeType=="deleted") {
-            if(this.currentSectionNums[sectionNum]=="undefined") {
+            if(!this.currentSectionNums.has(sectionNum)) {
                 errorMessages.throwError("2005", "sectionNum:" + sectionNum);
             }
         } else if(sectionChangeType=="updated"|| sectionChangeType=="unchanged") {
-            if(this.currentSectionNums[sectionNum]=="undefined") {
+            if(!this.currentSectionNums.has(sectionNum)) {
                 errorMessages.throwError("2004", "sectionNum:" + sectionNum);
             }
         }
@@ -160,18 +160,29 @@ function validateWriters(cnum, sacManifestJson) {
     var creatorForeverTmailAddress = changeset.creator.foreverTmailAddress;
     
     if((typeof changeset.addedWriters)!="undefined") {
-        for(writerIdx in changeset.addedWriters) {
-            validateWriter("1019", changeset.addedWriters[writerIdx]);
+        for(var writer of changeset.addedWriters) {
+            validateWriter("1019", writer);
+            this.currentWriters.add(writer.foreverTmailAddress);
         }
     }
     var wsac = sacManifestJson.wsac;
     cpJsonUtils.ensureJsonHas("1012", wsac, "writers");
     var creatorExists = false;
-    for(writerIdx in wsac.writers) {
-        var writer = wsac.writers[writerIdx];
+    var wsacForeverTmailAddress = new Set();
+    for(var writer of wsac.writers) {
         validateWriter("1012", writer);
-        if(writer.foreverTmailAddress==creatorForeverTmailAddress) {
+        if(!creatorExists && writer.foreverTmailAddress==creatorForeverTmailAddress) {
             creatorExists = true;
+        }
+        if(!this.currentWriters.has(writer.foreverTmailAddress)) {
+            errorMessages.throwError("2007", "unseen writer:" + writer.foreverTmailAddress);    
+        }
+        wsacForeverTmailAddress.add(writer.foreverTmailAddress);
+    }
+    //test for narrow of wsac
+    for(var foreverTmailAddress of this.currentWriters) {
+        if(!wsacForeverTmailAddress.has(foreverTmailAddress)) {
+            errorMessages.throwError("2006", "missing writer:" + foreverTmailAddress);       
         }
     }
     if(!creatorExists) {
@@ -200,8 +211,7 @@ function proveComment(cnum, changeset, zip) {
 function proveAttachments(cnum, changeset, zip) {
     console.log("Proving attachments for cnum:"+ cnum);                            
     if((typeof changeset.attachments)!="undefined") {
-        for(attachmentIdx in changeset.attachments) {
-            var attachment = changeset.attachments[attachmentIdx];
+        for(var attachment of changeset.attachments) {
             cpJsonUtils.ensureJsonHas("1020", attachment, "attachmentLeafHash","attachmentNum", "title")
             console.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum);
             var attachmentLeafHash = attachment.attachmentLeafHash;
@@ -222,11 +232,12 @@ function proveSsac(cnum, ssacHash, zip) {
     evidenceUtils.ensureHashMatches("1004", ssacData, ssacHash, "ssacHash for cnum:" + cnum);
     var ssac = cpJsonUtils.parseJson(ssacData.toString('utf-8'));
     if((typeof ssac.sections)!="undefined") {
-        for(sectionIdx in ssac.sections) {
-            var section = ssac.sections[sectionIdx];
+        for(var section of ssac.sections) {
             cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash","type", "title")
             var sectionLeafHash = section.sectionLeafHash;
-            if(this.sectionsHashesSeen[sectionLeafHash]=="undefined") {
+            console.log(sectionLeafHash);
+            console.log("sectionsHashesSeen" + sectionsHashesSeen);            
+            if(!this.sectionsHashesSeen.has(sectionLeafHash)) {
                 var extension = ".txt"
                 if(section.type=="file") {
                     cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName")
@@ -237,7 +248,7 @@ function proveSsac(cnum, ssacHash, zip) {
                 evidenceUtils.ensureFileExists("1002", this.entries, sectionFilePath);
                 var sectionData = zip.entryDataSync(sectionFilePath);
                 evidenceUtils.ensureHashMatches("1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
-                this.sectionsHashesSeen[sectionLeafHash]=true;
+                this.sectionsHashesSeen.add(sectionLeafHash);
             }
         }
     }
