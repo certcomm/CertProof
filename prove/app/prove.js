@@ -51,6 +51,7 @@ function proveEvidence(extractResponse) {
     cpJsonUtils.ensureJsonHas("1020", evidenceJson, "ttn", "highestCnum", "evidenceSchemaVersion", "hasDigitalSignature", "hasCBlockInfo");
     evidenceUtils.ensureEvidenceSchemaVersionSupported(evidenceJson.evidenceSchemaVersion)
     this.sectionsHashesSeen = {}
+    this.currentSectionNums = {}
     this.ttn = evidenceJson.ttn;
     this.ttnGlobal = evidenceJson.ttnGlobal;
     this.governor = evidenceJson.governor;
@@ -101,15 +102,7 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
                 evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
                 validateWriters(cnum, sacManifestJson);
 
-                var changeset = sacManifestJson.changeset;
-                evidenceUtils.ensureChangeTypeSupported(changeset.changeType);
-                
-                if(sacManifestJson.certified) {
-                    evidenceUtils.ensureCertOpTypeSupported(changeset.certOpType);
-                }
-
-                proveComment(cnum, changeset, zip);
-                proveAttachments(cnum, changeset, zip);
+                proveChangeset(cnum, sacManifestJson, zip)
                 proveSsac(cnum, sacManifestJson.ssacHash, zip);
                 console.log("proved", incEvidenceFileName);
                 if (cnum != highestcnum) {
@@ -122,6 +115,42 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
             }
         });  
     });
+}
+
+function proveChangeset(cnum, sacManifestJson, zip) {
+    var changeset = sacManifestJson.changeset;
+    evidenceUtils.ensureChangeTypeSupported(changeset.changeType);
+    
+    if(sacManifestJson.certified) {
+        evidenceUtils.ensureCertOpTypeSupported(changeset.certOpType);
+    }
+    cpJsonUtils.ensureJsonHas("1020",changeset, "changeNum", "sections");
+    if(cnum!=changeset.changeNum) {
+        errorMessages.throwError("1016", "changeNum:" + changeNum);
+    }
+
+    for(var sectionIdx in changeset.sections) {
+        var section = changeset.sections[sectionIdx];
+        cpJsonUtils.ensureJsonHas("1017", section, "sectionNum","sectionChangeType")
+        var sectionChangeType = section.sectionChangeType;
+        var sectionNum = section.sectionNum;
+        if(sectionChangeType=="added") {
+            this.currentSectionNums[sectionNum]=true;
+        } else if(sectionChangeType=="deleted") {
+            if(this.currentSectionNums[sectionNum]=="undefined") {
+                errorMessages.throwError("2005", "sectionNum:" + sectionNum);
+            }
+        } else if(sectionChangeType=="updated"|| sectionChangeType=="unchanged") {
+            if(this.currentSectionNums[sectionNum]=="undefined") {
+                errorMessages.throwError("2004", "sectionNum:" + sectionNum);
+            }
+        }
+
+    }
+
+    proveComment(cnum, changeset, zip);
+    proveAttachments(cnum, changeset, zip);    
+    console.log("Proved changeset for cnum:"+ cnum);                            
 }
 
 function validateWriters(cnum, sacManifestJson) {
@@ -139,7 +168,7 @@ function validateWriters(cnum, sacManifestJson) {
     cpJsonUtils.ensureJsonHas("1012", wsac, "writers");
     var creatorExists = false;
     for(writerIdx in wsac.writers) {
-        writer = wsac.writers[writerIdx];
+        var writer = wsac.writers[writerIdx];
         validateWriter("1012", writer);
         if(writer.foreverTmailAddress==creatorForeverTmailAddress) {
             creatorExists = true;
@@ -172,7 +201,7 @@ function proveAttachments(cnum, changeset, zip) {
     console.log("Proving attachments for cnum:"+ cnum);                            
     if((typeof changeset.attachments)!="undefined") {
         for(attachmentIdx in changeset.attachments) {
-            attachment = changeset.attachments[attachmentIdx];
+            var attachment = changeset.attachments[attachmentIdx];
             cpJsonUtils.ensureJsonHas("1020", attachment, "attachmentLeafHash","attachmentNum", "title")
             console.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum);
             var attachmentLeafHash = attachment.attachmentLeafHash;
@@ -194,7 +223,7 @@ function proveSsac(cnum, ssacHash, zip) {
     var ssac = cpJsonUtils.parseJson(ssacData.toString('utf-8'));
     if((typeof ssac.sections)!="undefined") {
         for(sectionIdx in ssac.sections) {
-            section = ssac.sections[sectionIdx];
+            var section = ssac.sections[sectionIdx];
             cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash","type", "title")
             var sectionLeafHash = section.sectionLeafHash;
             if(this.sectionsHashesSeen[sectionLeafHash]=="undefined") {

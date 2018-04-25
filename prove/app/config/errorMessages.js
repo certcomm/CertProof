@@ -22,8 +22,8 @@ module.exports = {
 		"1019":"Invalid Added Writer Structure",
 		"1020":"Invalid JSON, Schema validation failed",
 		"1021":"Creator Writer that is absent from Writer SAC",
-		"1022":"CBlockInfo if present does not match its hash",
-		"1023":"Digital Signature if present is not valid",
+		"1022":"CBlockInfo if present does not match its hash",//TODO
+		"1023":"Digital Signature if present is not valid",//TODO
 		"1024":"Missing incremental manifest file",
 
 		 //Across Multiple Incremental Evidence 
@@ -32,17 +32,17 @@ module.exports = {
 		"2003":"Inconsistent TTN Global",
 		"2004":"Modified Section that did not exist or was deleted",
 		"2005":"Deleted Section that did not exist or was deleted",
-		"2006":"Narrowed Writer SAC across changeset",
-		"2007":"Writer SAC (changeset N) != Writer SAC (Changeset N-1) + Added Writer (Changeset N)",
+		"2006":"Narrowed Writer SAC across changeset",//TODO
+		"2007":"Writer SAC (changeset N) != Writer SAC (Changeset N-1) + Added Writer (Changeset N)",//TODO
 		"2008":"Unsupported Evidence Schema Version",
 		"2009":"Inconsistent Digital Signature presence",
 		"2010":"Inconsistent CBlockInfo presence",
 		"2011":"Inconsistent governor",
 		"2012":"Missing manifest file",
 		// Blockchain Tests 
-		"3001":"#SAC in incremental evidence does not match #SAC on Blockchain using Merkel path",
-		"3002":"#SSAC in incremental evidence does not match #SSAC on Blockchain using Merkel path",
-		"3003":"#CBlockInfo in incremental evidence does not match #CBlockInfo on Blockchain",
+		"3001":"#SAC in incremental evidence does not match #SAC on Blockchain using Merkel path",//TODO
+		"3002":"#SSAC in incremental evidence does not match #SSAC on Blockchain using Merkel path",//TODO
+		"3003":"#CBlockInfo in incremental evidence does not match #CBlockInfo on Blockchain",//TODO
 	},
 	throwError: function(errorCode, msgSuffix) {
 	    var errorMessage = this.errors[errorCode] + ", " + msgSuffix;
