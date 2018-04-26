@@ -80,28 +80,15 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
             try {
                 evidenceUtils.ensureFileExists("1024", this.entries, Constants.default.incManifestJsonFileName)
                 var incManifestJson = cpJsonUtils.parseJson(zip.entryDataSync(Constants.default.incManifestJsonFileName).toString('utf-8'));
-                cpJsonUtils.ensureJsonHas("1020",incManifestJson, "sacHash","incEvidenceSchemaVersion", "hasDigitalSignature", "hasCBlockInfo");
-                evidenceUtils.assertEquals("2009", incManifestJson.hasDigitalSignature, this.hasDigitalSignature);                
-                evidenceUtils.assertEquals("2010", incManifestJson.hasCBlockInfo, this.hasCBlockInfo);                
+                validateIncManifest(cnum, incManifestJson);
+                proveCThinBlockInfo(cnum, incManifestJson, zip);
 
-                evidenceUtils.ensureIncEvidenceSchemaVersionSupported(incManifestJson.incEvidenceSchemaVersion)
-
-                evidenceUtils.ensureFileExists("2012", this.entries, Constants.default.manifestJsonFileName)
+                evidenceUtils.ensureFileExists("2012", this.entries, Constants.default.manifestJsonFileName)                
                 var sacManifestData = zip.entryDataSync(Constants.default.manifestJsonFileName);
                 evidenceUtils.ensureHashMatches("1005", sacManifestData, incManifestJson.sacHash, "sacHash for cnum:" + cnum);
 
                 var sacManifestJson = cpJsonUtils.parseJson(sacManifestData.toString('utf-8'));
-                cpJsonUtils.ensureJsonHas("1010",sacManifestJson, "ttnGlobal");
-                cpJsonUtils.ensureJsonHas("1009",sacManifestJson, "subject");
-                cpJsonUtils.ensureJsonHas("1013",sacManifestJson, "governor");
-                cpJsonUtils.ensureJsonHas("1020",sacManifestJson, "ttn", "certified", "sacSchemaVersion"
-                                                            , "changeset","ssac", "ssacHash", "wsac");
-                evidenceUtils.assertEquals("2003", sacManifestJson.ttnGlobal, this.ttnGlobal);
-                evidenceUtils.assertEquals("2002", sacManifestJson.ttn, this.ttn);                
-                evidenceUtils.assertEquals("2011", sacManifestJson.governor, this.governor);                
-                evidenceUtils.ensureSacSchemaVersionSupported(sacManifestJson.sacSchemaVersion);
-                evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
-                validateWriters(cnum, sacManifestJson);
+                validateSacManifest(cnum, sacManifestJson);
 
                 proveChangeset(cnum, sacManifestJson, zip)
                 proveSsac(cnum, sacManifestJson.ssacHash, zip);
@@ -151,6 +138,43 @@ function proveChangeset(cnum, sacManifestJson, zip) {
     proveComment(cnum, changeset, zip);
     proveAttachments(cnum, changeset, zip);    
     console.log("Proved changeset for cnum:"+ cnum);                            
+}
+
+function validateIncManifest(cnum, incManifestJson) {
+    cpJsonUtils.ensureJsonHas("1020", incManifestJson, "sacHash","incEvidenceSchemaVersion", "hasDigitalSignature", "hasCBlockInfo");
+    evidenceUtils.assertEquals("2009", incManifestJson.hasDigitalSignature, this.hasDigitalSignature);                
+    evidenceUtils.assertEquals("2010", incManifestJson.hasCBlockInfo, this.hasCBlockInfo);                
+
+    evidenceUtils.ensureIncEvidenceSchemaVersionSupported(incManifestJson.incEvidenceSchemaVersion)    
+}
+
+function proveCThinBlockInfo(cnum, incManifestJson, zip) {
+    if(incManifestJson.hasCBlockInfo) {
+        console.log("Proving CThinBlock for cnum:"+ cnum);                            
+        cpJsonUtils.ensureJsonHas("1020", incManifestJson, "cThinBlockHashes","sacMerklePath", "ssacMerklePath", "cThinBlockMerkleRoot");
+        for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
+            var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
+            evidenceUtils.ensureFileExists("1002", this.entries, cThinBlockFilePath);
+            var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
+            evidenceUtils.ensureHashMatches("1002", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
+        }
+        console.log("Proved CThinBlock for cnum:"+ cnum);                            
+    }
+}
+
+function validateSacManifest(cnum, sacManifestJson) {
+    cpJsonUtils.ensureJsonHas("1010",sacManifestJson, "ttnGlobal");
+    cpJsonUtils.ensureJsonHas("1009",sacManifestJson, "subject");
+    cpJsonUtils.ensureJsonHas("1013",sacManifestJson, "governor");
+    cpJsonUtils.ensureJsonHas("1020",sacManifestJson, "ttn", "certified", "sacSchemaVersion"
+                                                , "changeset","ssac", "ssacHash", "wsac");
+    evidenceUtils.assertEquals("2003", sacManifestJson.ttnGlobal, this.ttnGlobal);
+    evidenceUtils.assertEquals("2002", sacManifestJson.ttn, this.ttn);                
+    evidenceUtils.assertEquals("2011", sacManifestJson.governor, this.governor);                
+    evidenceUtils.ensureSacSchemaVersionSupported(sacManifestJson.sacSchemaVersion);
+    evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
+
+    validateWriters(cnum, sacManifestJson);
 }
 
 function validateWriters(cnum, sacManifestJson) {
@@ -235,8 +259,6 @@ function proveSsac(cnum, ssacHash, zip) {
         for(var section of ssac.sections) {
             cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash","type", "title")
             var sectionLeafHash = section.sectionLeafHash;
-            console.log(sectionLeafHash);
-            console.log("sectionsHashesSeen" + sectionsHashesSeen);            
             if(!this.sectionsHashesSeen.has(sectionLeafHash)) {
                 var extension = ".txt"
                 if(section.type=="file") {
