@@ -154,9 +154,9 @@ function proveCThinBlockInfo(cnum, incManifestJson, zip) {
         cpJsonUtils.ensureJsonHas("1020", incManifestJson, "cThinBlockHashes","sacMerklePath", "ssacMerklePath", "cThinBlockMerkleRoot");
         for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
             var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
-            evidenceUtils.ensureFileExists("1002", this.entries, cThinBlockFilePath);
+            evidenceUtils.ensureFileExists("1022", this.entries, cThinBlockFilePath);
             var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
-            evidenceUtils.ensureHashMatches("1002", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
+            evidenceUtils.ensureHashMatches("1022", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
         }
         console.log("Proved CThinBlock for cnum:"+ cnum);                            
     }
