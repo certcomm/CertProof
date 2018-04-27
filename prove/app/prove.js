@@ -81,7 +81,6 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
                 evidenceUtils.ensureFileExists("1024", this.entries, Constants.default.incManifestJsonFileName)
                 var incManifestJson = cpJsonUtils.parseJson(zip.entryDataSync(Constants.default.incManifestJsonFileName).toString('utf-8'));
                 validateIncManifest(cnum, incManifestJson);
-                proveCThinBlockInfo(cnum, incManifestJson, zip);
 
                 evidenceUtils.ensureFileExists("2012", this.entries, Constants.default.manifestJsonFileName)                
                 var sacManifestData = zip.entryDataSync(Constants.default.manifestJsonFileName);
@@ -90,6 +89,7 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
                 var sacManifestJson = cpJsonUtils.parseJson(sacManifestData.toString('utf-8'));
                 validateSacManifest(cnum, sacManifestJson);
 
+                proveCThinBlockInfo(cnum, incManifestJson, sacManifestJson, zip);
                 proveChangeset(cnum, sacManifestJson, zip)
                 proveSsac(cnum, sacManifestJson.ssacHash, zip);
                 console.log("proved", incEvidenceFileName);
@@ -148,7 +148,7 @@ function validateIncManifest(cnum, incManifestJson) {
     evidenceUtils.ensureIncEvidenceSchemaVersionSupported(incManifestJson.incEvidenceSchemaVersion)    
 }
 
-function proveCThinBlockInfo(cnum, incManifestJson, zip) {
+function proveCThinBlockInfo(cnum, incManifestJson, sacManifestJson, zip) {
     if(incManifestJson.hasCBlockInfo) {
         console.log("Proving CThinBlock for cnum:"+ cnum);                            
         cpJsonUtils.ensureJsonHas("1020", incManifestJson, "cThinBlockHashes","sacMerklePath", "ssacMerklePath", "cThinBlockMerkleRoot");
@@ -157,10 +157,16 @@ function proveCThinBlockInfo(cnum, incManifestJson, zip) {
             evidenceUtils.ensureFileExists("1022", this.entries, cThinBlockFilePath);
             var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
             evidenceUtils.ensureHashMatches("1022", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
+            console.log("Proved " + cThinBlockFilePath);                            
         }
+        console.log("Proved sacMerklePath");
+        evidenceUtils.proveMerklePathToRoot(incManifestJson.cThinBlockMerkleRoot, incManifestJson.sacHash, incManifestJson.sacMerklePath);
+        console.log("Proved ssacMerklePath");
+        evidenceUtils.proveMerklePathToRoot(incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
         console.log("Proved CThinBlock for cnum:"+ cnum);                            
     }
 }
+
 
 function validateSacManifest(cnum, sacManifestJson) {
     cpJsonUtils.ensureJsonHas("1010",sacManifestJson, "ttnGlobal");

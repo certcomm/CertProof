@@ -75,6 +75,31 @@ module.exports = {
         if(!(certOpTypes.has(certOpType))) {
             errorMessages.throwError("1018", certOpType);            
         }
+    },
+    proveMerklePathToRoot: function (merkleRootHash, leafSignature, merklePathToRoot) {
+        console.log("Proving leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash + " using merklePathToRoot: " + merklePathToRoot);
+        var digest = Buffer.from(leafSignature,'hex');
+        for(var treeNode of merklePathToRoot.split(",")) {
+            var msg = "Hashing node " + treeNode + " and " + digest.toString('hex');
+            var hash = crypto.createHash('sha256');
+            var split = treeNode.split(":")
+            if(split[0]=="L"){
+                hash.update(Buffer.from(split[1],'hex'));
+                hash.update(digest);
+                digest = hash.digest();
+            } else {
+                hash.update(digest);
+                hash.update(Buffer.from(split[1],'hex'));
+                digest = hash.digest();
+            }
+            console.log(msg + " leads to hash:" + digest.toString('hex'));
+        }
+        var actualRootHash = digest.toString('hex');
+        console.log("actualRootHash:" + actualRootHash)
+        if(actualRootHash != merkleRootHash) {
+            errorMessages.throwError("1022", "expectedRootHash:" + merkleRootHash +", actualRootHash=" + actualRootHash);            
+        }
+        console.log("MerkleTree proved leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash);
     }
 }
 
