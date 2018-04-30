@@ -92,6 +92,9 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
                 proveCThinBlockInfo(cnum, incManifestJson, sacManifestJson, zip);
                 proveChangeset(cnum, sacManifestJson, zip)
                 proveSsac(cnum, sacManifestJson.ssacHash, zip);
+                if (cnum==1) {
+                    proveForwards(sacManifestJson, zip);
+                }    
                 console.log("proved", incEvidenceFileName);
                 if (cnum != highestcnum) {
                     proveIncEvidence(evidenceJson, mainZipEntries, cnum+1);
@@ -103,6 +106,23 @@ function proveIncEvidence(evidenceJson, mainZipEntries, cnum) {
             }
         });  
     });
+}
+
+function proveForwards(sacManifestJson, zip) {
+    if((typeof sacManifestJson.forwards)!="undefined") {
+        for(var forward of sacManifestJson.forwards) {
+            cpJsonUtils.ensureJsonHas("1020", forward, "forwardedComments", "subject", "ttnGlobal", "ttn", "forwardedAtChangeNum", "threadType");            
+            for(var forwardedComment of forward.forwardedComments) {
+                cpJsonUtils.ensureJsonHas("1020", forwardedComment, "sacHash", "changeNum");            
+                var forwardedCommentSacManifestPath = "forwards/" + forward.ttn + "_" + forwardedComment.changeNum + "_sacManifest.json";
+                evidenceUtils.ensureFileExists("1025", this.entries, forwardedCommentSacManifestPath);
+                var forwardedCommentSacData = zip.entryDataSync(forwardedCommentSacManifestPath);
+                evidenceUtils.ensureHashMatches("1025", forwardedCommentSacData, forwardedComment.sacHash, "forwardedComment for " + forwardedCommentSacManifestPath);
+                console.log("Proved " + forwardedCommentSacManifestPath);                                            
+            }
+        }
+        console.log("proved forwards");
+    }    
 }
 
 function proveChangeset(cnum, sacManifestJson, zip) {
@@ -159,9 +179,9 @@ function proveCThinBlockInfo(cnum, incManifestJson, sacManifestJson, zip) {
             evidenceUtils.ensureHashMatches("1022", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
             console.log("Proved " + cThinBlockFilePath);                            
         }
-        console.log("Proved sacMerklePath");
+        console.log("Proving sacMerklePath");
         evidenceUtils.proveMerklePathToRoot(incManifestJson.cThinBlockMerkleRoot, incManifestJson.sacHash, incManifestJson.sacMerklePath);
-        console.log("Proved ssacMerklePath");
+        console.log("Proving ssacMerklePath");
         evidenceUtils.proveMerklePathToRoot(incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
         console.log("Proved CThinBlock for cnum:"+ cnum);                            
     }

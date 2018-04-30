@@ -22,9 +22,10 @@ module.exports = {
 		"1019":"Invalid Added Writer Structure",
 		"1020":"Invalid JSON, Schema validation failed",
 		"1021":"Creator Writer that is absent from Writer SAC",
-		"1022":"CBlockInfo if present does not match its hash",//TODO
+		"1022":"CBlockInfo if present does not match its hash",
 		"1023":"Digital Signature if present is not valid",//TODO
 		"1024":"Missing incremental manifest file",
+		"1025":"Forwarded comment if present does not match its hash",
 
 		 //Across Multiple Incremental Evidence 
 		"2001":"Missing or non-contiguous change num",
