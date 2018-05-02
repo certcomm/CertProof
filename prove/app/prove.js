@@ -5,11 +5,11 @@ var fs = require('fs-extra');
 var path = require('path');
 const StreamZip = require('node-stream-zip');
 module.exports = {
-    extractEvidence: function(logEmitter, evidenceFileName) {
+    extractEvidence: function(logEmitter, extractedEvidenceFolder, evidenceFileName) {
       this.logEmitter = logEmitter;
       return new Promise(function(resolve, reject) {
-        if (fs.existsSync(Constants.default.extractedEvidenceFolder)){
-            fs.removeSync(Constants.default.extractedEvidenceFolder);
+        if (fs.existsSync(extractedEvidenceFolder)){
+            fs.removeSync(extractedEvidenceFolder);
         }
         const zip = new StreamZip({
             file: process.argv[2],
@@ -20,12 +20,12 @@ module.exports = {
             if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)){
                 return;
             }
-            fs.ensureDir(Constants.default.extractedEvidenceFolder, err => {
+            fs.ensureDir(extractedEvidenceFolder, err => {
               if(err) {
                 reject(err);
               }
             })
-            zip.extract(null, Constants.default.extractedEvidenceFolder, (err, count) => {
+            zip.extract(null, extractedEvidenceFolder, (err, count) => {
                 if(err) {
                     this.logEmitter.log(err ? 'Extract error' : `Extracted ${count} entries`);
                     zip.close();
@@ -33,6 +33,7 @@ module.exports = {
                 } else if(this.entries[Constants.default.routeEvidenceJsonFileName]) {
                    this.evidenceData = zip.entryDataSync(Constants.default.routeEvidenceJsonFileName).toString('utf-8');
                    resolve({
+                    extractedEvidenceFolder:extractedEvidenceFolder,
                     entries: this.entries,
                     evidenceJson:cpJsonUtils.parseJson(this.evidenceData)
                    });
@@ -59,10 +60,10 @@ module.exports = {
         this.governor = evidenceJson.governor;
         this.hasDigitalSignature = evidenceJson.hasDigitalSignature;
         this.hasCBlockInfo = evidenceJson.hasCBlockInfo;
-        return this.proveIncEvidence(evidenceJson,extractResponse.entries, 1);
+        return this.proveIncEvidence(evidenceJson,extractResponse.extractedEvidenceFolder, extractResponse.entries, 1);
     },
 
-    proveIncEvidence : function (evidenceJson, mainZipEntries, cnum) {
+    proveIncEvidence : function (evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum) {
         var outer = this;
         return new Promise(function(resolve, reject) {
             var ttn = evidenceJson.ttn;
@@ -70,7 +71,7 @@ module.exports = {
             var incEvidenceFileName = evidenceUtils.getIncEvidenceFileName(evidenceJson, mainZipEntries, ttn, cnum)
             evidenceUtils.ensureFileExists("2001", mainZipEntries, incEvidenceFileName);
             const zip = new StreamZip({
-                file: Constants.default.extractedEvidenceFolder+incEvidenceFileName,
+                file: extractedEvidenceFolder + incEvidenceFileName,
                 storeEntries: true
             });
 
@@ -100,7 +101,7 @@ module.exports = {
                     }    
                     this.logEmitter.log("proved", incEvidenceFileName);
                     if (cnum != highestcnum) {
-                        outer.proveIncEvidence(evidenceJson, mainZipEntries, cnum+1);
+                        outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
                     }
                     resolve("proved")
                 } catch(err) {

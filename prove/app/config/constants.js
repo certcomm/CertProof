@@ -1,9 +1,5 @@
-const userDataPath = "/tmp";
 
 module.exports.default = {
-	userDataPath: userDataPath,
-	evidenceFolder: userDataPath+"/uploads/",
-	extractedEvidenceFolder: userDataPath+"/uploads/extracted/",
 	routeEvidenceJsonFileName: "evidenceManifest.json",
 	manifestJsonFileName: "sacManifest.json",
 	ssacManifestJsonFileName: "ssacManifest.json",

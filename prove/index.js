@@ -6,8 +6,8 @@ LogEmitter.prototype = {
 	error: function(err) {console.error(err);}
 };
 var logEmitter = new LogEmitter();
-
-prover.extractEvidence(logEmitter, process.argv[2])
+var extractedEvidenceFolder = "/tmp/uploads/extracted/";
+prover.extractEvidence(logEmitter, extractedEvidenceFolder, process.argv[2])
 .then(function(response) {
         return prover.proveEvidence(response);
     })
