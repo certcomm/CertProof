@@ -40,26 +40,26 @@ module.exports = {
     computeSha256Hash: function(data) {
         return crypto.createHash('sha256').update(data).digest('hex');
     },
-    ensureHashMatches: function(errorCode, data, expectedHash, msgContext) {
+    ensureHashMatches: function(logEmitter, errorCode, data, expectedHash, msgContext) {
         if(expectedHash==Constants.default.zeroBytesHash && data.length==0) {
-            console.log(msgContext + " proof skipped as 0 bytes");
+            logEmitter.log(msgContext + " proof skipped as 0 bytes");
             return;            
         }
         var hashFromContent = this.computeSha256Hash(data)
         if(hashFromContent!=expectedHash) {
             errorMessages.throwError(errorCode, msgContext + " doesn't match, expected=" + expectedHash + ", actual=" + hashFromContent);
         } else {
-            console.log(msgContext + " proved");                            
+            logEmitter.log(msgContext + " proved");                            
         }
     },
-    ensureSacSchemaVersionSupported: function(schemaVersion) { 
-        schemaVersionSupported("sac", "1006", schemaVersion, Constants.default.supportedSchemaVersions.sac);
+    ensureSacSchemaVersionSupported: function(logEmitter, schemaVersion) { 
+        schemaVersionSupported(logEmitter, "sac", "1006", schemaVersion, Constants.default.supportedSchemaVersions.sac);
     },
-    ensureEvidenceSchemaVersionSupported: function(schemaVersion) { 
-        schemaVersionSupported("evidence", "2008", schemaVersion, Constants.default.supportedSchemaVersions.evidence);
+    ensureEvidenceSchemaVersionSupported: function(logEmitter, schemaVersion) { 
+        schemaVersionSupported(logEmitter, "evidence", "2008", schemaVersion, Constants.default.supportedSchemaVersions.evidence);
     },
-    ensureIncEvidenceSchemaVersionSupported: function(schemaVersion) { 
-        schemaVersionSupported("incEvidence", "1006", schemaVersion, Constants.default.supportedSchemaVersions.incEvidence);
+    ensureIncEvidenceSchemaVersionSupported: function(logEmitter, schemaVersion) { 
+        schemaVersionSupported(logEmitter, "incEvidence", "1006", schemaVersion, Constants.default.supportedSchemaVersions.incEvidence);
     },
     ensureThreadTypeSupported: function(threadType) {
         if(!(threadTypes.has(threadType))) {
@@ -76,8 +76,8 @@ module.exports = {
             errorMessages.throwError("1018", certOpType);            
         }
     },
-    proveMerklePathToRoot: function (merkleRootHash, leafSignature, merklePathToRoot) {
-        console.log("Proving leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash + " using merklePathToRoot: " + merklePathToRoot);
+    proveMerklePathToRoot: function (logEmitter, merkleRootHash, leafSignature, merklePathToRoot) {
+        logEmitter.log("Proving leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash + " using merklePathToRoot: " + merklePathToRoot);
         var digest = Buffer.from(leafSignature,'hex');
         for(var treeNode of merklePathToRoot.split(",")) {
             var msg = "Hashing node " + treeNode + " and " + digest.toString('hex');
@@ -92,20 +92,20 @@ module.exports = {
                 hash.update(Buffer.from(split[1],'hex'));
                 digest = hash.digest();
             }
-            console.log(msg + " leads to hash:" + digest.toString('hex'));
+            logEmitter.log(msg + " leads to hash:" + digest.toString('hex'));
         }
         var actualRootHash = digest.toString('hex');
-        console.log("actualRootHash:" + actualRootHash)
+        logEmitter.log("actualRootHash:" + actualRootHash)
         if(actualRootHash != merkleRootHash) {
             errorMessages.throwError("1022", "expectedRootHash:" + merkleRootHash +", actualRootHash=" + actualRootHash);            
         }
-        console.log("MerkleTree proved leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash);
+        logEmitter.log("MerkleTree proved leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash);
     }
 }
 
-function schemaVersionSupported(schemaType, errorCode, schemaVersion, expectedSchemaVersion) {
+function schemaVersionSupported(logEmitter, schemaType, errorCode, schemaVersion, expectedSchemaVersion) {
     if(schemaVersion<expectedSchemaVersion) {
         errorMessages.throwError(errorCode, "Found " + schemaType + " SchemaVersion:" + schemaVersion+" but only version higher than " + expectedSchemaVersion + " are supported");                            
     } 
-    console.log(schemaType + " version validated");
+    logEmitter.log(schemaType + " version validated");
 }
