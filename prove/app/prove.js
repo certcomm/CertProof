@@ -176,13 +176,39 @@ module.exports = {
         if(incManifestJson.hasCBlockInfo) {
             this.logEmitter.log("Proving CThinBlock for cnum:"+ cnum);                            
             cpJsonUtils.ensureJsonHas("1020", incManifestJson, "cThinBlockHashes","sacMerklePath", "ssacMerklePath", "cThinBlockMerkleRoot");
+            var opsHashes = new Set()
+            var cThinBlockMerkleRootHashes = new Set()
             for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
                 var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
                 evidenceUtils.ensureFileExists("1022", zip.entries(), cThinBlockFilePath);
                 var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
                 evidenceUtils.ensureHashMatches(this.logEmitter, "1022", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
+                var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
+                cpJsonUtils.ensureJsonHas("1010",cThinBlockJson, "blockNum", "cThinBlockMerkleRootHash","governor","shardKey");
+                cThinBlockMerkleRootHashes.add(cThinBlockJson.cThinBlockMerkleRootHash);
+                for(var op of cThinBlockJson.operations) {
+                    cpJsonUtils.ensureJsonHas("1010", op, "transactionNum", "ttnGlobalHash", "sacHash", "ssacHash", "changeNum");
+                    opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.sacHash);
+                    opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.ssacHash);
+                }
                 this.logEmitter.log("Proved " + cThinBlockFilePath);                            
             }
+            if(!cThinBlockMerkleRootHashes.has(incManifestJson.cThinBlockMerkleRoot)) {
+                errorMessages.throwError("2010", "cThinBlockMerkleRoot in incremental evidence missing in included cthinBlocks");                
+            }
+            this.logEmitter.log("Proved cThinBlockMerkleRoot:" + incManifestJson.cThinBlockMerkleRoot  + " exists");                                                    
+            var ttnGlobalHash = evidenceUtils.computeSha256Hash(incManifestJson.ttnGlobal);
+            var sacOpHash = ttnGlobalHash + ":" + cnum + incManifestJson.sacHash;
+            if(!opsHashes.has(sacOpHash)) {
+                errorMessages.throwError("2010", "sacHash in incremental evidence missing in included cthinBlocks operations");                
+            }
+            this.logEmitter.log("Proved sacHash:" + incManifestJson.sacHash  + " exists  in cthinBlock");                                                    
+            var ssacOpHash = ttnGlobalHash + ":" + cnum + sacManifestJson.ssacHash;
+            if(!opsHashes.has(ssacOpHash)) {
+                errorMessages.throwError("2010", "ssacHash in incremental evidence missing in included cthinBlocks operations");                
+            }
+            this.logEmitter.log("Proved ssacHash:" + sacManifestJson.ssacHash  + " exists in cthinBlock");                                                    
+
             this.logEmitter.log("Proving sacMerklePath");
             evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, incManifestJson.sacHash, incManifestJson.sacMerklePath);
             this.logEmitter.log("Proving ssacMerklePath");
