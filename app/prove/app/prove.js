@@ -12,7 +12,7 @@ module.exports = {
             fs.removeSync(extractedEvidenceFolder);
         }
         const zip = new StreamZip({
-            file: process.argv[2],
+            file: evidenceFileName,
             storeEntries: true
         });
         zip.on('ready', () => {
