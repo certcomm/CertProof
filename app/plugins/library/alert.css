@@ -1,0 +1,296 @@
+#smartAlert {
+    position: absolute;
+    visibility: hidden;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+}
+
+body > #smartAlert {
+    position: fixed;
+}
+
+/* -----[ BOX ]---------------------------------------------------------------------------------- */
+
+#smartAlertBox {
+    overflow: hidden;
+    position: absolute;
+}
+
+/* -----[ HEADER ]------------------------------------------------------------------------------- */
+
+#smartAlertHeader {
+    position: relative;
+}
+
+#smartAlert[data-draggable="true"] #smartAlertHeader {
+    cursor: move;
+}
+
+#smartAlert[data-ie="7"] #smartAlertHeader {
+    width: expression((
+        this.parentNode.clientWidth -
+        parseInt(this.currentStyle['paddingLeft']) -
+        parseInt(this.currentStyle['paddingRight'])
+    ) + 'px');
+}
+
+#smartAlertTitle {
+    text-align: left;
+}
+
+#smartAlertClose {
+    display: none;
+    position: absolute;
+    cursor: pointer;
+}
+
+#smartAlert[data-cancel="true"] #smartAlertClose {
+    display: block;
+}
+
+/* -----[ BODY ]--------------------------------------------------------------------------------- */
+
+#smartAlertBody {
+    display: table;
+    width: 100%;
+}
+
+#smartAlert[data-ie="7"] #smartAlertBody {
+    display: block;
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: auto;
+    width: expression(this.parentNode.clientWidth + 'px');
+}
+
+#smartAlert[data-ie="7"] #smartAlertBody,
+#smartAlert[data-ie="7"] #smartAlertBody td {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    border: none;
+    font-weight: inherit;
+    font-style: inherit;
+    font-size: 100%;
+    vertical-align: baseline;
+}
+
+/* -----[ ICONS ]-------------------------------------------------------------------------------- */
+
+#smartAlertIcon {
+    display: table-cell;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#smartAlert[data-icon="false"] #smartAlertIcon {
+    display: none;
+}
+
+/* -----[ CONTENT ]------------------------------------------------------------------------------ */
+
+#smartAlertContent {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#smartAlert[data-align="left"] #smartAlertContent {
+    text-align: left;
+}
+
+#smartAlert[data-align="center"] #smartAlertContent {
+    text-align: center;
+}
+
+#smartAlert[data-align="right"] #smartAlertContent {
+    text-align: right;
+}
+
+#smartAlert[data-ie="7"] #smartAlertContent {
+    word-wrap: break-word;
+}
+
+#smartAlertPrompt {
+    display: block;
+    width: 100%;
+    outline: none;
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+/* -----[ BUTTONS ]------------------------------------------------------------------------------ */
+
+#smartAlertButtons {
+    position: relative;
+    text-align: center;
+}
+
+#smartAlert[data-ie="7"] #smartAlertButtons {
+    width: expression((
+        this.parentNode.clientWidth -
+        parseInt(this.currentStyle['paddingLeft']) -
+        parseInt(this.currentStyle['paddingRight'])
+    ) + 'px');
+}
+
+.smartAlertButton {
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+}
+
+#smartAlert[data-ie="8"] .smartAlertButton {
+    position: relative;
+}
+
+#smartAlert[data-ie="7"] .smartAlertButton {
+    display: inline;
+    width: 1px;
+}
+
+/* =====[ MALIHU CUSTOM SCROLLBAR ]============================================================== */
+
+.mCSB_container{width:auto;margin-right:30px;overflow:hidden;text-align:center;color:#000;font-size:13px;}.mCSB_container.mCS_no_scrollbar{margin-right:0}.mCS_disabled>.mCustomScrollBox>.mCSB_container.mCS_no_scrollbar,.mCS_destroyed>.mCustomScrollBox>.mCSB_container.mCS_no_scrollbar{margin-right:30px}.mCustomScrollBox>.mCSB_scrollTools{width:16px;height:100%;top:0;right:0}.mCSB_scrollTools .mCSB_draggerContainer{position:absolute;top:0;left:0;bottom:0;right:0;height:auto}.mCSB_scrollTools a+.mCSB_draggerContainer{margin:20px 0}.mCSB_scrollTools .mCSB_draggerRail{width:2px;height:100%;margin:0 auto;-webkit-border-radius:10px;-moz-border-radius:10px;border-radius:10px}.mCSB_scrollTools .mCSB_dragger{cursor:pointer;width:100%;height:30px}.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar{width:4px;height:100%;margin:0 auto;-webkit-border-radius:10px;-moz-border-radius:10px;border-radius:10px;text-align:center}.mCustomScrollBox>.mCSB_scrollTools{opacity:.75;filter:"alpha(opacity=75)";-ms-filter:"alpha(opacity=75)"}.mCustomScrollBox:hover>.mCSB_scrollTools{opacity:1;filter:"alpha(opacity=100)";-ms-filter:"alpha(opacity=100)"}.mCSB_scrollTools .mCSB_draggerRail{background:#000;background:rgba(0,0,0,0.4);filter:"alpha(opacity=40)";-ms-filter:"alpha(opacity=40)"}.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar{background:#fff;background:rgba(255,255,255,0.75);filter:"alpha(opacity=75)";-ms-filter:"alpha(opacity=75)"}.mCSB_scrollTools .mCSB_dragger:hover .mCSB_dragger_bar{background:rgba(255,255,255,0.85);filter:"alpha(opacity=85)";-ms-filter:"alpha(opacity=85)"}.mCSB_scrollTools .mCSB_dragger:active .mCSB_dragger_bar,.mCSB_scrollTools .mCSB_dragger.mCSB_dragger_onDrag .mCSB_dragger_bar{background:rgba(255,255,255,0.9);filter:"alpha(opacity=90)";-ms-filter:"alpha(opacity=90)"}.mCustomScrollBox{max-width:none !important;}
+
+/* Theme css */
+#smartAlert {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.7);
+    -pie-background: rgba(0, 0, 0, 0.7);
+}
+
+/* -----[ BOX ]---------------------------------------------------------------------------------- */
+
+#smartAlertBox {
+  background: none repeat scroll 0 0 #EEEEEE;
+  font-size: 13px;
+  margin: 15px;
+  max-width: 500px;
+  min-width: 270px;
+  padding: 0 5px;
+}
+
+#smartAlert[data-type="prompt"] #smartAlertBox {
+    min-width: 310px;
+}
+
+#smartAlert[data-ie="8"] #smartAlertBox,
+#smartAlert[data-ie="7"] #smartAlertBox {
+    box-shadow: none;
+}
+
+/* -----[ HEADER ]------------------------------------------------------------------------------- */
+
+#smartAlertHeader {
+  background-color: #EEEEEE;
+  padding: 7px 38px 10px 10px;
+}
+
+#smartAlertTitle {
+  color: #000000;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 13px;
+  text-shadow: 0 -1px 1px #FFFFFF;
+}
+
+#smartAlertClose {
+  height: 13px;
+  right: 8px;
+  top: 8px;
+  width: 13px;
+}
+#smartAlertClose:after {
+  border: 1px solid;
+  color: #777777;
+  font-family: tmail;
+  content: "(";
+}
+#smartAlert[data-webkit] #smartAlertHeader,
+#smartAlert[data-opera] #smartAlertHeader {
+    border-radius: 2px 2px 0 0;
+}
+
+/* -----[ CONTENT ]------------------------------------------------------------------------------ */
+
+#smartAlertContent {
+  background: none repeat scroll 0 0 #F3F3F3;
+  border-color: #CCCCCC;
+  color: #63737F;
+  line-height: 20px;
+  padding: 20px 0;
+}
+
+#smartAlert[data-icon="false"] #smartAlertContent {
+    padding-left: 52px;
+}
+
+#smartAlert[data-type="prompt"] #smartAlertContent {
+    padding: 16px 20px 16px 0;
+}
+
+#smartAlert[data-type="prompt"][data-icon="false"] #smartAlertContent {
+    padding-left: 26px;
+}
+
+#smartAlertScrollBar {
+    background: #e9e9e9 !important;
+}
+
+#smartAlertScrollDrag {
+    background: #bbbbbe;
+}
+
+#smartAlertPrompt {
+    border: 1px solid #bbbbbe;
+    padding: 5px;
+    margin: 10px 0;
+    font-size: 13px;
+    line-height: 13px;
+    color: #848484;
+    background: none;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -o-border-radius: 3px;
+    -ms-border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(2, 3, 3, 0.12) inset;
+    -webkit-box-shadow: 0 1px 3px rgba(2, 3, 3, 0.12) inset;
+    -moz-box-shadow: 0 1px 3px rgba(2, 3, 3, 0.12) inset;
+    -o-box-shadow: 0 1px 3px rgba(2, 3, 3, 0.12) inset;
+    -ms-box-shadow: 0 1px 3px rgba(2, 3, 3, 0.12) inset;
+}
+
+/* -----[ BUTTONS ]------------------------------------------------------------------------------ */
+
+#smartAlertButtons {
+    padding: 8px 13px 13px;
+}
+
+#smartAlert[data-webkit] #smartAlertButtons,
+#smartAlert[data-opera] #smartAlertButtons,
+#smartAlert[data-ie="8"] #smartAlertButtons,
+#smartAlert[data-ie="7"] #smartAlertButtons {
+    border-radius: 0 0 2px 2px;
+}
+
+.smartAlertButton {
+  color: #000000;
+  float: right;
+  font-size: 11px;
+  font-weight: bold;
+  line-height: 13px;
+  margin: 0 0 9px;
+  padding: 7px 26px;
+}
+
+.smartAlertButton:hover {
+  background-color: #ddd;
+}

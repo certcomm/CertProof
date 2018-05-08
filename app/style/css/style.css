@@ -1,0 +1,336 @@
+body {
+  font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; background-color: #FFFFFF; font-size: 13px; color: #676a6c; overflow-x: hidden; margin: 0;
+}
+.wrapper {
+  padding-top: 15px;
+}
+.wrapper-content {
+  height: 100%;
+}
+.information-message-large {
+  font-size: 26px; text-align: center;
+}
+.header {
+  height: 80px;
+}
+.container {
+
+}
+.link {
+  text-decoration: underline; color: #1c84c6; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; cursor: pointer;
+}
+.cancel-link {
+  text-decoration: underline; color: #FF0000; font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
+}
+.text-center {
+  text-align: center;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 100;
+}
+h1 {
+  font-size: 30px;
+}
+h2 {
+  font-size: 24px;
+}
+h3 {
+  font-size: 16px;
+}
+h4 {
+  font-size: 14px;
+}
+h5 {
+  font-size: 12px;
+}
+h6 {
+  font-size: 10px;
+}
+h3,
+h4,
+h5 {
+  margin-top: 5px; font-weight: 600;
+}
+.bold {
+  font-weight: 600;
+}
+.form-group {
+  margin-bottom: 15px;
+}
+.single-line-small {
+  width: 100px!important;
+}
+.single-line {
+  background-color: #FFFFFF; background-image: none; border: 1px solid #E5E6E7; color: inherit; padding: 6px 12px; height: 18px; width: 300px;
+}
+.form-control, .form-control:focus, .has-error .form-control:focus, .has-success .form-control:focus, .has-warning .form-control:focus, .navbar-collapse, .navbar-form, .navbar-form-custom .form-control:focus, .navbar-form-custom .form-control:hover, .open .btn.dropdown-toggle, .panel, .popover, .progress, .progress-bar {
+  box-shadow: none;
+}
+.form-control {
+  background-color: #FFFFFF; background-image: none; border: 1px solid #CCCCCC; border-radius: 4px; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset; color: #555555; display: block; font-size: 14px; height: 34px; line-height: 1.42857;
+  padding: 6px 12px; transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+}
+a.breadcrumb {
+  cursor: pointer; display: inline-block; font-size: 13px; font-weight: 600; padding: 6px 12px; border: 1px solid #E7EAEC; border-radius: 4px;
+}
+.btn-w-m {
+  min-width: 120px;
+}
+.btn {
+  -moz-user-select: none; background-image: none; border: 1px solid #E7EAEC; border-radius: 4px; cursor: pointer; display: inline-block; font-size: 13px; font-weight: 500; line-height: 1.42857; margin-bottom: 0; padding: 6px 12px; text-align: center; white-space: nowrap;
+}
+.btn-primary {
+  background-color: #1AB394; border-color: #1AB394; color: #FFFFFF;
+}
+.btn-success {
+  background-color: #1C84C6; border-color: #1C84C6; color: #FFFFFF;
+}
+.btn-default {
+  background: #FFFFFF; border: 1px solid #E7EAEC; color: inherit;
+}
+.upload-button {
+  background: #FFFFFF; border: 1px solid #E7EAEC; border-radius: 0; color: inherit;
+}
+.upload-button-radius {
+  background: #FFFFFF; border: 1px solid #E7EAEC; border-radius: 0 5px 5px 0; color: inherit;
+}
+
+.fadeInRight {
+  animation-name: fadeInRight;
+}
+.animated {
+  animation-duration: 1s; animation-fill-mode: both;
+}
+.col-md-4 {
+  width: 33.3333%;
+}
+.col-md-8 {
+  width: 66.6667%;
+}
+.col-md-1, .col-md-10, .col-md-11, .col-md-12, .col-md-2, .col-md-3, .col-md-4, .col-md-5, .col-md-6, .col-md-7, .col-md-8, .col-md-9 {
+  float: left;
+}
+.left-container{
+  border-right: solid 1px #111111; height: 100%;
+}
+.right-container{
+
+}
+.evidence-title{
+
+}
+.middle-box {
+  margin: 0 auto; max-width: 400px; padding-top: 40px; z-index: 100;
+}
+.fadeInRightBig {
+  animation-name: fadeInRightBig;
+}
+.logo{
+  text-align: center;
+}
+.margin-between {
+  margin-left: 3px;
+}
+.panel-container {
+	background-color:white; width:100%; font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+.panel-container .xpanel {
+	width:40%; float:left; text-align: center; padding: 0 0 0 14px; box-sizing: border-box;
+}
+.panel-container .ypanel {
+	width: 59%; float: right; border-left:1px solid #EFEFEF;
+}
+.xpanel .xpanel-header{
+  border-bottom: solid 1px #EEEEEE; display: inline-block; width: 100%; padding-bottom: 12px;
+}
+.xpanel .xpanel-header .xpanel-header-back-btn {
+  float: right; margin-top: 10px;
+}
+.xpanel button.btn-breadcrumb {
+	color: gray; background: white; border: none; font-size: 16px!important;
+}
+.xpanel button.btn-default {
+	color: gray; background: white; border: 1px solid #e7eaec;
+}
+.xpanel button.btn-w-m {
+    min-width: 100px;
+}
+.xpanel button.btn {
+  border-radius: 3px; padding: 6px 12px; font-size: 14px; line-height: 1.42857143;
+}
+.xpanel .dashboard-icon{
+  vertical-align: middle; margin-top: -7px; height: 20px;
+}
+.xpanel span.zip-file-name{
+	font-size:18px; color:gray; margin-left: 3px;
+}
+.xpanel .advanced-container{
+	margin: 15px 0; display: inline-block; width: 90%;
+}
+.xpanel .advanced-container .hide-me {
+  margin: 0; line-height: 20px;
+}
+.xpanel .advanced-container .info-label {
+  float: left; color: #666666!important; width: 140px; text-align: left;
+}
+.xpanel .advanced-container .info-value {
+  float: left; color: #666666!important; font-weight: 500; margin-left: 10px;
+}
+.xpanel .advanced-container .fancy {
+  width:100%; text-align:center; border-bottom: 1px solid #DDDDDD; line-height:0.1em; margin:10px 0 20px;
+} 
+.xpanel .advanced-container .fancy span {
+  background: #FFFFFF; padding: 0 21px 0 10px; margin-right: -21px;
+}
+.xpanel .advanced-container .more div.col:after {
+  content: "?"; font-family: "tmail"; font-size: 15px; position: absolute;
+}
+.xpanel .advanced-container .more div.exp:after {
+  content: "J"; font-family: "tmail"; font-size: 15px; position: absolute;
+}
+.xpanel .advanced-container .more div.exp,
+.xpanel .advanced-container .more div.col {
+  position: relative;
+}
+
+.xpanel .advanced-container div:first-child{
+	cursor: pointer; color: #1c84c6;
+}
+.xpanel .xpanel-lhs-container {
+	margin-top: 20px;
+}
+.xpanel .xpanel-info-container {
+  margin-bottom: 20px; /* display: inline-block; */
+}
+.xpanel-info-sub-container {
+  margin-bottom: 10px;
+}
+.xpanel .xpanel-gov-sign {
+	display: block; margin: 20px 5px 0; color: gray; font-size: 16px; font-weight: bold;
+}
+.xpanel input.input-gov-sign {
+	border-radius: 3px; border:1px solid #e7eaec; padding: 6px 12px; color:gray; font-size: 14px; line-height: 1.42857143;
+}
+.xpanel button.btn-success {
+  background-color: #1c84c6; border-color: #1c84c6; color: #FFFFFF;
+}
+.xpanel .evidence-prove-container{
+  display: inline-block;
+}
+.xpanel .proving-btn {
+  border: 3px solid #1c84c6; color: #1c84c6; border-radius: 6px; cursor: pointer; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px;
+}
+.xpanel .proving-btn .fa-spin:after {
+  content: "\E03D"; font-family: "tmail"; font-size: 24px;
+}
+.fa-spin {
+  -webkit-animation-name: rotateThis;
+  -webkit-animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
+  -webkit-animation-timing-function: linear;
+}
+@-webkit-keyframes "rotateThis" {
+  from { 
+    -webkit-transform: rotate( 360deg );  
+  }
+  to  { 
+    -webkit-transform: rotate( 0deg ); 
+  }
+}
+.xpanel .proved-btn {
+  border: 1px solid #1AB394; color: #FFFFFF; border-radius: 6px; cursor: pointer; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px;
+}
+.xpanel .proved-icon:after {
+  content: "\E00D"; font-family: "tmail"; font-size: 24px;
+}
+
+.xpanel .prove-btn {
+  border: 1px solid #E7EAEC; border-radius: 6px 0 0 6px; cursor: pointer; font-size: 24px; padding: 6px 12px; line-height: 29px; width: 80px;
+}
+.xpanel .prove-gear-btn {
+  border: 1px solid #E7EAEC; border-radius: 0 6px 6px 0; cursor: pointer; font-size: 20px; padding: 6px 12px; line-height: 16px; margin-left: -1px; padding-top: 13px;
+}
+.xpanel .gear:before {
+  content: "\E014"; font-family: "tmail"; font-size: 26px;
+}
+.xpanel .prove-info-sign {
+  float: left; position: relative; margin: 8px 0px 0px 7px;
+}
+.xpanel .prove-info-sign:before{
+  content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
+}
+.xpanel .prove-info-sign:after{
+  content: "\E02F"; font-family: "tmail"; font-size: 11px; color: #fcae4e; position: absolute; left: 7px; top: 8px;
+}
+
+/*        Progress bar       */
+.progress-bar-container, .verification-container {
+  /* padding: 20px; border: solid 1px #DDDDDD; background-color: #EFEFEF; border-radius: 10px; height: 90px; text-align: center; */
+}
+.evidence-prove-form .link-container {
+  line-height: 18px; margin-left: 10px; text-align: center;
+}
+.verification-container .tmail-certified-new-rhs:before {
+  color: #4B8523; margin-top: -9px; font-size: 100px; display: inline-block;
+}
+.verification-container .verified-info-label {
+  font-size: 15px; font-weight: bold; line-height: 24px;
+}
+.progress-bar-container .prove-info-label {
+  background-color: #BBB; padding: 10px; color: #FFF; font-size: 20px; margin: 10px; display: inline-block;
+}
+.progress-bar-container .cancel-link {
+  margin-top: 25px; font-weight: 600;
+}
+.progress-bar-container .progress-bar-sub-continer { 
+  background-color: #FFF; padding: 7px;
+}
+.progress {
+  background-color: #F5F5F5; border-radius: 4px; box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) inset; height: 20px; overflow: hidden;
+}
+.progress-bar.active, .progress.active .progress-bar {
+  animation: 2s linear 0s normal none infinite progress-bar-stripes;
+}
+.progress-striped .progress-bar-danger {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+}
+.progress-bar-striped, .progress-striped .progress-bar {
+  background-image: linear-gradient(45deg, rgba(255, 255, 255, 0.15) 25%, rgba(0, 0, 0, 0) 25%, rgba(0, 0, 0, 0) 50%, rgba(255, 255, 255, 0.15) 50%, rgba(255, 255, 255, 0.15) 75%, rgba(0, 0, 0, 0) 75%, rgba(0, 0, 0, 0));
+  background-size: 40px 40px;
+}
+.progress-bar-danger {
+  background-color: #ED5565 !important;
+}
+.progress-bar {
+  background-color: #337AB7; box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.15) inset; color: #FFFFFF; float: left; font-size: 12px; height: 100%; line-height: 20px; text-align: center; transition: width 0.6s ease 0s; width: 0;
+}
+.sr-only {
+  border: 0 none; clip: rect(0px, 0px, 0px, 0px); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px;
+}
+
+/*    Raw evidence json      */
+.pretty-json{
+	position: relative; height: calc(100vh - 105px); overflow: auto;
+}
+
+.pretty-json pre {
+  background-color: #F8F8FF;
+  border: 1px solid #C0C0C0;
+  margin: 20px;
+  padding: 10px 20px;
+}
+.pretty-json .json-key {
+  color: #A52A2A;
+}
+.pretty-json .json-value {
+  color: #000080;
+}
+.pretty-json .json-string {
+  color: #808000;
+}
+/*    Raw evidence json      */

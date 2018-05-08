@@ -1,0 +1,683 @@
+@font-face {
+	font-family: "fileicons";
+	src:url("fonts/fileicons.eot");
+	src:url("fonts/fileicons.eot?#iefix") format("embedded-opentype"),
+		url("fonts/fileicons.woff") format("woff"),
+		url("fonts/fileicons.ttf") format("truetype"),
+		url("fonts/fileicons.svg#fileicons") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+@font-face {
+	font-family: "tmail";
+	src:url("fonts/tmail.eot");
+	src:url("fonts/tmail.eot?#iefix") format("embedded-opentype"),
+		url("fonts/tmail.woff") format("woff"),
+		url("fonts/tmail.ttf") format("truetype"),
+		url("fonts/tmail.svg#tmail") format("svg");
+	font-weight: normal;
+	font-style: normal;
+}
+
+@font-face {
+    font-family: "Open Sans";
+    src: url("fonts/OpenSans-Regular.ttf");
+}
+
+body {
+	font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; background-color: #FFFFFF;
+}
+ul {
+	margin: 0; padding: 0;
+}
+.blank-container{
+	text-align: center; padding-top: 10%; height: 95vh; box-sizing: border-box;
+}
+.clear {
+	clear: both
+}
+.hidden {
+	display: none;
+}
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+.information-message {
+	font-size: 15px; padding: 10px; font-weight: 600;
+}
+.information-danger-message {
+	color: #FF0000; font-size: 14px; font-weight: 600; padding: 10px;
+}
+.thread-container{
+	width: 100%;
+}
+.thread-container .top-container {
+	height: 85px;
+}
+.thread-container div.writers-count-wrapper {
+    cursor: pointer; float: left; min-height: 32px; min-width: 20px; padding: 4px;
+}
+div.writers-count-wrapper .h-inner-wrapper {
+    position: relative; text-align: center; top: 10px;
+}
+.h-users-icon:before {
+    color: #676A6C; content: "\E03C"; font-family: tmail; font-size: 16px;
+     position: relative;
+}
+.thread-container .middle-container{
+	position: relative; height: calc(100vh - 105px); overflow: auto; border-top: solid 1px #EEEEEE; border-bottom: solid 1px #EEEEEE;
+}
+.thread-container div.header-container {
+	/*  */
+}
+.thread-container div.header-container .header-title {
+	float: left; color: #2F4050; padding: 0px 10px 0px 6px; font-size: 20px !important; font-weight: 600 !important; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.thread-container div.header-rhs {
+	float: right; padding-right: 10px;
+}
+.thread-container div.item-wrapper {
+	border-bottom: 1px solid #EEEEEE;
+}
+.thread-container div.item-wrapper:last-child {
+	border-bottom: none;
+}
+.thread-container div.detail-data {
+    display: flex; padding-top:20px; padding-left:17px;
+}
+.middle-container ul.writers-container {
+	margin: 0; padding: 0;
+}
+.thread-container ul {
+	display: inline-flex; list-style: none;
+}
+.tooltip-container {
+	background: #FFFFFF!important; border: solid 1px #FFFFFF!important; padding: 0!important; margin: 0!important;opacity: 1!important;
+}
+.modal-container {
+	width: 800px; /*max-height: 85vh; */
+}
+.modal-file-container {
+	width: 100%; max-height: 85vh;
+}
+.modal-container .thread-container,
+.modal-file-container .thread-container {
+	padding: 10px; box-sizing: border-box; max-height: 300px; overflow: auto;
+}
+.modal-container .thread-container ul,
+.modal-file-container .thread-container ul {
+	display: inline-block; width: 100%;
+}
+.modal-container .modal-header,
+.modal-file-container .modal-header {
+	border-bottom: solid 1px #EFEFEF; padding: 15px 10px 7px 12px; width: 100%; display: inline-block;     box-sizing: border-box;
+}
+.modal-container .modal-content {
+	position: relative; height: calc(100vh - 60px); overflow: hidden!important;
+}
+.modal-file-container .modal-content {
+	position: relative; height: calc(100vh - 175px); overflow: hidden!important;
+}
+.modal-container .modal-header .modal-section-title,
+.modal-file-container .modal-header .modal-section-title {
+	font-size: 13px; font-weight: 600;
+}
+.modal-container .modal-header .btn-close:before,
+.modal-file-container .modal-header .btn-close:before {
+	color: #d2d1d1; content: "\E00E"; font-family: tmail; font-size: 12px; cursor: pointer; line-height: 17px;
+}
+.contribute-data .contribute-info {
+    float:left; padding-top: 9px;
+}
+.contribute-data .contribute-info span {
+    padding-left:10px; color:gray;
+}
+ .contribute-data .num {
+    display: inline-block; min-width: 3em; color:gray; margin-left: 10px;
+}
+.contribute-data .writer-nm {
+	font-weight: 600; color: #2F4050; padding-top: 2px; font-size: 13px; display: inline; cursor: pointer;
+}
+.thread-container div.comment-container {
+	margin: 10px 51px 10px; min-height: 35px; font-size: 13px; color:gray;
+}
+
+/*			Forwarded thread css			*/
+.thread-container .forwarded-container .more {
+    border-bottom: 2px solid #808080; cursor: pointer;
+}
+.thread-container .forwarded-container .more div.col:after {
+    content: "?"; font-family: "tmail";
+}
+.thread-container .forwarded-container .more div.exp:after {
+    content: "J"; font-family: "tmail";
+}
+.thread-container .forwarded-container .more div.exp {
+    position: relative;
+}
+.thread-container .forwarded-container .more div.col, .thread-container .forwarded-container .more div.exp {
+    color: #A52A2A; padding: 1px 16px 0 3px; text-decoration: none;
+}
+.thread-container .forwarded-container .hide-forwarded-container div.forwarded-item-wrapper {
+	margin: 35px 25px 50px;
+}
+.thread-container .forwarded-container .hide-forwarded-container {
+	height: 0; overflow: hidden; transition: height 0.8s ease;
+}
+.thread-container .forwarded-container .top-container {
+	border-bottom: 1px dotted #666666;
+}
+.thread-container .forwarded-container .header-title {
+	color: #A52A2A !important;
+}
+.thread-container .forwarded-container .tmail-certified-new-rhs:before {
+    font-size: 20px; display: inline-block; margin-top: -5px;
+}
+.forwarded-header-deleted, .forwarded-comment-deleted {
+    background-color: #FFD9D9 !important; border: 1px solid #FBE5D6 !important; color: #FF0000;
+    font-weight: bold; margin-right: 5px !important; padding: 8px !important; margin: 10px 0; padding-left: 70px!important;
+}
+/*			Forwarded thread css			*/
+
+.thread-container div.comment-container div.section-container {
+    margin-bottom: 10px;
+}
+.thread-container div.comment-container div.attahment-container {
+    margin-bottom: 10px;
+}
+.thread-container div.comment-container div.comment-text {
+	font-size: 13px; color:gray; margin-top: 10px;
+}
+.thread-container div.comment-container div.comment-text img, .thread-container div.comment-container div.comment-text iframe.thread-container div.comment-container div.comment-text video {
+    max-width: 100%;
+}
+.thread-container div.comment-container div span.asterik-sign {
+	margin-left: 25px; position: relative; top: 4px;
+}
+.thread-container .comment-container div.task-div {
+	max-width: 80%; margin: -3px 0 0 10px; display:inline;
+}
+.thread-container div.detail-data div.contribute-data {
+	font-size:13px;
+}
+.thread-container .header-rhs div.ttno {
+	color: #555; font-weight: bold; font-size: 11px; margin-top: 5px;
+}
+.thread-container .header-rhs button {
+	border-radius: 4px; cursor: pointer; display: inline-block; font-size: 13px; text-align: center; background: #FFFFFF; border: 1px solid #E7EAEC; color: inherit; height: 24px; position: relative; width: 30px; margin-left: 5px;
+}
+.-comment-section-container{
+	margin-bottom: 5px;
+}
+.-comment-section-action{
+	width: 30px; text-align: center; float: left; margin-right: 5px; margin-left: 10px;
+}
+.-comment-section-icon{
+	width: 20px; margin-top: 0px; float: left; margin-right: 5px;
+}
+.-comment-section-title{
+	width: 65%; text-align: left; cursor: pointer;
+}
+.section-title {
+	text-decoration: underline; color: #337AB7; font-size: 12px; font-weight: 500; cursor: pointer;
+}
+.striked-section-title {
+	text-decoration: underline; color: #337AB7; font-size: 12px; font-weight: 500;
+}
+.disable-section-title {
+	text-decoration: none; color: #111111; font-size: 12px; font-weight: 500;
+}
+.added-writer-container {
+	margin-top: 10px;
+}
+.comment-attachment{
+	width: 40px; text-align: right; float: left;
+}
+.comment-attachment-right{
+	margin-left: 25px;
+}
+.comment-attachment-file-icon{
+	width: 23px; text-align: left; float: left;
+}
+.comment-attachment-name{
+	width: 65%; text-align: left;
+}
+.comment-attachment-file-num{
+	width: 20px; text-align: left; float: left;
+}
+.comment-attachment-num{
+	float: left; padding-right: 2px; text-align: center; color: #666666; font-size: 14px;
+}
+.comment-attachment-size{
+	width: 80px; text-align: left;
+}
+.toolbar-btn {
+	border: solid 1px #EEEEEE; border-radius: 3px; margin: 0 7px; width: 28px; height: 22px; text-align: center; position: relative;
+}
+
+/*			Fontastic fonts			*/
+.tmail-certified-new-rhs:before {
+    color: #000000; content: "\E044"; font-family: "tmail"; font-size: 22px; font-weight: normal; margin-right: 5px;
+}
+.icon16x16{ width:16px;height:16px;display:inline-block;margin-bottom: -4px;position:relative}
+.t-add:before, .t-add-s:before {
+	color: #676A6C; content: "+"; font-size: 20px; font-weight: bold; left: 3px; position: absolute;
+}
+.t-grid:before {
+	color: #555555; content: "3"; font-family: tmail; font-size: 14px; font-weight: normal; left: 2px; position: absolute;
+}
+.t-file-icon-16{
+	min-width:18px; min-height: 16px; display:block; position: relative; margin-top: 4px;
+}
+.t-file:before {
+    color: #555555; content: "*"; font-family: tmail; font-size: 17px; font-weight: normal; left: 0; position: absolute; top: -3px;
+}
+.t-file-icon-16:before{
+	color: #A52A2A; content: "i"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-avi:before, .t-file-icon-16-mov:before, .t-file-icon-16-mp4:before, .t-file-icon-16-wmv:before{
+	color: #A52A2A; content: "q"; font-family: "fileicons"; font-size: 16px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-bmp:before, .t-file-icon-16-jpg:before, .t-file-icon-16-jpeg:before, .t-file-icon-16-png:before, .t-file-icon-16-svg:before, .t-file-icon-16-svg+xml:before, .t-file-icon-16-vsd:before, .t-file-icon-16-gif:before{
+	color: #555555; content: "v"; font-family: "fileicons"; font-size: 15px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-css:before{
+	color: #A52A2A; content: "n"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-docx:before, .t-file-icon-16-doc:before, .t-file-icon-16-Word:before{
+	background-image: url("../imgs/word-file-icon.svg"); background-size: cover; position: absolute; content: ''; width: 18px; height: 18px;
+}
+.t-file-icon-16-eps:before{
+	color: #A52A2A; content: "b"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-fla:before{
+	color: #A52A2A; content: "c"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-html:before{
+	color: #A52A2A; content: "o"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-ini:before{
+	color: #A52A2A; content: "i"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-midi:before, .t-file-icon-16-wav:before, .t-file-icon-16-mp3:before, .t-file-icon-16-mpeg:before, .t-file-icon-16-wma:before, .t-file-icon-16-x-wav:before{
+	color: #A52A2A; content: "p"; font-family: "fileicons"; font-size: 16px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-pdf:before{
+	color: #A52A2A; content: "d"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-ppt:before, .t-file-icon-16-pptx:before, .t-file-icon-16-Powerpoint:before{
+	background-image: url("../imgs/powerpoint-file-icon.svg"); background-size: cover; content: ""; height: 18px; position: absolute; width: 18px;
+}
+.t-file-icon-16-psd:before{
+	color: #A52A2A; content: "e"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-pst:before{
+	color: #A52A2A; content: "i"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-pub:before{
+	color: #A52A2A; content: "h"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-rar:before{
+	color: #A52A2A; content: "j"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-tiff:before{
+	color: #A52A2A; content: "k"; font-family: "fileicons"; font-size: 18px; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-txt:before, .t-file-icon-16-plain:before{
+	color: #A52A2A; content: "l"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-xls:before, .t-file-icon-16-xlsx:before, .t-file-icon-16-Excel:before{
+	background-image: url("../imgs/excel-file-icon.svg"); background-size: cover; content: ""; height: 18px; position: absolute; width: 18px;
+}
+.t-file-icon-16-zip:before{
+	color: #A52A2A; content: "m"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-no-file:before{
+	color: #A52A2A; content: "g"; font-family: "fileicons"; font-size: 18px!important; font-weight: normal; position: absolute;
+}
+.t-file-icon-16-Visio:before{
+	background-image: url("./vsdx-file-icon.png"); background-size: cover; position: absolute; content: ''; width: 18px; height: 18px;
+}
+.t-file-icon-32{
+	min-width:32px; min-height: 32px; display:block; position: relative;
+}
+.t-file-icon-32:before{
+	color: #A52A2A; content: "i"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-avi:before, .t-file-icon-32-mov:before, .t-file-icon-32-mp4:before, .t-file-icon-32-wmv:before{
+	color: #A52A2A; content: "q"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-bmp:before, .t-file-icon-32-svg:before, .t-file-icon-32-svg+xml:before, .t-file-icon-32-gif:before, .t-file-icon-32-jpg:before, .t-file-icon-32-jpeg:before, .t-file-icon-32-png:before, .t-file-icon-32-vsd:before{
+	color: #A52A2A; content: "v"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-css:before{
+	color: #A52A2A; content: "n"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-doc:before, .t-file-icon-32-docx:before{
+	background-image: url("../imgs/word-file-icon.svg"); background-size: cover; position: absolute; content: ''; width: 34px; height: 34px;
+}
+.t-file-icon-32-eps:before{
+	color: #A52A2A; content: "b"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-fla:before{
+	color: #A52A2A; content: "c"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-html:before{
+	color: #A52A2A; content: "o"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-ini:before{
+	color: #A52A2A; content: "i"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-midi:before, .t-file-icon-32-mp3:before, .t-file-icon-32-mpeg:before, .t-file-icon-32-wav:before, .t-file-icon-32-wma:before, .t-file-icon-32-x-wav:before{
+	color: #A52A2A; content: "p"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-pdf:before{
+	color: #A52A2A; content: "d"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-ppt:before, .t-file-icon-32-pptx:before{
+	background-image: url("../imgs/powerpoint-file-icon.svg"); background-size: cover; content: ""; height: 34px; position: absolute; width: 34px;
+}
+.t-file-icon-32-psd:before{
+	color: #A52A2A; content: "e"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-pst:before{
+	color: #A52A2A; content: "i"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-pub:before{
+	color: #A52A2A; content: "h"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-rar:before{
+	color: #A52A2A; content: "j"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-tiff:before{
+	color: #A52A2A; content: "k"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-txt:before, .t-file-icon-32-plain:before{
+	color: #A52A2A; content: "l"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-xls:before, .t-file-icon-32-xlsx:before{
+	background-image: url("../imgs/excel-file-icon.svg"); background-size: cover; content: ""; height: 34px; position: absolute; width: 34px;
+}
+.t-file-icon-32-zip:before{
+	color: #A52A2A; content: "m"; font-family: "fileicons"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-file-icon-32-no-file:before{
+	color: #A52A2A; content: "g"; font-size: 28px!important; left: 3px; font-weight: normal; position: absolute;
+}
+.t-text:before {
+	color: #555555; content: "r"; font-family: tmail; font-size: 18px; font-weight: normal; left: 0; position: absolute; top: -2px;
+}
+.t-form:before {
+    color: #555555; content: "9"; font-family: tmail; font-size: 16px; font-weight: normal; left: 0; position: absolute;
+}
+.t-tasklist:before {
+    color: #555555; content: "\E00F"; font-family: tmail; font-size: 15px; font-weight: normal; left: 0; position: absolute;
+}
+.add-attachment{
+	margin-left: 5px; padding-left: 15px; position: relative;
+}
+.t-changed { 
+  position:relative;
+ }
+.t-changed:before {
+	color: #676A6C; content: "*"; font-family: tahoma; font-size: 28px; font-weight: bold; left: 0; position: absolute; top: -6px;
+}
+.added-writer.t-add:before {
+	top: 10px;
+}
+.t-deleted:before { 
+	content: "("; font-family: "tmail"; font-size: 17px; font-weight: normal; left: 1px; position: absolute; top: -3px; color:#676A6C;
+}
+.t-deleted { 
+	position:relative;
+}
+.x-attachments {
+	margin-top: 5px; margin-bottom: 5px; position: relative;
+}
+.x-attachments .title-bar {
+	padding: 5px;
+}
+.x-attachments .add-attachment:before {
+	color: #676A6C; content: "&"; font-family: tmail; font-size: 20px; font-weight: normal; left: -7px; position: absolute;
+}
+.x-attachments .add-attachment{
+	margin-left: 5px; padding-left: 15px; position: relative;
+}
+.comment-text-ack .comment-text{
+	float: left;
+}
+.ack-certified-read:before {
+    color: #000000; content: "\E044"; font-family: "tmail"; font-size: 22px; font-weight: 100; left: 10px; position: absolute; top: 9px;
+}
+.ack-certified-read:after {
+    color: #000000; content: "-"; font-family: "tmail"; font-size: 13px; font-weight: normal; left: 26px; position: absolute; top: 26px;
+}
+.ack-certified:before {
+    color: #000000; content: "\E044"; font-family: "tmail"; font-size: 22px; font-weight: normal; left: 10px; position: absolute; top: 9px;
+}
+.ack-certified:after {
+    color: #000000; content: "H"; font-family: "tmail"; font-size: 15px; font-weight: normal; left: 24px; position: absolute; top: 25px;
+}
+.ack-certified-read, .ack-certified, .clone-certified {
+    float: right; height: 35px; position: relative;
+}
+.t-url-icon:before {
+    color: #555555; content: "\E004"; font-family: "tmail"; font-size: 11px; font-weight: normal; left: 8px; position: absolute; top: 5px;
+}
+.t-template:before {
+    color: #808080; content: "\E01A"; font-family: tmail; top: 4px; position: absolute; left: 7px; font-size: 15px;
+}
+.t-instance:before {
+	color: #808080; content: "\E01B"; font-family: tmail; font-size: 14px; position: absolute; left: 7px; top: 4px;
+}
+/**/
+.writer-header-container, .section-header-container {
+	margin: 5px 0px 0px 20px; display: inline-block;
+}
+.section-header-container .section-title {
+	overflow: hidden; text-overflow: ellipsis; max-width: 160px; margin: 0 0 0 5px; white-space: nowrap; font-weight: 500;
+}
+.section-el.templateSectionColor a, .section-el.templateSectionColor > span.-section-menu, .section-el.templateSectionColor a div, .templateSectionColor .section-title {
+    color: #3366FF !important;
+    font-weight: 500;
+}
+.section-header-container .section-el {
+    border: medium none; border-radius: 3px; float: left; margin-right: 5px; margin-top: 4px; max-width: 220px; min-height: 15px; padding: 5px 2px 3px 5px;
+}
+.hover-list {
+	display: block!important; /*max-height: 300px; overflow: auto;*/
+}
+.thread-container .copied-message-text {
+	position: absolute; right: 0; top: 7px; background: #1AB394; color: #FFFFFF; z-index: 999; padding: 8px; display: block
+}
+.thread-container ul li.writer-rounded.other-org {
+    border-color: #ed5565;
+}
+.thread-container ul li.writer-rounded {
+    background: none; padding: 0; font: inherit; background-color: transparent !important; position: relative; border-radius: 50%; padding: 2px; min-width: 32px;
+}
+.thread-container ul li.writer-rounded .img-responsive {
+    max-width: 32px;
+    float: left;
+}
+.thread-container .img-responsive {
+    display: block;
+    height: auto;
+    max-width: 40px;
+}
+.thread-container .img-circle {
+    border-radius: 50%;
+}
+.thread-container ul div.selected-li {
+	background-color: #EFEFEF; display: inline-block; width: 100%;
+}
+.thread-container ul li {
+	float: left; list-style: none; margin: 1px 3px; color: #000000;
+}
+.thread-container ul li.writer-rounded .no-image.role, ul li.writer-rounded .no-image.email {
+    position: relative;
+}
+.thread-container .middle-container .detail-data ul li.writer-rounded .no-image {
+    font-size: 14px; height: 27px; padding-top: 10px; width: 38px;
+}
+.thread-container ul li.writer-rounded .no-image {
+    font-size: 14px; height: 25px; padding-top: 7px; width: 32px; background: #1ab394; float: left; text-align: center; border-radius: 100%; color: #fff; font-weight: 600;
+}
+.thread-container ul li.writer-rounded .no-image.role::after {
+    bottom: -4px; font-size: 9px; height: 12px; padding-top: 2px; right: -3px; width: 13px;
+}
+.thread-container ul li.writer-rounded .no-image.role::after {
+    content: "\E036"; font-family: tmail; padding-top: 2px; height: 18px; line-height: 1;
+}
+.thread-container ul li.writer-rounded .no-image.role::after, ul li.writer-rounded .no-image.email::after {
+    background: #ed5565 none repeat scroll 0 0; border-radius: 50%; bottom: -5px; height: 19px; position: absolute; right: -7px; width: 19px; font-size: 13px; padding-top: 0;
+}
+.thread-container ul li.writer-rounded:not(.other-org) .no-image.role::after, .thread-container ul li.writer-rounded:not(.other-org) .no-image.email::after {
+    color: #FFFFFF; background: gray; font-size: 11px !important;
+}
+.thread-container ul li.writer-rounded .no-image.role::after {
+    content: "\E036"; font-family: tmail; padding-top: 4px; height: 14px; line-height: 1;
+}
+.thread-container ul li.writer-rounded .no-image.email:after {
+    content: "@"; font-family: inherit; font-size: 11px; height: 16px; padding-top: 2px;
+}
+.thread-container.ul li.writer-rounded .no-image.role::after, ul li.writer-rounded .no-image.email::after {
+    background: #ed5565 none repeat scroll 0 0; border-radius: 50%; bottom: -5px; height: 19px; position: absolute; right: -7px; width: 19px; font-size: 13px; padding-top: 0;
+}
+.download-s:before {
+    color: #d2d1d1; content: "Y"; font-family: "tmail"; font-size: 18px; margin-right: 15px;  cursor: pointer;
+}
+/***tool-tip**/
+.actorsHoverView {
+	z-index: 9;
+}
+.actorsHoverView .ahv-wrapper {
+    border: 1px solid #CCCCCC; overflow-x: hidden; overflow-y: auto; padding: 3px 0 0 0;
+}
+.actorsHoverView .ahv-wrapper ul {
+	margin: 0; padding: 0;
+}
+.actorsHoverView .ahv-wrapper ul li.writer-rounded .no-image {
+    font-size: 18px; height: 30px; padding-top: 12px; width: 43px;
+}
+.actorsHoverView .ahv-wrapper ul li.writer-rounded .img-responsive {
+    max-width: 40px!important;
+}
+ul li.writer-rounded.w-list-view div.w-info {
+    float: left; padding-left: 10px; margin-top: 4px; line-height: 15px; color: #2F4050; font-size: 13px;
+}
+ul li.writer-rounded.w-list-view div.w-info .w-name {
+    font-weight: 600;
+}
+ul li.writer-rounded.w-list-view div.w-info .w-name + .w-address {
+    padding-top: 0;
+}
+
+/*		custom scrollbar css		*/  
+.ps {
+	overflow: hidden !important; overflow-anchor: none; -ms-overflow-style: none; touch-action: auto; -ms-touch-action: auto;
+}
+/*
+* Scrollbar rail styles
+*/
+.ps__rail-x {
+	display: none; opacity: 0; transition: background-color .2s linear, opacity .2s linear; -webkit-transition: background-color .2s linear, opacity .2s linear; height: 15px;
+	/* there must be 'bottom' or 'top' for ps__rail-x */
+	bottom: 0px;
+	/* please don't change 'position' */
+	position: absolute;
+}
+.ps__rail-y {
+	display: none; opacity: 0; transition: background-color .2s linear, opacity .2s linear; -webkit-transition: background-color .2s linear, opacity .2s linear; width: 15px;
+	/* there must be 'right' or 'left' for ps__rail-y */
+	right: 0;
+	/* please don't change 'position' */
+	position: absolute;
+}
+.ps--active-x > .ps__rail-x,
+.ps--active-y > .ps__rail-y {
+	display: block; background-color: transparent;
+}
+.ps:hover > .ps__rail-x,
+.ps:hover > .ps__rail-y,
+.ps--focus > .ps__rail-x,
+.ps--focus > .ps__rail-y,
+.ps--scrolling-x > .ps__rail-x,
+.ps--scrolling-y > .ps__rail-y {
+	opacity: 0.6;
+}
+.ps__rail-x:hover,
+.ps__rail-y:hover,
+.ps__rail-x:focus,
+.ps__rail-y:focus {
+	background-color: #eee; opacity: 0.9;
+}
+/*
+* Scrollbar thumb styles
+*/
+.ps__thumb-x {
+	background-color: #aaa; border-radius: 6px; transition: background-color .2s linear, height .2s ease-in-out; -webkit-transition: background-color .2s linear, height .2s ease-in-out; height: 6px;
+	/* there must be 'bottom' for ps__thumb-x */
+	bottom: 2px;
+	/* please don't change 'position' */
+	position: absolute;
+}
+.ps__thumb-y {
+	background-color: #aaa; border-radius: 6px; transition: background-color .2s linear, width .2s ease-in-out; -webkit-transition: background-color .2s linear, width .2s ease-in-out; width: 6px;
+	/* there must be 'right' for ps__thumb-y */
+	right: 2px;
+	/* please don't change 'position' */
+	position: absolute;
+}
+.ps__rail-x:hover > .ps__thumb-x,
+.ps__rail-x:focus > .ps__thumb-x {
+	background-color: #999; height: 11px;
+}
+.ps__rail-y:hover > .ps__thumb-y,
+.ps__rail-y:focus > .ps__thumb-y {
+	background-color: #999; width: 11px;
+}
+/* MS supports */
+@supports (-ms-overflow-style: none) {
+	.ps {
+		overflow: auto !important;
+	}
+}
+@media screen and (-ms-high-contrast: active), (-ms-high-contrast: none) {
+	.ps {
+		overflow: auto !important;
+	}
+}
+/*		custom scrollbar css		*/  
+
+
+/* some rules to reset formatting */
+.reset-css h1 { font-size:138.5%; }
+.reset-css h2 { font-size:123.1%; }
+.reset-css h3 { font-size:108%; }
+.reset-css h1,.reset-css h2,.reset-css h3 { margin:1em 0; }
+.reset-css h1,.reset-css h2,.reset-css h3,.reset-css h4,.reset-css h5,.reset-css h6,.reset-css strong { font-weight:bold; }
+.reset-css abbr,.reset-css acronym { border-bottom:1px dotted #000; cursor:help; } 
+.reset-css strong em { font-style:italic; font-weight:bold; }
+.reset-css em strong { font-style:italic; font-weight:bold; }
+.reset-css em { font-style:italic; }
+.reset-css blockquote,.reset-css ul,.reset-css ol,.reset-css dl { margin:1em; }
+.reset-css ol,.reset-css ul,.reset-css dl { margin-left:2em; }
+.reset-css ol li { list-style: decimal outside; }
+.reset-css ul li { list-style: disc outside; }
+.reset-css dl dd { margin-left:1em; }
+.reset-css th,.reset-css td { /*border:1px solid #000; */padding:.5em; }
+.reset-css th { font-weight:bold; text-align:center; }
+.reset-css caption { margin-bottom:.5em; text-align:center; }
+.reset-css p,.reset-css fieldset,.reset-css table { margin-bottom:1em; }
+.reset-css.comment-text {
+	padding: 5px 10px; word-break: break-word;
+}
+.reset-css.comment-text img, .reset-css.comment-text iframe, .reset-css.comment-text video {
+    max-width: 100%;
+}
+
+/*  */
