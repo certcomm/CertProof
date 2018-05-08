@@ -17,7 +17,7 @@ body {
 
 }
 .link {
-  text-decoration: underline; color: #1c84c6; font-size: 13px; font-weight: 600; letter-spacing: 0.3px; cursor: pointer;
+  text-decoration: underline; color: #1c84c6; font-size: 13px; letter-spacing: 0.3px; cursor: pointer;
 }
 .cancel-link {
   text-decoration: underline; color: #FF0000; font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
@@ -144,6 +144,12 @@ a.breadcrumb {
 }
 .panel-container .ypanel {
 	width: 59%; float: right; border-left:1px solid #EFEFEF;
+}
+.panel-container .xpanel-modal {
+  width: 200px; display: inline-block; padding: 0 0 0 14px; box-sizing: border-box; position: relative; height: calc(100vh - 178px);
+}
+.panel-container .ypanel-modal {
+  height: calc(100vh - 200px); width: calc(100vw - 340px); display: inline-block; border-left:1px solid #EFEFEF;
 }
 .xpanel .xpanel-header{
   border-bottom: solid 1px #EEEEEE; display: inline-block; width: 100%; padding-bottom: 12px;
@@ -314,15 +320,33 @@ a.breadcrumb {
 }
 
 /*    Raw evidence json      */
-.pretty-json{
-	position: relative; height: calc(100vh - 105px); overflow: auto;
+.evidence-cnum-list{
+  border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px;
 }
-
+.evidence-cnum-list-normal{
+  border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px;
+}
+.hide-evidence-list .evidence-cnum-list{
+  padding-left: 15px;
+}
+.evidence-cnum-list-normal .more div.col-m:after {
+  content: "?"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px;
+}
+.evidence-cnum-list-normal .more div.exp-m:after {
+  content: "J"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px;
+}
+.evidence-cnum-list-normal .more div.exp-m,
+.evidence-cnum-list-normal .more div.col-m {
+  position: relative;
+}
+.pretty-json-1 {
+	position: relative; height: calc(100vh - 180px);
+}
+.pretty-json-2, .pretty-json-3, .pretty-json-4, .pretty-json-5 {
+	position: relative; height: calc(100vh - 220px);
+}
 .pretty-json pre {
-  background-color: #F8F8FF;
-  border: 1px solid #C0C0C0;
-  margin: 20px;
-  padding: 10px 20px;
+  background-color: #F8F8FF; border: 1px solid #EFEFEF; margin: 0 0px 0 10px; padding: 10px 20px; word-wrap: break-word; white-space: pre-wrap;
 }
 .pretty-json .json-key {
   color: #A52A2A;
@@ -334,3 +358,32 @@ a.breadcrumb {
   color: #808000;
 }
 /*    Raw evidence json      */
+
+/*    React Tab CSS      */
+.react-tabs__tab-list li:first-child{
+  border-left: none; border-top-left-radius: 0;
+}
+.react-tabs__tab-list {
+  border-bottom: 1px solid #EFEFEF; margin: 0 0 10px; padding: 0;
+}
+.react-tabs__tab { display: inline-block; border: 1px solid transparent; border-bottom: none; bottom: -1px; position: relative; list-style: none; padding: 6px 12px; cursor: pointer;
+}
+.react-tabs__tab--selected {
+  background: #fff; border-color: #EFEFEF; color: black; border-radius: 5px 5px 0 0;
+}
+.react-tabs__tab--disabled {
+  color: GrayText; cursor: default;
+}
+.react-tabs__tab:focus {
+  box-shadow: 0 0 5px hsl(208, 99%, 50%); border-color: hsl(208, 99%, 50%); outline: none;
+}
+.react-tabs__tab:focus:after {
+  content: ""; position: absolute; height: 5px; left: -4px; right: -4px; bottom: -5px; background: #fff;
+}
+.react-tabs__tab-panel {
+  display: none;
+}
+.react-tabs__tab-panel--selected {
+  display: block;
+}
+/*    React Tab CSS      */

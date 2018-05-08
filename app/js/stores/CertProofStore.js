@@ -1,7 +1,12 @@
 import { observable } from "mobx"
 
 export class CertProofStore {
-	@observable json = {};
+	@observable rawJson = {
+		evidenceJson: {},
+		sac: {},
+		ssac: {},
+		incEvidenceJson: {}
+	};
 	@observable data = {};
 	@observable evidenceManifestData = {};
 	@observable uploadedEvidence = false;
@@ -14,8 +19,21 @@ export class CertProofStore {
 		this.data = data;
 	}
 
-	setIncJson(cnum, data) {
-		this.json[cnum] = data;
+	setRawJson(data) {
+		switch(data.type){
+			case "evidencemanifest":
+				this.rawJson.evidenceJson = data.json;
+			break;
+			case "changeset":
+				this.rawJson.sac[data.cnum] = data.json;
+			break;
+			case "sacchangeset":
+				this.rawJson.ssac[data.cnum] = data.json;
+			break;
+			case "incevidencemanifest":
+				this.rawJson.incEvidenceJson[data.cnum] = data.json;
+			break;
+		}
 	}
 
 	setEvidenceManifestData(data) {
@@ -49,8 +67,8 @@ export class CertProofStore {
 		return this.data;
 	}
 
-	getIncJson(data) {
-		return this.json;
+	getRawJson() {
+		return this.rawJson;
 	}
 	
 	getEvidenceManifestData() {

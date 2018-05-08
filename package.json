@@ -1,7 +1,7 @@
 {
 	"name": "certproof",
 	"productName": "CertProof",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
@@ -39,19 +39,17 @@
 		"start": "electron .",
 		"dev": "electron . --debug",
 		"test": "echo \"Error: no test specified\" && exit 1",
-		"create-self-signed-cert": "build create-self-signed-cert -p CertProof",
 		"pack": "build --dir",
 		"dist": "build",
 		"packages": "npm-run-all package:*",
 		"package:reactify": "browserify -r react -r react-dom -r es6-promise -r | uglifyjs -c > ./app/reactifyBundle.js",
 		"package:certproof-start": "browserify -x=react -x=react-dom -x=es6-promise -t [babelify --presets [ es2015 react ] --plugins=transform-decorators-legacy,transform-class-properties] -r ./app/js/App.js:CertProof | uglifyjs -c > ./app/CertProofBundle.js",
+
 		"packages1": "npm-run-all package1:*",
 		"package1:reactify1": "browserify -r react -r react-dom -r es6-promise -r > ./app/reactifyBundle.js",
 		"package1:certproof-start1": "watchify -x=react -x=react-dom -x=es6-promise -t [babelify --presets [ es2015 react ] --plugins=transform-decorators-legacy,transform-class-properties] -r ./app/js/App.js:CertProof -r -o ./app/CertProofBundle.js",
-		"package-win-bac": "electron-packager . CertProof --overwrite=true --platform=win32 --arch=all --icon=./app/style/imgs/cert.ico --out=distribution",
 		"package-win": "electron-packager . CertProof --overwrite --asar=true --platform=all --arch=all --icon=./app/style/icons/win/icon.ico --prune=true --out=distribution",
 		"package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=./app/style/icons/mac/icon.icnc --prune=true asar: true --out=distribution",
-		"tasklist-start": "watchify -r ./app/plugins/tasklist/js/app.js:TaskList -r -o ./app/plugins/reactBundle.min.js -v -d ./app/plugins/tasklist/js/app.js",
 		"sections": "npm-run-all section:*",
 		"section:build-reactify": "browserify -o ./app/plugins/reactifyBundle.js -r react -r react-dom -r flux -r underscore -r",
 		"section:build-tasklist": "browserify -r ./app/plugins/tasklist/js/app.js:TaskList > ./app/plugins/tasklist/js/tmailReactBundle.js -x=react -x=react-dom -x=flux -x=underscore",
@@ -71,8 +69,6 @@
 	"dependencies": {
 		"create-react-class": "^15.6.3",
 		"electron-notifications": "^1.0.0",
-		"electron-squirrel-startup": "^1.0.0",
-		"electron-winstaller": "^2.6.4",
 		"es6-promise": "^4.1.0",
 		"excel4node": "^1.3.6",
 		"flux": "3.1.3",
@@ -86,7 +82,8 @@
 		"react-dom": "16.2.0",
 		"react-modal": "^3.3.2",
 		"react-tooltip": "^3.4.0",
-		"underscore": "^1.8.3"
+		"underscore": "^1.8.3",
+		"react-tabs": "2.2.2"
 	},
 	"devDependencies": {
 		"babel-core": "^6.26.0",

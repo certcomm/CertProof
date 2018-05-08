@@ -10,6 +10,7 @@ export default {
 	extractedEvidenceFolder: userDataPath+"/uploads/extracted/",
 	routeEvidenceJsonFileName: "evidenceManifest.json",
 	manifestJsonFileName: "sacManifest.json",
+	smanifestJsonFileName: "ssacManifest.json",
 	incManifestJsonFileName: "incEvidenceManifest.json",
 	errorFileName: "Errors.txt"
 }

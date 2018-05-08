@@ -3,6 +3,8 @@ import { observer } from "mobx-react";
 import moment from "moment";
 import PerfectScrollbar from 'perfect-scrollbar';
 
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+
 const StreamZip = window.require('node-stream-zip');
 const remote = window.require('electron').remote;
 var dialog = remote.dialog;
@@ -34,7 +36,7 @@ export default class AppRoutes extends React.Component {
             progress: 0,
             stateData: '',
             rawJson: null,
-            rawEvidenceJson: null
+            type: "evidencemenifest"
         }
 
         this.openModal = this.openModal.bind(this);
@@ -42,7 +44,8 @@ export default class AppRoutes extends React.Component {
     }
     
     openModal() {
-        this.setState({modalIsOpen: true, rawJson: this.store.getEvidenceManifestData(), rawEvidenceJson: this.store.getEvidenceManifestData()});
+        this.setState({modalIsOpen: true, rawJson: this.store.getEvidenceManifestData()});
+
     }
 
     closeModal() {
@@ -61,18 +64,21 @@ export default class AppRoutes extends React.Component {
 
     prettyPrint(obj) {
         var jsonLine = /^( *)("[\w]+": )?("[^"]*"|[\w.+-]*)?([,[{])?$/mg;
-        return <div className='pretty-json'>
-            <pre dangerouslySetInnerHTML={{__html: JSON.stringify(obj, null, 3).replace(/&/g, '&amp;').replace(/\\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(jsonLine, this.replacer)}}>
-            </pre>
-        </div>
+        return <pre dangerouslySetInnerHTML={{__html: JSON.stringify(obj, null, 3).replace(/&/g, '&amp;').replace(/\\"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(jsonLine, this.replacer)}}>
+        </pre>
     }
     
-    viewRawEvidene(json) {
-        this.setState({rawJson: json});
+    viewRawEvidene(json, type) {
+        this.setState({rawJson: json, type: type});
+        document.getElementsByClassName("pretty-json")[0].scrollIntoView();
     }
 
     configSectionModal(){
-        var incJson = this.store.getIncJson();
+        var rawJson = this.store.getRawJson();
+        var evidenceJson = rawJson.evidenceJson;
+        var sacJson = rawJson.sac;
+        var ssacJson = rawJson.ssac;
+        var incEvidenceJson = rawJson.incEvidenceJson;
         return (
             <Modal
                 isOpen={this.state.modalIsOpen}
@@ -87,24 +93,70 @@ export default class AppRoutes extends React.Component {
                     </div>
                     <div id="modal-content-container" className="modal-content">
                         <div className="panel-container">
-                            <div className="xpanel">
+                            <div className="xpanel-modal">
                                 <div className="xpanel-lhs-container">
-                                    <div className="info-label" onClick={this.viewRawEvidene.bind(this, this.state.rawEvidenceJson)}>Evidence Manifest</div>
-                                    <div className="clear" />
-                                    <div className="info-label">[-] Incremental Evidence</div>
-                                    <div className="clear" />
-                                    {
-                                        Object.keys(incJson).reverse().map( (i) => {
-                                            return <div key={"lhs-cset-"+i+Math.random()}>
-                                                <div className="info-label" onClick={this.viewRawEvidene.bind(this, incJson[i])}>#{i}</div>
-                                                <div className="clear" />
-                                            </div>
-                                        })
-                                    }
+                                    <div className="evidence-cnum-list">
+                                        <div className="info-label" onClick={this.viewRawEvidene.bind(this, evidenceJson, "evidencemenifest")}>Evidence Manifest</div>
+                                        <div className="clear" />
+                                    </div>
+
+                                    <div className="evidence-cnum-list-normal">
+                                        <div className="more">
+                                            <div className="col-m" onClick={this.toggleSlider.bind(this, "hide-evidence-list")}><span>Incremental Evidence</span></div>
+                                        </div>
+                                        <div className="clear" />
+                                    </div>
+                                    <div className="hide-evidence-list hidden">
+                                        {
+                                            Object.keys(sacJson).reverse().map( (i) => {
+                                                return <div className="evidence-cnum-list" key={"lhs-cset-"+i+Math.random()}>
+                                                    <div className="info-label" onClick={this.viewRawEvidene.bind(this, sacJson[i], i)}>#{i}</div>
+                                                    <div className="clear" />
+                                                </div>
+                                            })
+                                        }
+                                    </div>
                                 </div>
                             </div>
-                            <div className="ypanel">
-                                {this.prettyPrint(this.state.rawJson)}
+                            <div className="ypanel-modal">
+                                {
+                                    this.state.type == "evidencemenifest" ? (
+                                        <div className='pretty-json pretty-json-1'>
+                                            {this.prettyPrint(this.state.rawJson)}
+                                        </div>
+                                    ) : <Tabs onSelect={tabIndex => this.implementScrollOnModal()}>
+                                        <TabList>
+                                            <Tab>SAC</Tab>
+                                            <Tab>SSAC</Tab>
+                                            <Tab>Incremental Manifest</Tab>
+                                            <Tab>Hashes</Tab>
+                                        </TabList>
+
+                                        <TabPanel>
+                                            <div className='pretty-json pretty-json-2'>
+                                                {this.prettyPrint(sacJson[this.state.type])}
+                                            </div>
+                                        </TabPanel>
+                                        <TabPanel>
+                                            <div className='pretty-json pretty-json-3'>
+                                                {this.prettyPrint(ssacJson[this.state.type])}
+                                            </div>
+                                        </TabPanel>
+                                        <TabPanel>
+                                            <div className='pretty-json pretty-json-4'>
+                                                {this.prettyPrint(incEvidenceJson[this.state.type])}
+                                            </div>
+                                        </TabPanel>
+                                        <TabPanel>
+                                            <div className='pretty-json pretty-json-5'>
+                                                {this.prettyPrint({
+                                                    sacHash: incEvidenceJson[this.state.type].sacHash,
+                                                    ssacHash: sacJson[this.state.type].ssacHash
+                                                })}
+                                            </div>
+                                        </TabPanel>
+                                    </Tabs>
+                                }
                             </div>
                         </div>
                     </div>
@@ -118,11 +170,38 @@ export default class AppRoutes extends React.Component {
     }
 
     componentDidUpdate(){
-        var element =  document.getElementsByClassName('pretty-json');
-        if (typeof(element) != 'undefined' && element != null && element.length > 0) {
-            const ps = new PerfectScrollbar('.pretty-json');
-            ps.update();
-        }
+        this.implementScrollOnModal();
+    }
+
+    implementScrollOnModal(){
+        setTimeout(()=>{
+            var element =  document.getElementsByClassName('xpanel-modal');
+            if (element && element.length > 0) {
+                new PerfectScrollbar('.xpanel-modal').update();
+            }
+
+            var element1 =  document.getElementsByClassName('pretty-json-1');
+            if (element1 && element1.length > 0) {
+                new PerfectScrollbar('.pretty-json-1').update();
+            }
+
+            var element2 =  document.getElementsByClassName('pretty-json-2');
+            if (element2 && element2.length > 0) {
+                new PerfectScrollbar('.pretty-json-2').update();
+            }
+            var element3 =  document.getElementsByClassName('pretty-json-3');
+            if (element3 && element3.length > 0) {
+                new PerfectScrollbar('.pretty-json-3').update();
+            }
+            var element4 =  document.getElementsByClassName('pretty-json-4');
+            if (element4 && element4.length > 0) {
+                new PerfectScrollbar('.pretty-json-4').update();
+            }
+            var element5 =  document.getElementsByClassName('pretty-json-5');
+            if (element5 && element5.length > 0) {
+                new PerfectScrollbar('.pretty-json-5').update();
+            }
+        }, 50);
     }
     
     /*
@@ -218,6 +297,18 @@ export default class AppRoutes extends React.Component {
 
         var evidenceDataJson = this.store.getEvidenceManifestData();
         
+        try {
+            // check if sac manifest json exist in zip
+            var sacManifestBuffer = zip1.entryDataSync(Constants.default.smanifestJsonFileName),
+                sacManifestString = sacManifestBuffer.toString('ascii'),
+                sacManifestJson = JSON.parse(sacManifestString),
+                cloneSacManifestJson = JSON.parse(JSON.stringify(sacManifestJson));
+
+            this.store.setRawJson({cnum: cnum, json: cloneSacManifestJson, type: "sacchangeset"});
+        }catch(e){
+            console.log("Missing ssacManifest.json, ", e);
+        }
+
         var bufferData = null;
         try {
             bufferData = zip1.entryDataSync(filename);
@@ -227,10 +318,10 @@ export default class AppRoutes extends React.Component {
             if(isForwarded){
                 changesetJson.deletedComments.unshift(cnum);
                 changesetJson.comments[cnum] = "#"+cnum+" Deleted";
-                this.store.setIncJson(cnum, "#"+cnum+" Deleted");
+                this.store.setRawJson({cnum: cnum, json: "#"+cnum+" Deleted", type: "changeset"});
             }else{
                 changesetJson.comments[cnum] = "Missing "+filename+" file for changeset "+cnum;
-                this.store.setIncJson(cnum, "Missing "+filename+" file for changeset "+cnum);
+                this.store.setRawJson({cnum: cnum, json: "Missing "+filename+" file for changeset "+cnum, type: "changeset"});
             }
 
             return changesetJson;
@@ -238,9 +329,10 @@ export default class AppRoutes extends React.Component {
         
         if(bufferData != null){
             var manifestJson = bufferData.toString('ascii'),
-                jsonData = JSON.parse(manifestJson);
+                jsonData = JSON.parse(manifestJson),
+                cloneJsonData = JSON.parse(JSON.stringify(jsonData));
 
-            this.store.setIncJson(cnum, jsonData);
+            this.store.setRawJson({cnum: cnum, json: cloneJsonData, type: "changeset"});
             
             // if comment is deleted then we are not getting whole data so creating object with minimum data
             if(jsonData.metadataDeleted === true){
@@ -348,7 +440,10 @@ export default class AppRoutes extends React.Component {
                 // check if incremental manifest json exist in zip
                 var incManifestBuffer = zip1.entryDataSync(Constants.default.incManifestJsonFileName),
                     incManifestString = incManifestBuffer.toString('ascii'),
-                    incManifestJson = JSON.parse(incManifestString);
+                    incManifestJson = JSON.parse(incManifestString),
+                    cloneIncManifestJson = JSON.parse(JSON.stringify(incManifestJson));
+
+                this.store.setRawJson({cnum: cnum, json: cloneIncManifestJson, type: "incevidencemanifest"});
                 
                 // check if writerImageMappings property exist in json
                 if(incManifestJson.writerImageMappings){
@@ -480,7 +575,10 @@ export default class AppRoutes extends React.Component {
                         var data = bufferData.toString('ascii');
                         
                         //  convert buffer data to json
-                        var jsonData = JSON.parse(data);
+                        var jsonData = JSON.parse(data),
+                            cloneJsonData = JSON.parse(JSON.stringify(jsonData));
+                        
+                        this.store.setRawJson({json: cloneJsonData, type: "evidencemanifest"});
 
                         this.store.setEvidenceManifestData(jsonData);
 
@@ -535,10 +633,18 @@ export default class AppRoutes extends React.Component {
     toggleSlider(el, e){
         var x = document.getElementsByClassName(el)[0];
         if (x.style.display === "none" || x.style.display == "") {
-            document.getElementsByClassName("col")[0].className = "exp fancy";
+            if(el == "hide-evidence-list")
+                document.getElementsByClassName("col-m")[0].className = "exp-m";
+            else
+                document.getElementsByClassName("col")[0].className = "exp fancy";
+            
             x.style.display = "block";
         } else {
-            document.getElementsByClassName("exp")[0].className = "col fancy";
+            if(el == "hide-evidence-list")
+                document.getElementsByClassName("exp-m")[0].className = "col-m";
+            else
+                document.getElementsByClassName("exp")[0].className = "col fancy";
+            
             x.style.display = "none";
         }
     }
@@ -620,7 +726,7 @@ export default class AppRoutes extends React.Component {
                                 <div className="advanced-sub-container hide-me hidden">
                                     <div className="info-label">CertProof App Version</div>
                                     <div className="fl bold"> : </div>
-                                    <div className="info-value">1.0.6, support inc-10</div>
+                                    <div className="info-value">1.0.7, support inc-10</div>
                                     
                                     <div className="clear"></div>
                                     <div className="info-label">Live Thread</div>
