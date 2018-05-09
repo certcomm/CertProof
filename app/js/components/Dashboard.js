@@ -18,9 +18,17 @@ const customStyles = {
 };
 
 import Thread from "./Thread/js/components/Thread";
+import prover from "./../../prove/app/prove";
 
 var ConfigImages = require("./../../config/images.js");
 var Constants = require("./../../config/constants.js");
+
+function LogEmitter() {};
+// LogEmitter.prototype = {
+// 	log: function(msg) {console.log(msg);},
+// 	error: function(err) {console.error(err);}
+// };
+// var logEmitter = new LogEmitter();
 
 @observer
 export default class AppRoutes extends React.Component {
@@ -28,15 +36,17 @@ export default class AppRoutes extends React.Component {
         super(props);
 
         this.store = props.certProofStore;
-
         this.entries = [];
+        this.logEmitter = {};
 
         this.state = {
             modalIsOpen: false,
             progress: 0,
             stateData: '',
             rawJson: null,
-            type: "evidencemenifest"
+            type: "evidencemenifest",
+            log: "",
+            errLog: ""
         }
 
         this.openModal = this.openModal.bind(this);
@@ -95,22 +105,22 @@ export default class AppRoutes extends React.Component {
                         <div className="panel-container">
                             <div className="xpanel-modal">
                                 <div className="xpanel-lhs-container">
-                                    <div className="evidence-cnum-list">
-                                        <div className="info-label" onClick={this.viewRawEvidene.bind(this, evidenceJson, "evidencemenifest")}>Evidence Manifest</div>
+                                    <div className={"evidence-cnum-list "+(this.state.type == "evidencemenifest" ? "evidence-cnum-list-selected" : "")} onClick={this.viewRawEvidene.bind(this, evidenceJson, "evidencemenifest")}>
+                                        <div className="info-label">Evidence Manifest</div>
                                         <div className="clear" />
                                     </div>
 
-                                    <div className="evidence-cnum-list-normal">
+                                    <div className="evidence-cnum-list-normal" onClick={this.toggleSlider.bind(this, "hide-evidence-list")}>
                                         <div className="more">
-                                            <div className="col-m" onClick={this.toggleSlider.bind(this, "hide-evidence-list")}><span>Incremental Evidence</span></div>
+                                            <div className="col-m"><span>Incremental Evidence</span></div>
                                         </div>
                                         <div className="clear" />
                                     </div>
                                     <div className="hide-evidence-list hidden">
                                         {
                                             Object.keys(sacJson).reverse().map( (i) => {
-                                                return <div className="evidence-cnum-list" key={"lhs-cset-"+i+Math.random()}>
-                                                    <div className="info-label" onClick={this.viewRawEvidene.bind(this, sacJson[i], i)}>#{i}</div>
+                                                return <div className={"evidence-cnum-list "+(this.state.type == i ? "evidence-cnum-list-selected" : "")} key={"lhs-cset-"+i+Math.random()} onClick={this.viewRawEvidene.bind(this, sacJson[i], i)}>
+                                                    <div className="info-label">#{i}</div>
                                                     <div className="clear" />
                                                 </div>
                                             })
@@ -164,9 +174,25 @@ export default class AppRoutes extends React.Component {
             </Modal>
         );
     }
-
+    
     componentDidMount() {
         this.copyEvidence();
+
+        LogEmitter.prototype = {
+            log: (msg) => {
+                console.error(msg);
+
+                if(this.state.log == "")
+                    this.setState({log: msg})
+                else
+                    this.setState({log: this.state.log+"<br />"+msg})
+            },
+            error: (err) => {
+                console.error(err);
+                this.setState({errLog: this.state.errLog+"<br />"+JSON.stringify(err)})
+            }
+        };
+        this.logEmitter = new LogEmitter();
     }
 
     componentDidUpdate(){
@@ -650,27 +676,55 @@ export default class AppRoutes extends React.Component {
     }
 
     checkProveEvidence(){
-        this.setState({
-            progress: this.state.progress+5
-        })
+        // this.setState({
+        //     progress: this.state.progress+5
+        // })
 
-        setTimeout(()=>{
-            if(this.state.progress < 100){
-                this.checkProveEvidence();
-            }else{
-                setTimeout(()=>{
+        // setTimeout(()=>{
+        //     if(this.state.progress < 100){
+        //         this.checkProveEvidence();
+        //     }else{
+        //         setTimeout(()=>{
                     document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
                     document.getElementsByClassName("verification-container")[0].style.display = "block";
-                }, 500);
-            }
-        }, 300);
+        //         }, 500);
+        //     }
+        // }, 300);
     }
 
     proveEvidence(e){
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
         document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
 
-        this.checkProveEvidence();
+        // this.checkProveEvidence();
+
+        // both log should be blank on prove click each time
+        this.state.log = "";
+        this.state.errLog = "";
+
+        var filepath = this.store.getFilePath();
+
+        // read zip evidence
+        const proveZip = new StreamZip({
+            file: filepath,
+            storeEntries: true
+        });
+
+        proveZip.on('ready', () => {
+            prover.proveExtractedEvidenceZip(this.logEmitter, Constants.default.extractedEvidenceFolder, proveZip)
+            .then((response) => {
+                this.logEmitter.log("Success!"+ response);
+                
+                this.checkProveEvidence();
+                proveZip.close();
+            })
+            .catch((err) => {
+                console.error("Failed!", err);
+
+                this.checkProveEvidence();
+                proveZip.close();
+            });
+        });
     }
 
 	render() {
@@ -726,7 +780,7 @@ export default class AppRoutes extends React.Component {
                                 <div className="advanced-sub-container hide-me hidden">
                                     <div className="info-label">CertProof App Version</div>
                                     <div className="fl bold"> : </div>
-                                    <div className="info-value">1.0.7, support inc-10</div>
+                                    <div className="info-value">1.0.8, support inc-10</div>
                                     
                                     <div className="clear"></div>
                                     <div className="info-label">Live Thread</div>
@@ -746,19 +800,13 @@ export default class AppRoutes extends React.Component {
                                 </div>
                             </div>
                         </div>
-                        {/* <span className="xpanel-gov-sign">Gov Signature Proof</span> */}
                         <div className="evidence-prove-container">
                             <div className="evidence-prove-form">
                                 <div>
-                                    {/* <input name="input-sign-value" className="input-gov-sign" placeholder="TMail21 pub key" /> */}
                                     <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
                                     <div onClick={this.proveEvidence.bind(this)} className="fl prove-gear-btn gear btn-success" />
                                     <div className="prove-info-sign" />
                                 </div>
-                                {/* <div className="fl link-container">
-                                    <div className="link">Advanced Settings</div>
-                                    <div className="link">Learn Mode</div>
-                                </div> */}
                             </div>
                             <div className="progress-bar-container hidden">
                                 <div className="proving-btn">
@@ -772,10 +820,13 @@ export default class AppRoutes extends React.Component {
                                     Proved
                                     <div className="fr proved-icon"></div>
                                 </div>
-                                {/* <div className="fl tmail-certified-new-rhs" title="This thread is certified"></div>
-                                <span className="verified-info-label">The evidence of this  Certified Thread was successfully  verified against the CertComm Blockchain on {moment().format('MMMM Do, YYYY')}!</span>
-                                <span style={{display: "inherit", fontWeight: 600}} className="link">Details</span> */}
                             </div>
+                        </div>
+                        <div className="clear" />
+                        <div className={"log-container"+(this.state.log == "" && this.state.errLog == "" ? "hidden" : "")}>
+                            <div className="log-text" dangerouslySetInnerHTML={{__html: this.state.log}} />
+                            <div className="clear" />
+                            <div className="err-text" dangerouslySetInnerHTML={{__html: (typeof this.state.errLog == "string" ? this.state.errLog : JSON.stringify(this.state.errLog))}} />
                         </div>
                     </div>
                 </div>

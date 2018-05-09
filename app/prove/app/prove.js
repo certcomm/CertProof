@@ -1,9 +1,17 @@
 var Constants = require("./config/constants.js");
 var cpJsonUtils = require("./util/cpJsonUtils.js");
 var evidenceUtils = require("./util/evidenceUtils.js");
-var fs = require('fs-extra');
-var path = require('path');
-const StreamZip = require('node-stream-zip');
+
+try{
+    var fs = window.require('fs-extra');
+    var path = window.require('path');
+    var StreamZip = window.require('node-stream-zip');
+}catch(e){
+    var fs = require('fs-extra');
+    var path = require('path');
+    var StreamZip = require('node-stream-zip');
+}
+
 module.exports = {
     extractEvidence: function(logEmitter, extractedEvidenceFolder, evidenceFileName) {
       this.logEmitter = logEmitter;
@@ -40,7 +48,7 @@ module.exports = {
     proveExtractedEvidenceZip :function(logEmitter, extractedEvidenceFolder, zip) {
         this.logEmitter = logEmitter;
         var outer = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             this.entries = zip.entries()
             if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)) {
                 return;
@@ -78,7 +86,7 @@ module.exports = {
 
     proveIncEvidence : function (evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum) {
         var outer = this;
-        return new Promise(function(resolve, reject) {
+        return new Promise((resolve, reject) => {
             var ttn = evidenceJson.ttn;
             var highestcnum = evidenceJson.highestCnum;      
             var incEvidenceFileName = evidenceUtils.getIncEvidenceFileName(evidenceJson, mainZipEntries, ttn, cnum)

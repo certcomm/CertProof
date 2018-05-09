@@ -249,7 +249,7 @@ a.breadcrumb {
   }
 }
 .xpanel .proved-btn {
-  border: 1px solid #1AB394; color: #FFFFFF; border-radius: 6px; cursor: pointer; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px;
+  border: 1px solid #1AB394; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px;
 }
 .xpanel .proved-icon:after {
   content: "\E00D"; font-family: "tmail"; font-size: 24px;
@@ -318,16 +318,29 @@ a.breadcrumb {
 .sr-only {
   border: 0 none; clip: rect(0px, 0px, 0px, 0px); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px;
 }
+.log-container{
+  text-align: left; font-size: 13px; max-height: 150px; overflow: auto; border: solid 1px #EFEFEF;
+  margin-top: 14px; display: inline-block; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all;
+}
+.log-container .log-text{
+  color: forestgreen;
+}
+.log-container .err-text{
+  color: #FF0000;
+}
 
 /*    Raw evidence json      */
 .evidence-cnum-list{
-  border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px;
+  border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px; padding-left: 8px;
+}
+.evidence-cnum-list-selected{
+  background-color: #EFEFEF;
 }
 .evidence-cnum-list-normal{
-  border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px;
+  border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px; padding-left: 8px;
 }
 .hide-evidence-list .evidence-cnum-list{
-  padding-left: 15px;
+  padding-left: 20px;
 }
 .evidence-cnum-list-normal .more div.col-m:after {
   content: "?"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px;
