@@ -98,8 +98,9 @@ export default class AppRoutes extends React.Component {
                 contentLabel="Section Modal">
                 <div className={"modal-file-container"}>
                     <div className="modal-header">
-                        <div className="fl modal-section-title">Raw Evidence</div>
+                        <div className="fl modal-section-title">Raw Evidence {(sacJson && sacJson[evidenceJson.highestCnum] ? " - "+sacJson[evidenceJson.highestCnum].subject : "" )}</div>
                         <div className="fr btn-close" onClick={this.closeModal} />
+                        <div className="fr header-ttn">{evidenceJson.ttn}</div>
                     </div>
                     <div id="modal-content-container" className="modal-content">
                         <div className="panel-container">
@@ -110,13 +111,13 @@ export default class AppRoutes extends React.Component {
                                         <div className="clear" />
                                     </div>
 
-                                    <div className="evidence-cnum-list-normal" onClick={this.toggleSlider.bind(this, "hide-evidence-list")}>
+                                    <div className="evidence-cnum-list-normal">
                                         <div className="more">
                                             <div className="col-m"><span>Incremental Evidence</span></div>
                                         </div>
                                         <div className="clear" />
                                     </div>
-                                    <div className="hide-evidence-list hidden">
+                                    <div className="hide-evidence-list hidden1">
                                         {
                                             Object.keys(sacJson).reverse().map( (i) => {
                                                 return <div className={"evidence-cnum-list "+(this.state.type == i ? "evidence-cnum-list-selected" : "")} key={"lhs-cset-"+i+Math.random()} onClick={this.viewRawEvidene.bind(this, sacJson[i], i)}>
@@ -175,6 +176,10 @@ export default class AppRoutes extends React.Component {
         );
     }
     
+    componentWillMount(){
+        this.store.resetRawJson();
+    }
+
     componentDidMount() {
         this.copyEvidence();
 
@@ -330,7 +335,7 @@ export default class AppRoutes extends React.Component {
                 sacManifestJson = JSON.parse(sacManifestString),
                 cloneSacManifestJson = JSON.parse(JSON.stringify(sacManifestJson));
 
-            this.store.setRawJson({cnum: cnum, json: cloneSacManifestJson, type: "sacchangeset"});
+            if(!isForwarded) this.store.setRawJson({cnum: cnum, json: cloneSacManifestJson, type: "sacchangeset"});
         }catch(e){
             console.log("Missing ssacManifest.json, ", e);
         }
@@ -344,10 +349,12 @@ export default class AppRoutes extends React.Component {
             if(isForwarded){
                 changesetJson.deletedComments.unshift(cnum);
                 changesetJson.comments[cnum] = "#"+cnum+" Deleted";
-                this.store.setRawJson({cnum: cnum, json: "#"+cnum+" Deleted", type: "changeset"});
+                
+                if(!isForwarded) this.store.setRawJson({cnum: cnum, json: "#"+cnum+" Deleted", type: "changeset"});
             }else{
                 changesetJson.comments[cnum] = "Missing "+filename+" file for changeset "+cnum;
-                this.store.setRawJson({cnum: cnum, json: "Missing "+filename+" file for changeset "+cnum, type: "changeset"});
+                
+                if(!isForwarded) this.store.setRawJson({cnum: cnum, json: "Missing "+filename+" file for changeset "+cnum, type: "changeset"});
             }
 
             return changesetJson;
@@ -358,7 +365,7 @@ export default class AppRoutes extends React.Component {
                 jsonData = JSON.parse(manifestJson),
                 cloneJsonData = JSON.parse(JSON.stringify(jsonData));
 
-            this.store.setRawJson({cnum: cnum, json: cloneJsonData, type: "changeset"});
+                if(!isForwarded) this.store.setRawJson({cnum: cnum, json: cloneJsonData, type: "changeset"});
             
             // if comment is deleted then we are not getting whole data so creating object with minimum data
             if(jsonData.metadataDeleted === true){
@@ -469,7 +476,7 @@ export default class AppRoutes extends React.Component {
                     incManifestJson = JSON.parse(incManifestString),
                     cloneIncManifestJson = JSON.parse(JSON.stringify(incManifestJson));
 
-                this.store.setRawJson({cnum: cnum, json: cloneIncManifestJson, type: "incevidencemanifest"});
+                if(!isForwarded) this.store.setRawJson({cnum: cnum, json: cloneIncManifestJson, type: "incevidencemanifest"});
                 
                 // check if writerImageMappings property exist in json
                 if(incManifestJson.writerImageMappings){
@@ -676,27 +683,13 @@ export default class AppRoutes extends React.Component {
     }
 
     checkProveEvidence(){
-        // this.setState({
-        //     progress: this.state.progress+5
-        // })
-
-        // setTimeout(()=>{
-        //     if(this.state.progress < 100){
-        //         this.checkProveEvidence();
-        //     }else{
-        //         setTimeout(()=>{
-                    document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
-                    document.getElementsByClassName("verification-container")[0].style.display = "block";
-        //         }, 500);
-        //     }
-        // }, 300);
+        document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
+        document.getElementsByClassName("verification-container")[0].style.display = "block";
     }
 
     proveEvidence(e){
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
         document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
-
-        // this.checkProveEvidence();
 
         // both log should be blank on prove click each time
         this.state.log = "";
@@ -780,7 +773,12 @@ export default class AppRoutes extends React.Component {
                                 <div className="advanced-sub-container hide-me hidden">
                                     <div className="info-label">CertProof App Version</div>
                                     <div className="fl bold"> : </div>
-                                    <div className="info-value">1.0.8, support inc-10</div>
+                                    <div className="info-value">1.0.8</div>
+                                    
+                                    <div className="clear"></div>
+                                    <div className="info-label">Schema Version</div>
+                                    <div className="fl bold"> : </div>
+                                    <div className="info-value">Inc-10</div>
                                     
                                     <div className="clear"></div>
                                     <div className="info-label">Live Thread</div>
@@ -788,6 +786,7 @@ export default class AppRoutes extends React.Component {
                                     <div className="info-value">
                                         <a className="link" href={ttnURL}>{ttnURL}</a>
                                     </div>
+
                                     <div className="clear"></div>
                                     <div className="info-label">CertComm global TTN</div>
                                     <div className="fl bold"> : </div>

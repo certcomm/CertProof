@@ -58,6 +58,15 @@ export class CertProofStore {
 	setError(err) {
 		this.error = err;
 	}
+
+	resetRawJson(){
+		this.rawJson = {
+			evidenceJson: {},
+			sac: {},
+			ssac: {},
+			incEvidenceJson: {}
+		};
+	}
 	
 	getError() {
 		return this.error;

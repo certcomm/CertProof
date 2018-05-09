@@ -113,7 +113,7 @@ div.writers-count-wrapper .h-inner-wrapper {
 }
 .modal-container .modal-header,
 .modal-file-container .modal-header {
-	border-bottom: solid 1px #EFEFEF; padding: 15px 10px 7px 12px; width: 100%; display: inline-block;     box-sizing: border-box;
+	border-bottom: solid 1px #EFEFEF; padding: 5px 10px 7px 12px; width: 100%; display: inline-block;     box-sizing: border-box;
 }
 .modal-container .modal-content {
 	position: relative; height: calc(100vh - 60px); overflow: hidden!important;

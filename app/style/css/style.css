@@ -124,6 +124,10 @@ a.breadcrumb {
 .evidence-title{
 
 }
+.modal-file-container .modal-header .header-ttn {
+	font-size: 13px; font-weight: 600; margin-right: 15px; color: #999999;
+}
+
 .middle-box {
   margin: 0 auto; max-width: 400px; padding-top: 40px; z-index: 100;
 }
@@ -337,16 +341,16 @@ a.breadcrumb {
   background-color: #EFEFEF;
 }
 .evidence-cnum-list-normal{
-  border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px; padding-left: 8px;
+  border-bottom: solid 1px #EFEFEF; color: #111111; padding: 10px 0; font-size: 13px; font-weight: 500; margin-right: 10px; padding-left: 8px;
 }
 .hide-evidence-list .evidence-cnum-list{
   padding-left: 20px;
 }
 .evidence-cnum-list-normal .more div.col-m:after {
-  content: "?"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px;
+  /* content: "?"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px; */
 }
 .evidence-cnum-list-normal .more div.exp-m:after {
-  content: "J"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px;
+  /* content: "J"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px; */
 }
 .evidence-cnum-list-normal .more div.exp-m,
 .evidence-cnum-list-normal .more div.col-m {

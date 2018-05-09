@@ -313,9 +313,15 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                         _react2.default.createElement(
                             "div",
                             { className: "fl modal-section-title" },
-                            "Raw Evidence"
+                            "Raw Evidence ",
+                            sacJson && sacJson[evidenceJson.highestCnum] ? " - " + sacJson[evidenceJson.highestCnum].subject : ""
                         ),
-                        _react2.default.createElement("div", { className: "fr btn-close", onClick: this.closeModal })
+                        _react2.default.createElement("div", { className: "fr btn-close", onClick: this.closeModal }),
+                        _react2.default.createElement(
+                            "div",
+                            { className: "fr header-ttn" },
+                            evidenceJson.ttn
+                        )
                     ),
                     _react2.default.createElement(
                         "div",
@@ -341,7 +347,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     ),
                                     _react2.default.createElement(
                                         "div",
-                                        { className: "evidence-cnum-list-normal", onClick: this.toggleSlider.bind(this, "hide-evidence-list") },
+                                        { className: "evidence-cnum-list-normal" },
                                         _react2.default.createElement(
                                             "div",
                                             { className: "more" },
@@ -359,7 +365,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     ),
                                     _react2.default.createElement(
                                         "div",
-                                        { className: "hide-evidence-list hidden" },
+                                        { className: "hide-evidence-list hidden1" },
                                         Object.keys(sacJson).reverse().map(function (i) {
                                             return _react2.default.createElement(
                                                 "div",
@@ -457,6 +463,11 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     )
                 )
             );
+        }
+    }, {
+        key: "componentWillMount",
+        value: function componentWillMount() {
+            this.store.resetRawJson();
         }
     }, {
         key: "componentDidMount",
@@ -618,7 +629,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     sacManifestJson = JSON.parse(sacManifestString),
                     cloneSacManifestJson = JSON.parse(JSON.stringify(sacManifestJson));
 
-                this.store.setRawJson({ cnum: cnum, json: cloneSacManifestJson, type: "sacchangeset" });
+                if (!isForwarded) this.store.setRawJson({ cnum: cnum, json: cloneSacManifestJson, type: "sacchangeset" });
             } catch (e) {
                 console.log("Missing ssacManifest.json, ", e);
             }
@@ -632,10 +643,12 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 if (isForwarded) {
                     changesetJson.deletedComments.unshift(cnum);
                     changesetJson.comments[cnum] = "#" + cnum + " Deleted";
-                    this.store.setRawJson({ cnum: cnum, json: "#" + cnum + " Deleted", type: "changeset" });
+
+                    if (!isForwarded) this.store.setRawJson({ cnum: cnum, json: "#" + cnum + " Deleted", type: "changeset" });
                 } else {
                     changesetJson.comments[cnum] = "Missing " + filename + " file for changeset " + cnum;
-                    this.store.setRawJson({ cnum: cnum, json: "Missing " + filename + " file for changeset " + cnum, type: "changeset" });
+
+                    if (!isForwarded) this.store.setRawJson({ cnum: cnum, json: "Missing " + filename + " file for changeset " + cnum, type: "changeset" });
                 }
 
                 return changesetJson;
@@ -646,7 +659,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     jsonData = JSON.parse(manifestJson),
                     cloneJsonData = JSON.parse(JSON.stringify(jsonData));
 
-                this.store.setRawJson({ cnum: cnum, json: cloneJsonData, type: "changeset" });
+                if (!isForwarded) this.store.setRawJson({ cnum: cnum, json: cloneJsonData, type: "changeset" });
 
                 // if comment is deleted then we are not getting whole data so creating object with minimum data
                 if (jsonData.metadataDeleted === true) {
@@ -755,7 +768,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                         incManifestJson = JSON.parse(incManifestString),
                         cloneIncManifestJson = JSON.parse(JSON.stringify(incManifestJson));
 
-                    this.store.setRawJson({ cnum: cnum, json: cloneIncManifestJson, type: "incevidencemanifest" });
+                    if (!isForwarded) this.store.setRawJson({ cnum: cnum, json: cloneIncManifestJson, type: "incevidencemanifest" });
 
                     // check if writerImageMappings property exist in json
                     if (incManifestJson.writerImageMappings) {
@@ -970,20 +983,8 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "checkProveEvidence",
         value: function checkProveEvidence() {
-            // this.setState({
-            //     progress: this.state.progress+5
-            // })
-
-            // setTimeout(()=>{
-            //     if(this.state.progress < 100){
-            //         this.checkProveEvidence();
-            //     }else{
-            //         setTimeout(()=>{
             document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
             document.getElementsByClassName("verification-container")[0].style.display = "block";
-            //         }, 500);
-            //     }
-            // }, 300);
         }
     }, {
         key: "proveEvidence",
@@ -992,8 +993,6 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
             document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
             document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
-
-            // this.checkProveEvidence();
 
             // both log should be blank on prove click each time
             this.state.log = "";
@@ -1121,7 +1120,23 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.8, support inc-10"
+                                        "1.0.8"
+                                    ),
+                                    _react2.default.createElement("div", { className: "clear" }),
+                                    _react2.default.createElement(
+                                        "div",
+                                        { className: "info-label" },
+                                        "Schema Version"
+                                    ),
+                                    _react2.default.createElement(
+                                        "div",
+                                        { className: "fl bold" },
+                                        " : "
+                                    ),
+                                    _react2.default.createElement(
+                                        "div",
+                                        { className: "info-value" },
+                                        "Inc-10"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -3372,6 +3387,16 @@ var CertProofStore = exports.CertProofStore = (_class = function () {
 			this.error = err;
 		}
 	}, {
+		key: 'resetRawJson',
+		value: function resetRawJson() {
+			this.rawJson = {
+				evidenceJson: {},
+				sac: {},
+				ssac: {},
+				incEvidenceJson: {}
+			};
+		}
+	}, {
 		key: 'getError',
 		value: function getError() {
 			return this.error;
@@ -4105,6 +4130,7 @@ module.exports = {
         this.logEmitter.log("Proved ssac for cnum:" + cnum);
     }
 };
+
 
 },{"./config/constants.js":13,"./util/cpJsonUtils.js":16,"./util/evidenceUtils.js":17,"fs-extra":128,"node-stream-zip":180,"path":199}],16:[function(require,module,exports){
 "use strict";
