@@ -16,8 +16,7 @@ module.exports = {
             storeEntries: true
         });
         zip.on('ready', () => {
-            this.entries = zip.entries()
-            if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)){
+            if(evidenceUtils.rejectIfErrorFileExists(reject, zip.entries)) {
                 return;
             }
             fs.ensureDir(extractedEvidenceFolder, err => {
@@ -27,25 +26,39 @@ module.exports = {
             })
             zip.extract(null, extractedEvidenceFolder, (err, count) => {
                 if(err) {
-                    this.logEmitter.log(err ? 'Extract error' : `Extracted ${count} entries`);
+                    this.logEmitter.error('Extract error');
                     zip.close();
                     reject(err);
-                } else if(this.entries[Constants.default.routeEvidenceJsonFileName]) {
-                   this.evidenceData = zip.entryDataSync(Constants.default.routeEvidenceJsonFileName).toString('utf-8');
-                   resolve({
-                    extractedEvidenceFolder:extractedEvidenceFolder,
-                    entries: this.entries,
-                    evidenceJson:cpJsonUtils.parseJson(this.evidenceData)
-                   });
                 } else {
-                    reject("Invalid zip missing "+ Constants.default.routeEvidenceJsonFileName);
-                    return;
+                    resolve(zip);
                 }
             });
         });
       });
     },
 
+    proveExtractedEvidenceZip :function(logEmitter, extractedEvidenceFolder, zip) {
+        this.logEmitter = logEmitter;
+        var outer = this;
+        return new Promise(function(resolve, reject) {
+            this.entries = zip.entries()
+            if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)) {
+                return;
+            }
+            if(this.entries[Constants.default.routeEvidenceJsonFileName]) {
+               this.evidenceData = zip.entryDataSync(Constants.default.routeEvidenceJsonFileName).toString('utf-8');
+               resolve(outer.proveEvidence({
+                extractedEvidenceFolder:extractedEvidenceFolder,
+                entries: this.entries,
+                evidenceJson:cpJsonUtils.parseJson(this.evidenceData)
+               }));
+            } else {
+                reject("Invalid zip missing "+ Constants.default.routeEvidenceJsonFileName);
+                return;
+            }    
+        });
+    },
+    
     proveEvidence :function(extractResponse) {
         var evidenceJson = extractResponse.evidenceJson
         cpJsonUtils.ensureJsonHas("1010", evidenceJson, "ttnGlobal");

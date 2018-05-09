@@ -7,12 +7,13 @@ LogEmitter.prototype = {
 };
 var logEmitter = new LogEmitter();
 var extractedEvidenceFolder = "/tmp/uploads/extracted/";
-prover.extractEvidence(logEmitter, extractedEvidenceFolder, process.argv[2])
-.then(function(response) {
-        return prover.proveEvidence(response);
+var zipFilePath = process.argv[2];
+prover.extractEvidence(logEmitter, extractedEvidenceFolder, zipFilePath)
+.then(function(zip) {
+        return prover.proveExtractedEvidenceZip(logEmitter, extractedEvidenceFolder, zip);
     })
 .then(function(response) {
-        console.log("Success!"+ response);
+        logEmitter.log("Success!"+ response);
      })
 .catch(function(err) {
         console.error("Failed!", err);
