@@ -253,21 +253,33 @@ export default class AppRoutes extends React.Component {
             
             if(currentChangeSetSections && Object.keys(currentChangeSetSections).length > 0)
                 currentChangeSetSections.map( (cssection, i) => {
-                    if(!cssection.zipEntryName) cssection.zipEntryName = zipentryname;
+                    if(!cssection.zipEntryName){
+                        cssection.zipEntryName = zipentryname;
+                        cssection.sacSchemaVersion = currentchangeset.sacSchemaVersion;
+                    }
 
                     if(headerSections)
                         headerSections.map( (hsection, i) => {
                             if(hsection.sectionNum == cssection.sectionNum){
-                                if(!hsection.zipEntryName) hsection.zipEntryName = zipentryname;
+                                if(!hsection.zipEntryName){
+                                    hsection.zipEntryName = zipentryname;
+                                    hsection.sacSchemaVersion = currentchangeset.sacSchemaVersion;
+                                }
                             } else if(isForwarded === true){
-                                if(!hsection.zipEntryName) hsection.zipEntryName = zipentryname;
+                                if(!hsection.zipEntryName){
+                                    hsection.zipEntryName = zipentryname;
+                                    hsection.sacSchemaVersion = currentchangeset.sacSchemaVersion;
+                                }
                             }
                         })
                 })
             else
                 if(headerSections && isForwarded === true)
                     headerSections.map( (hsection, i) => {
-                        if(!hsection.zipEntryName) hsection.zipEntryName = zipentryname;
+                        if(!hsection.zipEntryName){
+                            hsection.zipEntryName = zipentryname;
+                            hsection.sacSchemaVersion = currentchangeset.sacSchemaVersion;
+                        }
                     })
         }
         return changesetjson;
@@ -278,7 +290,10 @@ export default class AppRoutes extends React.Component {
 
         if(attachments)
             attachments.map( (attachment, i) => {
-                if(!attachment.zipEntryName) attachment.zipEntryName = zipentryname;
+                if(!attachment.zipEntryName){
+                    attachment.zipEntryName = zipentryname;
+                    attachment.sacSchemaVersion = currentchangeset.sacSchemaVersion;
+                }
             })
         
         return changesetjson;
@@ -295,6 +310,7 @@ export default class AppRoutes extends React.Component {
                 if(writerimagemappings[hwriter.foreverTmailAddress]){
                     hwriter.profileImage = writerimagemappings[hwriter.foreverTmailAddress];
                     hwriter.profileImageUri = "data:image/png;base64,"+writerimagemappings[hwriter.foreverTmailAddress];
+                    hwriter.sacSchemaVersion = currentchangeset.sacSchemaVersion;
                 }
             })
         }
@@ -304,6 +320,7 @@ export default class AppRoutes extends React.Component {
             if(writerimagemappings[currentchangeset.creator.foreverTmailAddress]){
                 currentchangeset.creator.profileImage = writerimagemappings[currentchangeset.creator.foreverTmailAddress];
                 currentchangeset.creator.profileImageUri = "data:image/png;base64,"+writerimagemappings[currentchangeset.creator.foreverTmailAddress];
+                currentchangeset.creator.sacSchemaVersion = currentchangeset.sacSchemaVersion;
             }
     
         // if added writer property exist and address exist in 
@@ -312,6 +329,7 @@ export default class AppRoutes extends React.Component {
                 if(writerimagemappings[cwriter.foreverTmailAddress]){
                     cwriter.profileImage = writerimagemappings[cwriter.foreverTmailAddress];
                     cwriter.profileImageUri = "data:image/png;base64,"+writerimagemappings[cwriter.foreverTmailAddress];
+                    cwriter.sacSchemaVersion = currentchangeset.sacSchemaVersion;
                 }
             })
         
@@ -370,8 +388,8 @@ export default class AppRoutes extends React.Component {
             var manifestJson = bufferData.toString('ascii'),
                 jsonData = JSON.parse(manifestJson),
                 cloneJsonData = JSON.parse(JSON.stringify(jsonData));
-
-                if(!isForwarded) this.store.setRawJson({cnum: cnum, json: cloneJsonData, type: "changeset"});
+            
+            if(!isForwarded) this.store.setRawJson({cnum: cnum, json: cloneJsonData, type: "changeset"});
             
             // if comment is deleted then we are not getting whole data so creating object with minimum data
             if(jsonData.metadataDeleted === true){
@@ -469,6 +487,7 @@ export default class AppRoutes extends React.Component {
             // call function to add zip file name into specific attachment object
             changesetJson = this.updateAttachmentsToAddFileName(changesetJson, jsonData.changeset, zipEntryName);
 
+            jsonData.changeset.sacSchemaVersion = jsonData.sacSchemaVersion;
             changesetJson.comments[jsonData.changeset.changeNum] = jsonData.changeset;
 
             // call function to add zip file name into specific section object
