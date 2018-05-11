@@ -25,10 +25,12 @@ module.exports = {
         });
         zip.on('ready', () => {
             if(evidenceUtils.rejectIfErrorFileExists(reject, zip.entries)) {
+                zip.close();
                 return;
             }
             fs.ensureDir(extractedEvidenceFolder, err => {
               if(err) {
+                zip.close();
                 reject(err);
               }
             })
@@ -39,6 +41,7 @@ module.exports = {
                     reject(err);
                 } else {
                     resolve(zip);
+                    zip.close();
                 }
             });
         });
@@ -100,6 +103,7 @@ module.exports = {
                 this.entries = zip.entries();
                 this.logEmitter = outer.logEmitter;
                 if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)){
+                    zip.close();
                     return;
                 }
                 try {
@@ -125,8 +129,10 @@ module.exports = {
                         outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
                     }
                     resolve("proved")
+                    zip.close();
                 } catch(err) {
                     this.logEmitter.error(err);
+                    zip.close();
                     reject(err.message);
                 }
             });  

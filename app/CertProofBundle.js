@@ -220,11 +220,6 @@ var ConfigImages = require("./../../config/images.js");
 var Constants = require("./../../config/constants.js");
 
 function LogEmitter() {};
-// LogEmitter.prototype = {
-// 	log: function(msg) {console.log(msg);},
-// 	error: function(err) {console.error(err);}
-// };
-// var logEmitter = new LogEmitter();
 
 var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
     _inherits(AppRoutes, _React$Component);
@@ -245,7 +240,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
             rawJson: null,
             type: "evidencemenifest",
             log: "",
-            errLog: ""
+            errLog: []
         };
 
         _this.openModal = _this.openModal.bind(_this);
@@ -331,7 +326,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                             { className: "panel-container" },
                             _react2.default.createElement(
                                 "div",
-                                { className: "xpanel-modal" },
+                                { className: "xpanel-modal xpanel-modal-inspenia" },
                                 _react2.default.createElement(
                                     "div",
                                     { className: "xpanel-lhs-container" },
@@ -478,13 +473,13 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
             LogEmitter.prototype = {
                 log: function log(msg) {
-                    console.error(msg);
+                    // console.error(msg);
 
                     if (_this3.state.log == "") _this3.setState({ log: msg });else _this3.setState({ log: _this3.state.log + "<br />" + msg });
                 },
                 error: function error(err) {
-                    console.error(err);
-                    _this3.setState({ errLog: _this3.state.errLog + "<br />" + JSON.stringify(err) });
+                    // console.error(err);
+                    _this3.state.errLog.push(err);
                 }
             };
             this.logEmitter = new LogEmitter();
@@ -802,6 +797,19 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
             }
             return changesetJson;
         }
+    }, {
+        key: "getIncEvidenceFileName",
+        value: function getIncEvidenceFileName(evidenceJson, entries, ttn, cnum) {
+            var filename;
+            if (evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo) {
+                filename = "L2_INC_EV_" + ttn + "_" + cnum + ".zip";
+            } else if (evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo == false) {
+                filename = "L1_INC_EV_" + ttn + "_" + cnum + ".zip";
+            } else {
+                filename = "BACKUP_INC_" + ttn + "_" + cnum + ".zip";
+            }
+            return filename;
+        }
 
         // run loop on all zip files under evidenceManifest.json
 
@@ -819,13 +827,8 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
             // get highest cnum from file and run a loop
             var t = function t(cnum) {
                 // create file name dynamically
-                var filename = "BACKUP_INC_" + ttn + "_" + cnum + ".zip";
-                if (_this5.entries[filename] == undefined) {
-                    filename = "L1_INC_EV_" + ttn + "_" + cnum + ".zip";
-                    var zipEntry = _this5.entries[filename];
-                } else {
-                    var zipEntry = _this5.entries[filename];
-                }
+                var filename = _this5.getIncEvidenceFileName(json, _this5.entries, ttn, cnum);
+                var zipEntry = _this5.entries[filename];
 
                 // read incremental change num zip without extreact
                 var zip1 = new StreamZip({
@@ -979,12 +982,16 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
                 x.style.display = "none";
             }
+
+            this.implementScrollOnModal();
         }
     }, {
         key: "checkProveEvidence",
-        value: function checkProveEvidence() {
+        value: function checkProveEvidence(isPassed) {
+            var verificationBtn = isPassed === false ? "verification-failed-container" : "verification-container";
+
             document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
-            document.getElementsByClassName("verification-container")[0].style.display = "block";
+            document.getElementsByClassName(verificationBtn)[0].style.display = "block";
         }
     }, {
         key: "proveEvidence",
@@ -996,7 +1003,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
             // both log should be blank on prove click each time
             this.state.log = "";
-            this.state.errLog = "";
+            this.state.errLog = [];
 
             var filepath = this.store.getFilePath();
 
@@ -1007,16 +1014,47 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
             });
 
             proveZip.on('ready', function () {
+                var implementScrollForProve = function implementScrollForProve() {
+                    setTimeout(function () {
+                        var element6 = document.getElementsByClassName('log-container-ps');
+                        if (element6 && element6.length > 0) {
+                            new _perfectScrollbar2.default('.log-container-ps').update();
+                        }
+                        var element7 = document.getElementsByClassName('modal-xpanel-lhs-container');
+                        if (element7 && element7.length > 0) {
+                            new _perfectScrollbar2.default('.modal-xpanel-lhs-container').update();
+                        }
+                    }, 50);
+                };
+
                 _prove2.default.proveExtractedEvidenceZip(_this8.logEmitter, Constants.default.extractedEvidenceFolder, proveZip).then(function (response) {
+                    console.error("Success!" + response);
+                    proveZip.close();
+
                     _this8.logEmitter.log("Success!" + response);
 
-                    _this8.checkProveEvidence();
-                    proveZip.close();
-                }).catch(function (err) {
-                    console.error("Failed!", err);
+                    setTimeout(function () {
+                        if (_this8.state.errLog.length > 0) {
+                            _this8.checkProveEvidence(false);
+                            _this8.setState({ progress: _this8.state.progress + 1 });
+                        } else {
+                            _this8.checkProveEvidence(true);
+                        }
+                    }, 500);
 
-                    _this8.checkProveEvidence();
+                    // enable scroll after log loaded
+                    implementScrollForProve();
+                }).catch(function (err) {
                     proveZip.close();
+
+                    console.error("Failed!", err);
+                    _this8.checkProveEvidence(false);
+
+                    // set error log
+                    _this8.setState({ progress: _this8.state.progress + 1 });
+
+                    // enable scroll after log loaded
+                    implementScrollForProve();
                 });
             });
         }
@@ -1063,7 +1101,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     _react2.default.createElement("div", { className: "clear" }),
                     _react2.default.createElement(
                         "div",
-                        { className: "xpanel-lhs-container" },
+                        { className: "xpanel-lhs-container modal-xpanel-lhs-container" },
                         _react2.default.createElement(
                             "div",
                             { className: "xpanel-info-container" },
@@ -1120,7 +1158,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.8"
+                                        "1.0.10"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1223,11 +1261,6 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     { className: "proving-btn" },
                                     "Proving",
                                     _react2.default.createElement("div", { className: "fr fa-spin" })
-                                ),
-                                _react2.default.createElement(
-                                    "div",
-                                    { className: "cancel-link", style: { marginTop: 10 } },
-                                    "Cancel"
                                 )
                             ),
                             _react2.default.createElement(
@@ -1239,15 +1272,35 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     "Proved",
                                     _react2.default.createElement("div", { className: "fr proved-icon" })
                                 )
+                            ),
+                            _react2.default.createElement(
+                                "div",
+                                { className: "verification-failed-container hidden" },
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "btn-primary prove-failed-btn" },
+                                    "Proof Failed",
+                                    _react2.default.createElement("div", { className: "fr prove-failed-icon" })
+                                )
                             )
                         ),
                         _react2.default.createElement("div", { className: "clear" }),
                         _react2.default.createElement(
                             "div",
-                            { className: "log-container" + (this.state.log == "" && this.state.errLog == "" ? "hidden" : "") },
+                            { className: "log-container-ps " + (this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "log-container") },
                             _react2.default.createElement("div", { className: "log-text", dangerouslySetInnerHTML: { __html: this.state.log } }),
                             _react2.default.createElement("div", { className: "clear" }),
-                            _react2.default.createElement("div", { className: "err-text", dangerouslySetInnerHTML: { __html: typeof this.state.errLog == "string" ? this.state.errLog : JSON.stringify(this.state.errLog) } })
+                            this.state.errLog.length > 0 ? _react2.default.createElement(
+                                "div",
+                                { className: "err-text" },
+                                _react2.default.createElement("br", null),
+                                "Error:",
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "pretty-json err-text" },
+                                    this.prettyPrint(this.state.errLog)
+                                )
+                            ) : null
                         )
                     )
                 ),
@@ -3585,10 +3638,12 @@ module.exports = {
             });
             zip.on('ready', function () {
                 if (evidenceUtils.rejectIfErrorFileExists(reject, zip.entries)) {
+                    zip.close();
                     return;
                 }
                 fs.ensureDir(extractedEvidenceFolder, function (err) {
                     if (err) {
+                        zip.close();
                         reject(err);
                     }
                 });
@@ -3599,6 +3654,7 @@ module.exports = {
                         reject(err);
                     } else {
                         resolve(zip);
+                        zip.close();
                     }
                 });
             });
@@ -3664,6 +3720,7 @@ module.exports = {
                 _this3.entries = zip.entries();
                 _this3.logEmitter = outer.logEmitter;
                 if (evidenceUtils.rejectIfErrorFileExists(reject, _this3.entries)) {
+                    zip.close();
                     return;
                 }
                 try {
@@ -3689,8 +3746,10 @@ module.exports = {
                         outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum + 1);
                     }
                     resolve("proved");
+                    zip.close();
                 } catch (err) {
                     _this3.logEmitter.error(err);
+                    zip.close();
                     reject(err.message);
                 }
             });

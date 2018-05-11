@@ -24,11 +24,6 @@ var ConfigImages = require("./../../config/images.js");
 var Constants = require("./../../config/constants.js");
 
 function LogEmitter() {};
-// LogEmitter.prototype = {
-// 	log: function(msg) {console.log(msg);},
-// 	error: function(err) {console.error(err);}
-// };
-// var logEmitter = new LogEmitter();
 
 @observer
 export default class AppRoutes extends React.Component {
@@ -46,7 +41,7 @@ export default class AppRoutes extends React.Component {
             rawJson: null,
             type: "evidencemenifest",
             log: "",
-            errLog: ""
+            errLog: []
         }
 
         this.openModal = this.openModal.bind(this);
@@ -104,7 +99,7 @@ export default class AppRoutes extends React.Component {
                     </div>
                     <div id="modal-content-container" className="modal-content">
                         <div className="panel-container">
-                            <div className="xpanel-modal">
+                            <div className="xpanel-modal xpanel-modal-inspenia">
                                 <div className="xpanel-lhs-container">
                                     <div className={"evidence-cnum-list "+(this.state.type == "evidencemenifest" ? "evidence-cnum-list-selected" : "")} onClick={this.viewRawEvidene.bind(this, evidenceJson, "evidencemenifest")}>
                                         <div className="info-label">Evidence Manifest</div>
@@ -185,7 +180,7 @@ export default class AppRoutes extends React.Component {
 
         LogEmitter.prototype = {
             log: (msg) => {
-                console.error(msg);
+                // console.error(msg);
 
                 if(this.state.log == "")
                     this.setState({log: msg})
@@ -193,8 +188,8 @@ export default class AppRoutes extends React.Component {
                     this.setState({log: this.state.log+"<br />"+msg})
             },
             error: (err) => {
-                console.error(err);
-                this.setState({errLog: this.state.errLog+"<br />"+JSON.stringify(err)})
+                // console.error(err);
+                this.state.errLog.push(err);
             }
         };
         this.logEmitter = new LogEmitter();
@@ -512,6 +507,18 @@ export default class AppRoutes extends React.Component {
         return changesetJson;
     }
 
+    getIncEvidenceFileName(evidenceJson, entries, ttn, cnum) {
+        var filename;
+        if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo) {
+            filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
+        } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
+            filename = "L1_INC_EV_"+ttn+"_"+cnum+".zip"
+        } else {
+            filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
+        } 
+        return filename;
+    }
+
     // run loop on all zip files under evidenceManifest.json
     accessChildZip(json){
         var ttn = json.ttn,
@@ -522,13 +529,8 @@ export default class AppRoutes extends React.Component {
         // get highest cnum from file and run a loop
         var t = (cnum) =>{
             // create file name dynamically
-            var filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
-            if(this.entries[filename] == undefined){
-                filename = "L1_INC_EV_"+ttn+"_"+cnum+".zip";
-                var zipEntry = this.entries[filename];
-            }else{
-                var zipEntry = this.entries[filename];
-            }
+            var filename = this.getIncEvidenceFileName(json, this.entries, ttn, cnum)
+            var zipEntry = this.entries[filename];
 
             // read incremental change num zip without extreact
             const zip1 = new StreamZip({
@@ -680,11 +682,15 @@ export default class AppRoutes extends React.Component {
             
             x.style.display = "none";
         }
+
+        this.implementScrollOnModal();
     }
 
-    checkProveEvidence(){
+    checkProveEvidence(isPassed){
+        var verificationBtn = isPassed === false ? "verification-failed-container" : "verification-container";
+
         document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
-        document.getElementsByClassName("verification-container")[0].style.display = "block";
+        document.getElementsByClassName(verificationBtn)[0].style.display = "block";
     }
 
     proveEvidence(e){
@@ -693,7 +699,7 @@ export default class AppRoutes extends React.Component {
 
         // both log should be blank on prove click each time
         this.state.log = "";
-        this.state.errLog = "";
+        this.state.errLog = [];
 
         var filepath = this.store.getFilePath();
 
@@ -704,18 +710,49 @@ export default class AppRoutes extends React.Component {
         });
 
         proveZip.on('ready', () => {
+            var implementScrollForProve = function(){
+                setTimeout(()=>{
+                    var element6 =  document.getElementsByClassName('log-container-ps');
+                    if (element6 && element6.length > 0) {
+                        new PerfectScrollbar('.log-container-ps').update();
+                    }
+                    var element7 =  document.getElementsByClassName('modal-xpanel-lhs-container');
+                    if (element7 && element7.length > 0) {
+                        new PerfectScrollbar('.modal-xpanel-lhs-container').update();
+                    }
+                }, 50);
+            }
+
             prover.proveExtractedEvidenceZip(this.logEmitter, Constants.default.extractedEvidenceFolder, proveZip)
             .then((response) => {
-                this.logEmitter.log("Success!"+ response);
-                
-                this.checkProveEvidence();
+                console.error("Success!"+ response);
                 proveZip.close();
+                
+                this.logEmitter.log("Success!"+ response);
+
+                setTimeout(()=>{
+                    if(this.state.errLog.length > 0){
+                        this.checkProveEvidence(false);
+                        this.setState({progress: this.state.progress+1});
+                    }else{
+                        this.checkProveEvidence(true);
+                    }
+                }, 500);
+
+                // enable scroll after log loaded
+                implementScrollForProve();
             })
             .catch((err) => {
-                console.error("Failed!", err);
-
-                this.checkProveEvidence();
                 proveZip.close();
+
+                console.error("Failed!", err);
+                this.checkProveEvidence(false);
+
+                // set error log
+                this.setState({progress: this.state.progress+1});
+
+                // enable scroll after log loaded
+                implementScrollForProve();
             });
         });
     }
@@ -746,7 +783,7 @@ export default class AppRoutes extends React.Component {
                         </div>
                     </div>
                     <div className="clear" />
-                    <div className="xpanel-lhs-container">
+                    <div className="xpanel-lhs-container modal-xpanel-lhs-container">
                         <div className="xpanel-info-container">
                             {
                                 governor ? (
@@ -773,7 +810,7 @@ export default class AppRoutes extends React.Component {
                                 <div className="advanced-sub-container hide-me hidden">
                                     <div className="info-label">CertProof App Version</div>
                                     <div className="fl bold"> : </div>
-                                    <div className="info-value">1.0.8</div>
+                                    <div className="info-value">1.0.10</div>
                                     
                                     <div className="clear"></div>
                                     <div className="info-label">Schema Version</div>
@@ -812,7 +849,7 @@ export default class AppRoutes extends React.Component {
                                     Proving
                                     <div className="fr fa-spin"></div>
                                 </div>
-                                <div className="cancel-link" style={{marginTop: 10}}>Cancel</div>
+                                {/* <div className="cancel-link" style={{marginTop: 10}}>Cancel</div> */}
                             </div>
                             <div className="verification-container hidden">
                                 <div className="btn-primary proved-btn">
@@ -820,12 +857,26 @@ export default class AppRoutes extends React.Component {
                                     <div className="fr proved-icon"></div>
                                 </div>
                             </div>
+                            <div className="verification-failed-container hidden">
+                                <div className="btn-primary prove-failed-btn">
+                                    Proof Failed
+                                    <div className="fr prove-failed-icon"></div>
+                                </div>
+                            </div>
                         </div>
                         <div className="clear" />
-                        <div className={"log-container"+(this.state.log == "" && this.state.errLog == "" ? "hidden" : "")}>
+                        <div className={"log-container-ps "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "log-container")}>
                             <div className="log-text" dangerouslySetInnerHTML={{__html: this.state.log}} />
                             <div className="clear" />
-                            <div className="err-text" dangerouslySetInnerHTML={{__html: (typeof this.state.errLog == "string" ? this.state.errLog : JSON.stringify(this.state.errLog))}} />
+                            {
+                                this.state.errLog.length > 0 ? (
+                                    <div className="err-text"><br />Error: 
+                                        <div className='pretty-json err-text'>
+                                            {this.prettyPrint(this.state.errLog)}
+                                        </div>
+                                    </div>
+                                ) : null
+                            }
                         </div>
                     </div>
                 </div>
