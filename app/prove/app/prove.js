@@ -41,7 +41,6 @@ module.exports = {
                     reject(err);
                 } else {
                     resolve(zip);
-                    zip.close();
                 }
             });
         });
@@ -107,6 +106,7 @@ module.exports = {
                     return;
                 }
                 try {
+                    this.logEmitter.indent();
                     evidenceUtils.ensureFileExists("1024", this.entries, Constants.default.incManifestJsonFileName)
                     var incManifestJson = cpJsonUtils.parseJson(zip.entryDataSync(Constants.default.incManifestJsonFileName).toString('utf-8'));
                     outer.validateIncManifest(cnum, incManifestJson);
@@ -126,6 +126,8 @@ module.exports = {
                     }    
                     this.logEmitter.log("proved", incEvidenceFileName);
                     if (cnum != highestcnum) {
+                        this.logEmitter.log("");
+                        this.logEmitter.log("");
                         outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
                     }
                     resolve("proved")
@@ -134,6 +136,8 @@ module.exports = {
                     this.logEmitter.error(err);
                     zip.close();
                     reject(err.message);
+                } finally {
+                    this.logEmitter.deindent();
                 }
             });  
         });
@@ -167,27 +171,31 @@ module.exports = {
         if(cnum!=changeset.changeNum) {
             errorMessages.throwError("1016", "changeNum:" + changeNum);
         }
+        try {
+            this.logEmitter.indent();
+            for(var section of  changeset.sections) {
+                cpJsonUtils.ensureJsonHas("1017", section, "sectionNum","sectionChangeType")
+                var sectionChangeType = section.sectionChangeType;
+                var sectionNum = section.sectionNum;
+                if(sectionChangeType=="added") {
+                    this.currentSectionNums.add(sectionNum);
+                } else if(sectionChangeType=="deleted") {
+                    if(!this.currentSectionNums.has(sectionNum)) {
+                        errorMessages.throwError("2005", "sectionNum:" + sectionNum);
+                    }
+                } else if(sectionChangeType=="updated"|| sectionChangeType=="unchanged") {
+                    if(!this.currentSectionNums.has(sectionNum)) {
+                        errorMessages.throwError("2004", "sectionNum:" + sectionNum);
+                    }
+                }
 
-        for(var section of  changeset.sections) {
-            cpJsonUtils.ensureJsonHas("1017", section, "sectionNum","sectionChangeType")
-            var sectionChangeType = section.sectionChangeType;
-            var sectionNum = section.sectionNum;
-            if(sectionChangeType=="added") {
-                this.currentSectionNums.add(sectionNum);
-            } else if(sectionChangeType=="deleted") {
-                if(!this.currentSectionNums.has(sectionNum)) {
-                    errorMessages.throwError("2005", "sectionNum:" + sectionNum);
-                }
-            } else if(sectionChangeType=="updated"|| sectionChangeType=="unchanged") {
-                if(!this.currentSectionNums.has(sectionNum)) {
-                    errorMessages.throwError("2004", "sectionNum:" + sectionNum);
-                }
             }
 
+            this.proveComment(cnum, changeset, zip);
+            this.proveAttachments(cnum, changeset, zip);    
+        } finally {
+            this.logEmitter.deindent();            
         }
-
-        this.proveComment(cnum, changeset, zip);
-        this.proveAttachments(cnum, changeset, zip);    
         this.logEmitter.log("Proved changeset for cnum:"+ cnum);                            
     },
 
@@ -202,44 +210,49 @@ module.exports = {
     proveCThinBlockInfo : function(cnum, incManifestJson, sacManifestJson, zip) {
         if(incManifestJson.hasCBlockInfo) {
             this.logEmitter.log("Proving CThinBlock for cnum:"+ cnum);                            
-            cpJsonUtils.ensureJsonHas("1020", incManifestJson, "cThinBlockHashes","sacMerklePath", "ssacMerklePath", "cThinBlockMerkleRoot");
-            var opsHashes = new Set()
-            var cThinBlockMerkleRootHashes = new Set()
-            for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
-                var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
-                evidenceUtils.ensureFileExists("1022", zip.entries(), cThinBlockFilePath);
-                var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
-                evidenceUtils.ensureHashMatches(this.logEmitter, "1022", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
-                var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
-                cpJsonUtils.ensureJsonHas("1010",cThinBlockJson, "blockNum", "cThinBlockMerkleRootHash","governor","shardKey");
-                cThinBlockMerkleRootHashes.add(cThinBlockJson.cThinBlockMerkleRootHash);
-                for(var op of cThinBlockJson.operations) {
-                    cpJsonUtils.ensureJsonHas("1010", op, "transactionNum", "ttnGlobalHash", "sacHash", "ssacHash", "changeNum");
-                    opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.sacHash);
-                    opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.ssacHash);
+            try {
+                this.logEmitter.indent();            
+                cpJsonUtils.ensureJsonHas("1020", incManifestJson, "cThinBlockHashes","sacMerklePath", "ssacMerklePath", "cThinBlockMerkleRoot");
+                var opsHashes = new Set()
+                var cThinBlockMerkleRootHashes = new Set()
+                for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
+                    var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
+                    evidenceUtils.ensureFileExists("1022", zip.entries(), cThinBlockFilePath);
+                    var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
+                    evidenceUtils.ensureHashMatches(this.logEmitter, "1022", cThinBlockData, cThinBlockHash, "CThinBlockHash for cnum:" + cnum);
+                    var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
+                    cpJsonUtils.ensureJsonHas("1010",cThinBlockJson, "blockNum", "cThinBlockMerkleRootHash","governor","shardKey");
+                    cThinBlockMerkleRootHashes.add(cThinBlockJson.cThinBlockMerkleRootHash);
+                    for(var op of cThinBlockJson.operations) {
+                        cpJsonUtils.ensureJsonHas("1010", op, "transactionNum", "ttnGlobalHash", "sacHash", "ssacHash", "changeNum");
+                        opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.sacHash);
+                        opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.ssacHash);
+                    }
+                    this.logEmitter.log("Proved " + cThinBlockFilePath);                            
                 }
-                this.logEmitter.log("Proved " + cThinBlockFilePath);                            
-            }
-            if(!cThinBlockMerkleRootHashes.has(incManifestJson.cThinBlockMerkleRoot)) {
-                errorMessages.throwError("2010", "cThinBlockMerkleRoot in incremental evidence missing in included cthinBlocks");                
-            }
-            this.logEmitter.log("Proved cThinBlockMerkleRoot:" + incManifestJson.cThinBlockMerkleRoot  + " exists");                                                    
-            var ttnGlobalHash = evidenceUtils.computeSha256Hash(incManifestJson.ttnGlobal);
-            var sacOpHash = ttnGlobalHash + ":" + cnum + incManifestJson.sacHash;
-            if(!opsHashes.has(sacOpHash)) {
-                errorMessages.throwError("2010", "sacHash in incremental evidence missing in included cthinBlocks operations");                
-            }
-            this.logEmitter.log("Proved sacHash:" + incManifestJson.sacHash  + " exists  in cthinBlock");                                                    
-            var ssacOpHash = ttnGlobalHash + ":" + cnum + sacManifestJson.ssacHash;
-            if(!opsHashes.has(ssacOpHash)) {
-                errorMessages.throwError("2010", "ssacHash in incremental evidence missing in included cthinBlocks operations");                
-            }
-            this.logEmitter.log("Proved ssacHash:" + sacManifestJson.ssacHash  + " exists in cthinBlock");                                                    
+                if(!cThinBlockMerkleRootHashes.has(incManifestJson.cThinBlockMerkleRoot)) {
+                    errorMessages.throwError("2010", "cThinBlockMerkleRoot in incremental evidence missing in included cthinBlocks");                
+                }
+                this.logEmitter.log("Proved cThinBlockMerkleRoot:" + incManifestJson.cThinBlockMerkleRoot  + " exists");                                                    
+                var ttnGlobalHash = evidenceUtils.computeSha256Hash(incManifestJson.ttnGlobal);
+                var sacOpHash = ttnGlobalHash + ":" + cnum + incManifestJson.sacHash;
+                if(!opsHashes.has(sacOpHash)) {
+                    errorMessages.throwError("2010", "sacHash in incremental evidence missing in included cthinBlocks operations");                
+                }
+                this.logEmitter.log("Proved sacHash:" + incManifestJson.sacHash  + " exists  in cthinBlock");                                                    
+                var ssacOpHash = ttnGlobalHash + ":" + cnum + sacManifestJson.ssacHash;
+                if(!opsHashes.has(ssacOpHash)) {
+                    errorMessages.throwError("2010", "ssacHash in incremental evidence missing in included cthinBlocks operations");                
+                }
+                this.logEmitter.log("Proved ssacHash:" + sacManifestJson.ssacHash  + " exists in cthinBlock");                                                    
 
-            this.logEmitter.log("Proving sacMerklePath");
-            evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, incManifestJson.sacHash, incManifestJson.sacMerklePath);
-            this.logEmitter.log("Proving ssacMerklePath");
-            evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
+                this.logEmitter.log("Proving sacMerklePath");
+                evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, incManifestJson.sacHash, incManifestJson.sacMerklePath);
+                this.logEmitter.log("Proving ssacMerklePath");
+                evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
+            } finally {
+                this.logEmitter.deindent();
+            }                
             this.logEmitter.log("Proved CThinBlock for cnum:"+ cnum);                            
         }
     },
@@ -318,45 +331,55 @@ module.exports = {
     proveAttachments: function(cnum, changeset, zip) {
         this.logEmitter.log("Proving attachments for cnum:"+ cnum);                            
         if((typeof changeset.attachments)!="undefined") {
-            for(var attachment of changeset.attachments) {
-                cpJsonUtils.ensureJsonHas("1020", attachment, "attachmentLeafHash","attachmentNum", "title")
-                this.logEmitter.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum);
-                var attachmentLeafHash = attachment.attachmentLeafHash;
-                var extension = path.extname(attachment.title);
-                var attachmentFilePath = "attachments/" + attachmentLeafHash + extension;
-                evidenceUtils.ensureFileExists("1003", zip.entries(), attachmentFilePath);
-                var attachmentData = zip.entryDataSync(attachmentFilePath);
-                evidenceUtils.ensureHashMatches(this.logEmitter, "1003", attachmentData, attachmentLeafHash, "AttachmentLeafHash for cnum:" + cnum+ ", attachmentNum:" + attachment.attachmentNum);
-            }
+            try {
+                this.logEmitter.indent();            
+                for(var attachment of changeset.attachments) {
+                    cpJsonUtils.ensureJsonHas("1020", attachment, "attachmentLeafHash","attachmentNum", "title")
+                    this.logEmitter.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum);
+                    var attachmentLeafHash = attachment.attachmentLeafHash;
+                    var extension = path.extname(attachment.title);
+                    var attachmentFilePath = "attachments/" + attachmentLeafHash + extension;
+                    evidenceUtils.ensureFileExists("1003", zip.entries(), attachmentFilePath);
+                    var attachmentData = zip.entryDataSync(attachmentFilePath);
+                    evidenceUtils.ensureHashMatches(this.logEmitter, "1003", attachmentData, attachmentLeafHash, "AttachmentLeafHash for cnum:" + cnum+ ", attachmentNum:" + attachment.attachmentNum);
+                }
+            } finally {
+                this.logEmitter.deindent();
+            } 
         }   
         this.logEmitter.log("Proved attachments for cnum:"+ cnum);                            
     },
 
     proveSsac : function(cnum, ssacHash, zip) {
         this.logEmitter.log("Proving ssac for cnum:"+ cnum);                            
-        evidenceUtils.ensureFileExists("1004", zip.entries(), Constants.default.ssacManifestJsonFileName)
-        var ssacData = zip.entryDataSync(Constants.default.ssacManifestJsonFileName);
-        evidenceUtils.ensureHashMatches(this.logEmitter, "1004", ssacData, ssacHash, "ssacHash for cnum:" + cnum);
-        var ssac = cpJsonUtils.parseJson(ssacData.toString('utf-8'));
-        if((typeof ssac.sections)!="undefined") {
-            for(var section of ssac.sections) {
-                cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash","type", "title")
-                var sectionLeafHash = section.sectionLeafHash;
-                if(!this.sectionsHashesSeen.has(sectionLeafHash)) {
-                    var extension = ".txt"
-                    if(section.type=="file") {
-                        cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName")
-                        extension = path.extname(section.fileSectionOriginalName);
-                    } 
-                    
-                    var sectionFilePath = "sections/" + sectionLeafHash + extension;
-                    evidenceUtils.ensureFileExists("1002", zip.entries(), sectionFilePath);
-                    var sectionData = zip.entryDataSync(sectionFilePath);
-                    evidenceUtils.ensureHashMatches(this.logEmitter, "1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
-                    this.sectionsHashesSeen.add(sectionLeafHash);
+        try {
+            this.logEmitter.indent();            
+            evidenceUtils.ensureFileExists("1004", zip.entries(), Constants.default.ssacManifestJsonFileName)
+            var ssacData = zip.entryDataSync(Constants.default.ssacManifestJsonFileName);
+            evidenceUtils.ensureHashMatches(this.logEmitter, "1004", ssacData, ssacHash, "ssacHash for cnum:" + cnum);
+            var ssac = cpJsonUtils.parseJson(ssacData.toString('utf-8'));
+            if((typeof ssac.sections)!="undefined") {
+                for(var section of ssac.sections) {
+                    cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash","type", "title")
+                    var sectionLeafHash = section.sectionLeafHash;
+                    if(!this.sectionsHashesSeen.has(sectionLeafHash)) {
+                        var extension = ".txt"
+                        if(section.type=="file") {
+                            cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName")
+                            extension = path.extname(section.fileSectionOriginalName);
+                        } 
+                        
+                        var sectionFilePath = "sections/" + sectionLeafHash + extension;
+                        evidenceUtils.ensureFileExists("1002", zip.entries(), sectionFilePath);
+                        var sectionData = zip.entryDataSync(sectionFilePath);
+                        evidenceUtils.ensureHashMatches(this.logEmitter, "1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
+                        this.sectionsHashesSeen.add(sectionLeafHash);
+                    }
                 }
             }
-        }
+        } finally {
+            this.logEmitter.deindent();
+        }                
         this.logEmitter.log("Proved ssac for cnum:"+ cnum);                            
     }
 };

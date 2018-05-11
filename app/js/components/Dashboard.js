@@ -23,7 +23,9 @@ import prover from "./../../prove/app/prove";
 var ConfigImages = require("./../../config/images.js");
 var Constants = require("./../../config/constants.js");
 
-function LogEmitter() {};
+function LogEmitter() {
+    this.indentTimes = 0;    
+};
 
 @observer
 export default class AppRoutes extends React.Component {
@@ -183,14 +185,23 @@ export default class AppRoutes extends React.Component {
                 // console.error(msg);
 
                 if(this.state.log == "")
-                    this.setState({log: msg})
+                    this.setState({log: this.getPaddedMsg(msg)})
                 else
-                    this.setState({log: this.state.log+"<br />"+msg})
+                    this.setState({log: this.state.log+"<br />"+ this.getPaddedMsg(msg)})
             },
             error: (err) => {
                 // console.error(err);
                 this.state.errLog.push(err);
-            }
+            },
+            getPaddedMsg : function(msg) {
+                return "-".repeat(this.indentTimes*3) + msg
+            },
+            indent: function() {
+                this.indentTimes++;
+            },
+            deindent: function() {
+                this.indentTimes--;
+            }            
         };
         this.logEmitter = new LogEmitter();
     }
