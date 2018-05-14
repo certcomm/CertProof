@@ -15,16 +15,10 @@ class RenderComponents extends React.Component {
 	render() {
         switch(this.type){
             case "comment":
-                return <div>
-                    <div>Warning: The evidence file contains information that is best rendered with the latest version of CertProof. Do you want to go ahead anyway? [Yes|No]</div>
-                    <Comment comment={this.json} data={this.data} store={this.store} />
-                </div>
+                return <Comment comment={this.json} data={this.data} store={this.store} />
             break;
             case "section":
-                return <div>
-                    <div>Warning: The evidence file contains information that is best rendered with the latest version of CertProof. Do you want to go ahead anyway? [Yes|No]</div>
-                    {/* <Section comment={this.json} data={this.data} store={this.store} /> */}
-                </div>
+                // return <Section comment={this.json} data={this.data} store={this.store} />
             break;
         }
 	}

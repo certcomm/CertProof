@@ -4,6 +4,7 @@ const appPath = remote.app.getAppPath();
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
 export default {
+	supportedSchema: 10,
 	appPath: appPath,
 	userDataPath: userDataPath,
 	evidenceFolder: userDataPath+"/uploads/",

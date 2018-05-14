@@ -90,6 +90,9 @@ a.breadcrumb {
 .btn-success {
   background-color: #1C84C6; border-color: #1C84C6; color: #FFFFFF;
 }
+.btn-danger {
+  background-color: #EF5352; border-color: #EF5352; color: #FFFFFF;
+}
 .btn-default {
   background: #FFFFFF; border: 1px solid #E7EAEC; color: inherit;
 }
@@ -150,7 +153,7 @@ a.breadcrumb {
 	width: 59%; float: right; border-left:1px solid #EFEFEF;
 }
 .panel-container .xpanel-modal {
-  width: 200px; display: inline-block; padding: 0 0 0 14px; box-sizing: border-box; position: relative; height: calc(100vh - 178px);
+  width: 200px; float: left; padding: 0 0 0 14px; box-sizing: border-box; position: relative; height: calc(100vh - 178px);
 }
 .panel-container .ypanel-modal {
   height: calc(100vh - 200px); width: calc(100vw - 340px); display: inline-block; border-left:1px solid #EFEFEF;
@@ -373,7 +376,7 @@ a.breadcrumb {
 	position: relative; height: calc(100vh - 180px);
 }
 .pretty-json-2, .pretty-json-3, .pretty-json-4, .pretty-json-5 {
-	position: relative; height: calc(100vh - 220px);
+	position: relative; height: calc(100vh - 225px);
 }
 .pretty-json pre {
   background-color: #F8F8FF; border: 1px solid #EFEFEF; margin: 0 0px 0 10px; padding: 10px 20px; word-wrap: break-word; white-space: pre-wrap;

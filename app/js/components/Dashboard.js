@@ -178,19 +178,17 @@ export default class AppRoutes extends React.Component {
     }
 
     componentDidMount() {
+		var me = this;
         this.copyEvidence();
 
         LogEmitter.prototype = {
-            log: (msg) => {
-                // console.error(msg);
-
-                if(this.state.log == "")
-                    this.setState({log: this.getPaddedMsg(msg)})
+            log: function(msg) {
+                if(me.state.log == "")
+                    me.setState({log: this.getPaddedMsg(msg)})
                 else
-                    this.setState({log: this.state.log+"<br />"+ this.getPaddedMsg(msg)})
+                    me.setState({log: me.state.log+"<br />"+ this.getPaddedMsg(msg)})
             },
             error: (err) => {
-                // console.error(err);
                 this.state.errLog.push(err);
             },
             getPaddedMsg : function(msg) {
@@ -210,34 +208,22 @@ export default class AppRoutes extends React.Component {
         this.implementScrollOnModal();
     }
 
+    createPScroll(el){
+        var element =  document.getElementsByClassName(el);
+        if ( (element && element.length > 0) && (!$(element[0]).hasClass('ps')) ) {
+            const ps = new PerfectScrollbar('.'+el);
+            ps.update()
+        }
+    }
+
     implementScrollOnModal(){
         setTimeout(()=>{
-            var element =  document.getElementsByClassName('xpanel-modal');
-            if (element && element.length > 0) {
-                new PerfectScrollbar('.xpanel-modal').update();
-            }
-
-            var element1 =  document.getElementsByClassName('pretty-json-1');
-            if (element1 && element1.length > 0) {
-                new PerfectScrollbar('.pretty-json-1').update();
-            }
-
-            var element2 =  document.getElementsByClassName('pretty-json-2');
-            if (element2 && element2.length > 0) {
-                new PerfectScrollbar('.pretty-json-2').update();
-            }
-            var element3 =  document.getElementsByClassName('pretty-json-3');
-            if (element3 && element3.length > 0) {
-                new PerfectScrollbar('.pretty-json-3').update();
-            }
-            var element4 =  document.getElementsByClassName('pretty-json-4');
-            if (element4 && element4.length > 0) {
-                new PerfectScrollbar('.pretty-json-4').update();
-            }
-            var element5 =  document.getElementsByClassName('pretty-json-5');
-            if (element5 && element5.length > 0) {
-                new PerfectScrollbar('.pretty-json-5').update();
-            }
+            this.createPScroll("xpanel-modal", 1);
+            this.createPScroll("pretty-json-1", 2);
+            this.createPScroll("pretty-json-2", 3);
+            this.createPScroll("pretty-json-3", 4);
+            this.createPScroll("pretty-json-4", 5);
+            this.createPScroll("pretty-json-5", 6);
         }, 50);
     }
     
@@ -840,7 +826,7 @@ export default class AppRoutes extends React.Component {
                                 <div className="advanced-sub-container hide-me hidden">
                                     <div className="info-label">CertProof App Version</div>
                                     <div className="fl bold"> : </div>
-                                    <div className="info-value">1.0.10</div>
+                                    <div className="info-value">1.0.12</div>
                                     
                                     <div className="clear"></div>
                                     <div className="info-label">Schema Version</div>
@@ -911,7 +897,7 @@ export default class AppRoutes extends React.Component {
                     </div>
                 </div>
                 <div className="ypanel">
-                    {<Thread key={"thread-"+err} data={data} err={err} />}
+                    {<Thread key={"thread-"+err} data={data} err={err} parentStore={this.store} />}
                 </div>
                 {this.configSectionModal()}
             </div>

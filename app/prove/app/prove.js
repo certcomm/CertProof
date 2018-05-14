@@ -55,7 +55,7 @@ module.exports = {
                 return;
             }
             if(this.entries[Constants.default.routeEvidenceJsonFileName]) {
-                this.evidenceData = zip.entryDataSync(Constants.default.routeEvidenceJsonFileName).toString('utf-8');
+               this.evidenceData = zip.entryDataSync(Constants.default.routeEvidenceJsonFileName).toString('utf-8');
                resolve(outer.proveEvidence({
                 extractedEvidenceFolder:extractedEvidenceFolder,
                 entries: this.entries,

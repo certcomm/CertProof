@@ -9,6 +9,8 @@ import Writers from "./Writers";
 import Sections from "./Sections";
 import Comments from "./Comments";
 
+var Constants = require("./../../../../../config/constants.js");
+
 const {shell} = window.require('electron');
 
 @observer
@@ -16,9 +18,15 @@ export default class Thread extends React.Component {
 	constructor(props) {
         super(props);
 
+        this.parentStore = props.parentStore;
+
         this.store = ThreadStore;
         this.data = props.data;
         this.err = props.err;
+
+        this.state = {
+            renderView: false
+        }
     }
     
     componentWillMount() {
@@ -126,6 +134,15 @@ export default class Thread extends React.Component {
         }
     }
 
+    renderView(){
+        this.setState({renderView: true});
+    }
+
+    navigateToUploadEvidence(){
+        this.parentStore.setData({});
+        this.parentStore.setUploadedEvidenceFlag(false)
+    }
+    
     renderThread(){
         var data = this.store.getData(),
             err = this.err,
@@ -211,15 +228,30 @@ export default class Thread extends React.Component {
             </div>
         }
 
-        return (
-            err != "" ? (
-                <div key={Math.random()} className="blank-container">
+        if(err != ""){
+            return (
+                <div className="blank-container">
                     <div className="information-message">
                         This Evidence file could not be opened due to the following error(s):
                     </div>
                     <div className="information-danger-message">{err}</div>
                 </div>
-            ) : (
+            );
+        }else if(Constants.default.supportedSchema > headerData.sacSchemaVersion && !this.state.renderView){
+            return (
+                <div className="blank-container">
+                    <div className="information-message">
+                        Warning: The evidence file contains information that is best rendered with the latest version of CertProof.
+                    </div>
+                    <div className="information-message"> Do you want to go ahead anyway? </div>
+                    <div className="information-message">
+                        <input className="btn-primary btn btn-w-m" type="button" value="Yes" onClick={this.renderView.bind(this)} />
+                        <input className="btn-danger btn btn-w-m margin-between" type="button" value="No" onClick={this.navigateToUploadEvidence.bind(this)} />
+                    </div>
+                </div>
+            );
+        }else{
+            return (
                 <div className="thread-container">
                     {this.renderHeader(headerData)}
                     <div className="middle-container">
@@ -228,7 +260,7 @@ export default class Thread extends React.Component {
                     </div>
                 </div>
             )
-		);
+        }
     }
 
 	render() {
