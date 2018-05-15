@@ -206,6 +206,9 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+var _window$require = window.require('electron'),
+    shell = _window$require.shell;
+
 var StreamZip = window.require('node-stream-zip');
 var remote = window.require('electron').remote;
 var dialog = remote.dialog;
@@ -254,7 +257,9 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
     _createClass(AppRoutes, [{
         key: "openModal",
         value: function openModal() {
-            this.setState({ modalIsOpen: true, rawJson: this.store.getEvidenceManifestData() });
+            var rawJson = this.store.getRawJson(),
+                evidenceJson = rawJson.evidenceJson;
+            this.setState({ modalIsOpen: true, rawJson: evidenceJson });
         }
     }, {
         key: "closeModal",
@@ -814,6 +819,8 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
                 // if templateParent property exist in changeset but not in created json then it should add in object
                 if (jsonData.templateParent && changesetJson.header && !changesetJson.header.templateParent) changesetJson.header.templateParent = jsonData.templateParent;
+
+                if (changesetJson.header) changesetJson.header.firstSacSchemaVersion = jsonData.sacSchemaVersion;
             }
             return changesetJson;
         }
@@ -1079,6 +1086,11 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
             });
         }
     }, {
+        key: "navigateToLiveThread",
+        value: function navigateToLiveThread(link) {
+            shell.openExternal(link);
+        }
+    }, {
         key: "render",
         value: function render() {
             var storeFileName = this.store.getFileName(),
@@ -1178,7 +1190,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.10"
+                                        "1.0.12"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1212,7 +1224,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         { className: "info-value" },
                                         _react2.default.createElement(
                                             "a",
-                                            { className: "link", href: ttnURL },
+                                            { className: "link", onClick: this.navigateToLiveThread.bind(this, ttnURL) },
                                             ttnURL
                                         )
                                     ),
@@ -2754,9 +2766,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var Constants = require("./../../../../../config/constants.js");
 
-var _window$require = window.require('electron'),
-    shell = _window$require.shell;
-
 var Thread = (0, _mobxReact.observer)(_class = function (_React$Component) {
     _inherits(Thread, _React$Component);
 
@@ -3009,7 +3018,7 @@ var Thread = (0, _mobxReact.observer)(_class = function (_React$Component) {
                         err
                     )
                 );
-            } else if (Constants.default.supportedSchema > headerData.sacSchemaVersion && !this.state.renderView) {
+            } else if ((Constants.default.supportedSchema > headerData.sacSchemaVersion || Constants.default.supportedSchema > headerData.firstSacSchemaVersion) && !this.state.renderView) {
                 return _react2.default.createElement(
                     'div',
                     { className: 'blank-container' },
@@ -4097,6 +4106,7 @@ module.exports = {
 "use strict";
 
 var Constants = require("./config/constants.js");
+var errorMessages = require("./config/errorMessages.js");
 var cpJsonUtils = require("./util/cpJsonUtils.js");
 var evidenceUtils = require("./util/evidenceUtils.js");
 
@@ -4700,7 +4710,7 @@ module.exports = {
 };
 
 
-},{"./config/constants.js":18,"./util/cpJsonUtils.js":21,"./util/evidenceUtils.js":22,"fs-extra":133,"node-stream-zip":185,"path":204}],21:[function(require,module,exports){
+},{"./config/constants.js":18,"./config/errorMessages.js":19,"./util/cpJsonUtils.js":21,"./util/evidenceUtils.js":22,"fs-extra":133,"node-stream-zip":185,"path":204}],21:[function(require,module,exports){
 "use strict";
 
 var errorMessages = require("../config/errorMessages.js");

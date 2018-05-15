@@ -11,8 +11,6 @@ import Comments from "./Comments";
 
 var Constants = require("./../../../../../config/constants.js");
 
-const {shell} = window.require('electron');
-
 @observer
 export default class Thread extends React.Component {
 	constructor(props) {
@@ -237,7 +235,7 @@ export default class Thread extends React.Component {
                     <div className="information-danger-message">{err}</div>
                 </div>
             );
-        }else if(Constants.default.supportedSchema > headerData.sacSchemaVersion && !this.state.renderView){
+        }else if( (Constants.default.supportedSchema > headerData.sacSchemaVersion || Constants.default.supportedSchema > headerData.firstSacSchemaVersion) && !this.state.renderView){
             return (
                 <div className="blank-container">
                     <div className="information-message">

@@ -3,6 +3,8 @@ import { observer } from "mobx-react";
 import moment from "moment";
 import PerfectScrollbar from 'perfect-scrollbar';
 
+const {shell} = window.require('electron');
+
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 const StreamZip = window.require('node-stream-zip');
@@ -51,7 +53,9 @@ export default class AppRoutes extends React.Component {
     }
     
     openModal() {
-        this.setState({modalIsOpen: true, rawJson: this.store.getEvidenceManifestData()});
+        var rawJson = this.store.getRawJson(),
+            evidenceJson = rawJson.evidenceJson;
+        this.setState({modalIsOpen: true, rawJson: evidenceJson});
 
     }
 
@@ -519,6 +523,8 @@ export default class AppRoutes extends React.Component {
 
             // if templateParent property exist in changeset but not in created json then it should add in object
             if(jsonData.templateParent && (changesetJson.header && !changesetJson.header.templateParent) ) changesetJson.header.templateParent = jsonData.templateParent;
+
+            if(changesetJson.header) changesetJson.header.firstSacSchemaVersion = jsonData.sacSchemaVersion;
         }
         return changesetJson;
     }
@@ -773,6 +779,10 @@ export default class AppRoutes extends React.Component {
         });
     }
 
+    navigateToLiveThread(link){
+        shell.openExternal(link);
+    }
+
 	render() {
         var storeFileName = this.store.getFileName(),
             data = this.store.getData(),
@@ -837,7 +847,7 @@ export default class AppRoutes extends React.Component {
                                     <div className="info-label">Live Thread</div>
                                     <div className="fl bold"> : </div>
                                     <div className="info-value">
-                                        <a className="link" href={ttnURL}>{ttnURL}</a>
+                                        <a className="link" onClick={this.navigateToLiveThread.bind(this, ttnURL)}>{ttnURL}</a>
                                     </div>
 
                                     <div className="clear"></div>
