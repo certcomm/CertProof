@@ -5,9 +5,9 @@ function LogEmitter() {
 };
 LogEmitter.prototype = {	
 	log: function(msg) {console.log(this.getPaddedMsg(msg));},
-	error: function(err) {console.error(this.getPaddedMsg(err));},
+	error: function(err) {console.error(err);},
 	getPaddedMsg : function(msg) {
-                return "-".repeat(this.indentTimes*3) + msg
+                return "-".repeat(this.indentTimes*3) + msg;
     },
 	indent: function() {
 		this.indentTimes++;

@@ -192,7 +192,7 @@ export default class AppRoutes extends React.Component {
                 this.state.errLog.push(err);
             },
             getPaddedMsg : function(msg) {
-                return "-".repeat(this.indentTimes*3) + msg
+                return "-".repeat(this.indentTimes*3) + msg;
             },
             indent: function() {
                 this.indentTimes++;
