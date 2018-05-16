@@ -8,4 +8,5 @@ When an evidence file is uploaded to CertProof, both the internal proof and the 
 The actual proof can be used to prove certified messages, certified responses, certified update responses, certified forwards, certified templates, certified instantiation of templates, certified read acknowledgements and certified receipt acknowledgements. The proof proves all elements of the evidence including but not limited to the identities of the parties, the content of the message, the timestamp etc. 
 
 ![CertProof Screenshot2 Alt text](/static_resources/Screenshot_2.png?raw=true "CertProof Screenshot 2") 
-![CertProof Screenshot3 Alt text](/static_resources/Screenshot_3png?raw=true "CertProof Screenshot 3")
+
+![CertProof Screenshot3 Alt text](/static_resources/Screenshot_3.png?raw=true "CertProof Screenshot 3")
