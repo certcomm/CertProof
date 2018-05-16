@@ -1,12 +1,12 @@
 module.exports = {
 	// For a single Incremental Evidence 
 	errors : {
-		"1001":"Tampering with comment should cause FAIL",
-		"1002":"Tampering with section content should cause FAIL",
-		"1003":"Tampering with attachment content should cause FAIL",
-		"1004":"SSAC does not hash to SSAC hash should cause FAIL",
-		"1005":"SAC manifest does not hash to SAC manifest hash should cause FAIL",
-		"1006":"Unsupported schema version should cause FAIL",
+		"1001":"Failure due to Tampered comment",
+		"1002":"Failure due to Tampered section content",
+		"1003":"Failure due to Tampered attachment content",
+		"1004":"SSAC does not hash to SSAC hash",
+		"1005":"SAC manifest does not hash to SAC manifest hash",
+		"1006":"Failure due to Unsupported Schema Version",
 		"1007":"Invalid JSON Structure",
 		"1008":"Unknown Thread Type",
 		"1009":"Missing Subject",
