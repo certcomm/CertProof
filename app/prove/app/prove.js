@@ -51,6 +51,7 @@ module.exports = {
         this.logEmitter = logEmitter;
         var outer = this;
         return new Promise((resolve, reject) => {
+            this.logEmitter.log("Proof Started");
             this.entries = zip.entries()
             if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)) {
                 return;

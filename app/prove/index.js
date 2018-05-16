@@ -24,8 +24,8 @@ prover.extractEvidence(logEmitter, extractedEvidenceFolder, zipFilePath)
         return prover.proveExtractedEvidenceZip(logEmitter, extractedEvidenceFolder, zip);
     })
 .then(function(response) {
-        logEmitter.log("Success!"+ response);
+        logEmitter.log("Proof Success!"+ response);
      })
 .catch(function(err) {
-        console.error("Failed!", err);
+        console.error("Proof Failed!", err);
 });
