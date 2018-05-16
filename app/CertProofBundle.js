@@ -1190,7 +1190,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.12"
+                                        "1.0.13"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -2781,7 +2781,8 @@ var Thread = (0, _mobxReact.observer)(_class = function (_React$Component) {
         _this.err = props.err;
 
         _this.state = {
-            renderView: false
+            renderView: false,
+            inCompatibleEvidence: false
         };
         return _this;
     }
@@ -2828,16 +2829,21 @@ var Thread = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     { className: 'header-container' },
                     _react2.default.createElement(
                         'div',
-                        { className: 'header-title' },
+                        { className: 'header-lhs' },
                         _react2.default.createElement(
-                            'span',
-                            null,
-                            headerData.subject
+                            'div',
+                            { className: 'header-title' },
+                            _react2.default.createElement(
+                                'span',
+                                null,
+                                headerData.subject
+                            )
                         )
                     ),
                     _react2.default.createElement(
                         'div',
                         { className: 'header-rhs' },
+                        this.state.inCompatibleEvidence === true ? _react2.default.createElement('div', { title: "Warning: The schema version is " + headerData.firstSacSchemaVersion + " and this app only supports " + Constants.default.supportedSchema + ". The thread may not render properly.", className: 'incompatible-evidence' }) : null,
                         headerData.certified && !isForwarded ? _react2.default.createElement('div', { className: 'fl tmail-certified-new-rhs', title: 'This thread is certified' }) : null,
                         headerData.ttn ? _react2.default.createElement(
                             'div',
@@ -2899,7 +2905,7 @@ var Thread = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: 'renderView',
         value: function renderView() {
-            this.setState({ renderView: true });
+            this.setState({ renderView: true, inCompatibleEvidence: true });
         }
     }, {
         key: 'navigateToUploadEvidence',
@@ -4051,12 +4057,12 @@ module.exports.default = {
 module.exports = {
 	// For a single Incremental Evidence 
 	errors: {
-		"1001": "Tampering with comment should cause FAIL",
-		"1002": "Tampering with section content should cause FAIL",
-		"1003": "Tampering with attachment content should cause FAIL",
-		"1004": "SSAC does not hash to SSAC hash should cause FAIL",
-		"1005": "SAC manifest does not hash to SAC manifest hash should cause FAIL",
-		"1006": "Unsupported schema version should cause FAIL",
+		"1001": "Failure due to Tampered comment",
+		"1002": "Failure due to Tampered section content",
+		"1003": "Failure due to Tampered attachment content",
+		"1004": "SSAC does not hash to SSAC hash",
+		"1005": "SAC manifest does not hash to SAC manifest hash",
+		"1006": "Failure due to Unsupported Schema Version",
 		"1007": "Invalid JSON Structure",
 		"1008": "Unknown Thread Type",
 		"1009": "Missing Subject",
@@ -4671,20 +4677,25 @@ module.exports = {
                     for (var _iterator10 = ssac.sections[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
                         var section = _step10.value;
 
-                        cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash", "type", "title");
-                        var sectionLeafHash = section.sectionLeafHash;
-                        if (!this.sectionsHashesSeen.has(sectionLeafHash)) {
-                            var extension = ".txt";
-                            if (section.type == "file") {
-                                cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName");
-                                extension = path.extname(section.fileSectionOriginalName);
-                            }
+                        cpJsonUtils.ensureJsonHas("1017", section, "type", "title");
+                        if (section.type == "file" && section.fileSectionState == "BOUND") {
+                            cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash");
+                        }
+                        if (section.sectionLeafHash != undefined) {
+                            var sectionLeafHash = section.sectionLeafHash;
+                            if (!this.sectionsHashesSeen.has(sectionLeafHash)) {
+                                var extension = ".txt";
+                                if (section.type == "file") {
+                                    cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName");
+                                    extension = path.extname(section.fileSectionOriginalName);
+                                }
 
-                            var sectionFilePath = "sections/" + sectionLeafHash + extension;
-                            evidenceUtils.ensureFileExists("1002", zip.entries(), sectionFilePath);
-                            var sectionData = zip.entryDataSync(sectionFilePath);
-                            evidenceUtils.ensureHashMatches(this.logEmitter, "1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
-                            this.sectionsHashesSeen.add(sectionLeafHash);
+                                var sectionFilePath = "sections/" + sectionLeafHash + extension;
+                                evidenceUtils.ensureFileExists("1002", zip.entries(), sectionFilePath);
+                                var sectionData = zip.entryDataSync(sectionFilePath);
+                                evidenceUtils.ensureHashMatches(this.logEmitter, "1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
+                                this.sectionsHashesSeen.add(sectionLeafHash);
+                            }
                         }
                     }
                 } catch (err) {

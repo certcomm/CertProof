@@ -73,8 +73,14 @@ div.writers-count-wrapper .h-inner-wrapper {
 .thread-container div.header-container {
 	/*  */
 }
+.thread-container div.header-container .header-lhs {
+	float: left; padding: 0px 10px 0px 6px; max-width: 70%; width: 70%;
+}
 .thread-container div.header-container .header-title {
-	float: left; color: #2F4050; padding: 0px 10px 0px 6px; font-size: 20px !important; font-weight: 600 !important; max-width: 70%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+	float: left; color: #2F4050; font-size: 20px !important; font-weight: 600 !important; max-width: 67%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.thread-container div.header-container .incompatible-evidence {
+	float: left; background-color: #ffa500; width: 18px; height: 18px; display: inline-block; border-radius: 4px; margin-right: 4px; margin-top: 4px;
 }
 .thread-container div.header-rhs {
 	float: right; padding-right: 10px;

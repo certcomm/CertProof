@@ -23,7 +23,8 @@ export default class Thread extends React.Component {
         this.err = props.err;
 
         this.state = {
-            renderView: false
+            renderView: false,
+            inCompatibleEvidence: false
         }
     }
     
@@ -61,10 +62,15 @@ export default class Thread extends React.Component {
         return(
             <div className="top-container">
                 <div className="header-container">
-                    <div className="header-title">
-                        <span>{headerData.subject}</span>
+                    <div className="header-lhs">
+                        <div className="header-title"><span>{headerData.subject}</span></div>
                     </div>
                     <div className="header-rhs">
+                        {
+                            this.state.inCompatibleEvidence === true ? (
+                                <div title={"Warning: The schema version is "+headerData.firstSacSchemaVersion+" and this app only supports "+Constants.default.supportedSchema+". The thread may not render properly."} className="incompatible-evidence"></div>
+                            ) : null
+                        }
                         {
                             headerData.certified && !isForwarded ? (
                                 <div className="fl tmail-certified-new-rhs" title="This thread is certified"></div>
@@ -133,7 +139,7 @@ export default class Thread extends React.Component {
     }
 
     renderView(){
-        this.setState({renderView: true});
+        this.setState({renderView: true, inCompatibleEvidence: true});
     }
 
     navigateToUploadEvidence(){
