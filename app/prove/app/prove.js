@@ -360,20 +360,25 @@ module.exports = {
             var ssac = cpJsonUtils.parseJson(ssacData.toString('utf-8'));
             if((typeof ssac.sections)!="undefined") {
                 for(var section of ssac.sections) {
-                    cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash","type", "title")
-                    var sectionLeafHash = section.sectionLeafHash;
-                    if(!this.sectionsHashesSeen.has(sectionLeafHash)) {
-                        var extension = ".txt"
-                        if(section.type=="file") {
-                            cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName")
-                            extension = path.extname(section.fileSectionOriginalName);
-                        } 
-                        
-                        var sectionFilePath = "sections/" + sectionLeafHash + extension;
-                        evidenceUtils.ensureFileExists("1002", zip.entries(), sectionFilePath);
-                        var sectionData = zip.entryDataSync(sectionFilePath);
-                        evidenceUtils.ensureHashMatches(this.logEmitter, "1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
-                        this.sectionsHashesSeen.add(sectionLeafHash);
+                    cpJsonUtils.ensureJsonHas("1017", section, "type", "title")
+                    if(section.type == "file" && section.fileSectionState == "BOUND") {
+                        cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash")                        
+                    }
+                    if(section.sectionLeafHash!=undefined) {
+                        var sectionLeafHash = section.sectionLeafHash;
+                        if(!this.sectionsHashesSeen.has(sectionLeafHash)) {
+                            var extension = ".txt"
+                            if(section.type=="file") {
+                                cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName")
+                                extension = path.extname(section.fileSectionOriginalName);
+                            } 
+                            
+                            var sectionFilePath = "sections/" + sectionLeafHash + extension;
+                            evidenceUtils.ensureFileExists("1002", zip.entries(), sectionFilePath);
+                            var sectionData = zip.entryDataSync(sectionFilePath);
+                            evidenceUtils.ensureHashMatches(this.logEmitter, "1002", sectionData, sectionLeafHash, "SectionLeafHash for cnum:" + cnum + ", title:" + section.title);
+                            this.sectionsHashesSeen.add(sectionLeafHash);
+                        }
                     }
                 }
             }
