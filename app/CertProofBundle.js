@@ -1190,7 +1190,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.13"
+                                        "1.0.14"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -2843,7 +2843,11 @@ var Thread = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     _react2.default.createElement(
                         'div',
                         { className: 'header-rhs' },
-                        this.state.inCompatibleEvidence === true ? _react2.default.createElement('div', { title: "Warning: The schema version is " + headerData.firstSacSchemaVersion + " and this app only supports " + Constants.default.supportedSchema + ". The thread may not render properly.", className: 'incompatible-evidence' }) : null,
+                        this.state.inCompatibleEvidence === true ? _react2.default.createElement(
+                            'div',
+                            { title: "Warning: The schema version is " + headerData.firstSacSchemaVersion + " and this app only supports " + Constants.default.supportedSchema + ". The thread may not render properly. You should use the latest version of this CertProof App.", className: 'incompatible-evidence' },
+                            'Unsupported Schema'
+                        ) : null,
                         headerData.certified && !isForwarded ? _react2.default.createElement('div', { className: 'fl tmail-certified-new-rhs', title: 'This thread is certified' }) : null,
                         headerData.ttn ? _react2.default.createElement(
                             'div',
@@ -4168,6 +4172,7 @@ module.exports = {
         this.logEmitter = logEmitter;
         var outer = this;
         return new Promise(function (resolve, reject) {
+            _this2.logEmitter.log("Proof Started");
             _this2.entries = zip.entries();
             if (evidenceUtils.rejectIfErrorFileExists(reject, _this2.entries)) {
                 return;

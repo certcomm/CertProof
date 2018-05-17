@@ -1,7 +1,7 @@
 {
 	"name": "certproof",
 	"productName": "CertProof",
-	"version": "1.0.13",
+	"version": "1.0.14",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {

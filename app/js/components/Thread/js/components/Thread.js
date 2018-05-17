@@ -68,7 +68,7 @@ export default class Thread extends React.Component {
                     <div className="header-rhs">
                         {
                             this.state.inCompatibleEvidence === true ? (
-                                <div title={"Warning: The schema version is "+headerData.firstSacSchemaVersion+" and this app only supports "+Constants.default.supportedSchema+". The thread may not render properly."} className="incompatible-evidence"></div>
+                                <div title={"Warning: The schema version is "+headerData.firstSacSchemaVersion+" and this app only supports "+Constants.default.supportedSchema+". The thread may not render properly. You should use the latest version of this CertProof App."} className="incompatible-evidence">Unsupported Schema</div>
                             ) : null
                         }
                         {
