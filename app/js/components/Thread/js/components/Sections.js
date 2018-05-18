@@ -74,12 +74,15 @@ export default class Sections extends React.Component {
 
         if(section.type == "rich_text"){
             sectionHTML = <div className="reset-css comment-text" dangerouslySetInnerHTML={{__html: section.sectionContent}} />
-        }else if(section.type == "file"){
+        }else if(section.type == "file" && section.fileSectionState == "BOUND"){
             modalCSS = customStylesForFile;
             sectionHTML = <div className="reset-css comment-text">
                 <img src={"data:application/octet-stream;charset=utf-16le;base64," + section.sectionContent} />
             </div>
             downloadBtnHTML = <div onClick={this.downloadFile.bind(this, section.fileSectionOriginalName, section.sectionContent)} className="fr download-s"></div>;
+        }else if(section.type == "file" && section.fileSectionState == "UNBOUND"){
+            modalCSS = customStylesForFile;
+            sectionHTML = <div className="reset-css comment-text" dangerouslySetInnerHTML={{__html: section.sectionContent}} />
         }else if(section.type == "form"){
             setTimeout(() => {
                 Form.getFormSection('modal-content-container', 'modal-content-container', JSON.parse(section.sectionContent), "read", false);
@@ -385,9 +388,16 @@ export default class Sections extends React.Component {
 
         var bufferData = null;
         zip.on('ready', () => {
-            if(section.type == 'file'){
+            if(section.type == 'file' && section.fileSectionState == "BOUND"){
                 var ext = this.bifFileName(section.fileSectionOriginalName).ext,
                     fpath = "sections/"+section.sectionLeafHash+"."+ext;
+            }else if(section.type == 'file' && section.fileSectionState == "UNBOUND"){
+                var sectionContent = "No file associated.";
+                section.sectionContent = sectionContent;
+                this.openModal(section);
+
+                zip.close();
+                return false;
             }else{
                 var fpath = "sections/"+section.sectionLeafHash+".txt";
             }

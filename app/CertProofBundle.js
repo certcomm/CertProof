@@ -1190,7 +1190,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.14"
+                                        "1.0.15"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -2128,7 +2128,7 @@ var Sections = function (_React$Component) {
 
             if (section.type == "rich_text") {
                 sectionHTML = _react2.default.createElement('div', { className: 'reset-css comment-text', dangerouslySetInnerHTML: { __html: section.sectionContent } });
-            } else if (section.type == "file") {
+            } else if (section.type == "file" && section.fileSectionState == "BOUND") {
                 modalCSS = customStylesForFile;
                 sectionHTML = _react2.default.createElement(
                     'div',
@@ -2136,6 +2136,9 @@ var Sections = function (_React$Component) {
                     _react2.default.createElement('img', { src: "data:application/octet-stream;charset=utf-16le;base64," + section.sectionContent })
                 );
                 downloadBtnHTML = _react2.default.createElement('div', { onClick: this.downloadFile.bind(this, section.fileSectionOriginalName, section.sectionContent), className: 'fr download-s' });
+            } else if (section.type == "file" && section.fileSectionState == "UNBOUND") {
+                modalCSS = customStylesForFile;
+                sectionHTML = _react2.default.createElement('div', { className: 'reset-css comment-text', dangerouslySetInnerHTML: { __html: section.sectionContent } });
             } else if (section.type == "form") {
                 setTimeout(function () {
                     Form.getFormSection('modal-content-container', 'modal-content-container', JSON.parse(section.sectionContent), "read", false);
@@ -2464,9 +2467,16 @@ var Sections = function (_React$Component) {
 
             var bufferData = null;
             zip.on('ready', function () {
-                if (section.type == 'file') {
+                if (section.type == 'file' && section.fileSectionState == "BOUND") {
                     var ext = _this2.bifFileName(section.fileSectionOriginalName).ext,
                         fpath = "sections/" + section.sectionLeafHash + "." + ext;
+                } else if (section.type == 'file' && section.fileSectionState == "UNBOUND") {
+                    var sectionContent = "No file associated.";
+                    section.sectionContent = sectionContent;
+                    _this2.openModal(section);
+
+                    zip.close();
+                    return false;
                 } else {
                     var fpath = "sections/" + section.sectionLeafHash + ".txt";
                 }
