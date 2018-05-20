@@ -28,3 +28,6 @@ deploy:
     secure: OnTqF98RecRT7q6J9WVXhbqJG0kLis8FAiyA4y6BoxQHvPHbt43mEXifx3kPQ5ly
   draft: false
   prerelease: false
+  force_update: true
+  on:
+    branch: master
