@@ -1,5 +1,7 @@
 {
 	"name": "certproof",
+	"homepage":"https://certcomm.io",
+	"license": "Apache-2.0",
 	"productName": "CertProof",
 	"version": "1.0.15",
 	"description": "CertProof",
@@ -119,7 +121,10 @@
 		"uglify-es": "3.2.0",
 		"watchify": "^3.10.0"
 	},
-	"author": "TMailInc",
+	"author": {
+		"name":"CertComm",
+		"email":"the.team@certcomm.io"
+	},
 	"browserify": {
 		"transform": [
 			"reactify",
