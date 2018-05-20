@@ -20,13 +20,15 @@ shallow_clone: true
 clone_depth: 1
 test_script:
   - npm run dist
+artifacts:
+- path: dist\*
 deploy:
   release: certproof-v1.0.15
   description: 'CertProof Release description'
   provider: GitHub
   auth_token:
     secure: OnTqF98RecRT7q6J9WVXhbqJG0kLis8FAiyA4y6BoxQHvPHbt43mEXifx3kPQ5ly
-  artifact: /.*\.exe/
+  artifact: dist\*
   draft: true
   prerelease: false
   force_update: true
