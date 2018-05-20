@@ -32,6 +32,12 @@
 			"perMachine": true,
 			"deleteAppDataOnUninstall": true,
 			"allowToChangeInstallationDirectory": true
+		},
+		"linux": {
+		    "target": [
+		      "AppImage",
+		      "deb"
+		    ]
 		}
 	},
 	"scripts": {
