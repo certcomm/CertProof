@@ -44,3 +44,13 @@ before_script:
 
 script:
   - npm run dist
+
+deploy:
+  provider: releases
+  api_key:
+    secure: misd0lQHeVx8tYj4wAYqbm23Zvw1Mv8scvijti8erwGSZZfLhDcx4T8kfiLCZxtXt7s3Z8HheY4cM2cK1tgE4Ef8P5B+teyqVuSpDsSkmHekuQIEuABFBd3txKiOJo3tuJ9mDVwZOhjIQ/dPe6ydOmYD4t98XJ1GXclT4xuMF1WpUdYWEut3T6Qi63P0q43Q23fpDgbC8JCpsGz458WdHv22jbWx14ucZKt82WWvJUvOyOq2+QuGBo59mwGaAEgVYZmJhTrMO0m1+1y+mosTCNJ/pKIkcwyQi3vE41z4n/oWETqzgreQIeopY977scF8k9X5rV7tJRfKNRdkIXzMophTvRYgtNC2M33unCHKa02O0Jzg5RgEE6xMD/wa4Clr2Zw3EvP9GzTyoic6j4mqjx3TTdYvvRMMK1o4oLvCTrpDOhPC697RDydxDLdKVx0laksYzUxyW+G05CTvbSLNvFo5DtHUqvZrfQo1GUy7czq9KCOXpquqFo8BopZDE6m2w1vGi8dXezVeAWM7EOEBqNshkK4yBRxgNkYuN9CUNJ/WDfdApfczBPQ/vKIpS8E3yup8+z5cuQtiqbAhGCtWzOe3GSuFGwTabioZtxqYGZ/s0i3O/iJo4QG69dTo4UshLLMiflJeAxczGhXtwUr/P9ASyI/qNUG8a9B8jJNUfBU=
+  file: dist/*
+  skip_cleanup: true
+  overwrite: true
+  on:
+    branch: master
