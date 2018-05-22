@@ -25,7 +25,7 @@ The screenshot below shows a proof that failed and so the user can assume that t
 ![CertProof Screenshot3 Alt text](/static_resources/Screenshot_3.png?raw=true "CertProof Screenshot 3")
 
 # The Evidence for a Certified Operation
-The Evidence for a Certified Operation is the input to the CertProof app and is required in order to prove that a certified thread made up of one or more certified operations has not been tampered with. The Evidence consists of three parts, one of which is confidential and two of which are public. The end user (*transacting party*) only deals directly with the confidential evidence file.
+The Evidence for a Certified Operation is the input to the CertProof app and is required in order to prove that a certified thread made up of one or more certified operations has not been tampered with. The Evidence consists of three parts, one of which is confidential and two of which are public. The end user (*transacting party*) only deals directly with the confidential evidence file (CCEF).
 
 ## CertComm Confidential Evidence File (CCEF)
 The first piece of evidence is the CertComm Confidential Evidence File. As the name suggests, this part of the evidence is **confidential** and is only distributed by the Governor to the parties to the thread. The end user (*transacting party*) needs to upload this file to CertProof in order to perform the proof. The file is a ZIP file in the CCEF format.
@@ -37,7 +37,7 @@ CertComm Layer 2 Evidence Files (CL2EF) consist of File(s) corresponding to the 
 A key element of CertComm (and the CertProof App) is that they produce and require evidence in the form of "anchors" to be written to the Blockchain. These anchors are governed by Smart Contracts. An Adaptor pattern is used to support multiple Blockchains. Currently the **Ethereum** Blockchain is supported, but other Blockchains will be supported in the future as well. The anchor is **public** information. The end user (*transacting party*) does not need to deal directly with this part of the evidence.
 
 # How to Get the CertProof App
-There are two ways to get the CertProof App. You can directly download the binary installers (available for Windows and Mac) or you can build an installer from this Github source. The former is more convenient. The latter is recommended for maximimum security. Note that the CertProof App is an *Electron* based app.
+There are two ways to get the CertProof App. You can directly download the binary installers (available for Windows and Mac) or you can build an installer from this Github source. The former is more convenient. The latter is recommended for maximimum security. Note that the CertProof App is a Javascript app built using *Electron*, *ReactJS* and *MobX*.
 
 ## Download the Installer
 
