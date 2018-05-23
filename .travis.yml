@@ -52,6 +52,9 @@ deploy:
   file_glob: true
   file: dist/*
   skip_cleanup: true
-  overwrite: true
+  overwrite: true,
+  name: "certproof-mac-linux-latest",
+  body: "CertProof mac and linux latest release",
+  draft: true,
   on:
     branch: master
