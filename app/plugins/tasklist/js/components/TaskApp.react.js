@@ -292,9 +292,9 @@ var ShowOpenTaskToggle = createReactClass({  // hide accepted and nla
 	render: function(){
 		var disabled = false;
 		var hasModifiedTasks = false;
-		if(this.props.items.length < 2) {
-			disabled = true;
-		}
+		//if(this.props.items.length < 2) {
+		//	disabled = true;
+		//}
 		if(this.props.items.length <= 0) {
 			return null;
 		} else {

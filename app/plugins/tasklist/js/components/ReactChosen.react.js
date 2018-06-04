@@ -8,6 +8,12 @@ var Chosen = createReactClass({
 		// chosen doesn't refresh the options by itself, babysit it
 		$(ReactDOM.findDOMNode(this.refs.select)).trigger('chosen:updated');
 	},
+	handleChange: function(a, b, c) {
+		// force the update makes it so that we reset chosen to whatever
+		// controlled value the parent dictated
+		this.forceUpdate();
+		this.props.onChange && this.props.onChange(a, b, c);
+	},
 	componentDidMount: function() {
 		var props = this.props;
 		var select = $(ReactDOM.findDOMNode(this.refs.select));

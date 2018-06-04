@@ -30,7 +30,7 @@ function LogEmitter() {
 };
 
 @observer
-export default class AppRoutes extends React.Component {
+export default class Dashboard extends React.Component {
 	constructor(props) {
         super(props);
 
@@ -674,7 +674,8 @@ export default class AppRoutes extends React.Component {
                 this.readEvidence(filename, filepath);
             });
             source.on('error', (err) => {
-                console.log("Unable to copy file", err);
+                console.log("Unable to copy file.", err);
+                this.store.setError(" "+ err);
             });
         }else{
             // call function to read evidence
@@ -836,7 +837,7 @@ export default class AppRoutes extends React.Component {
                                 <div className="advanced-sub-container hide-me hidden">
                                     <div className="info-label">CertProof App Version</div>
                                     <div className="fl bold"> : </div>
-                                    <div className="info-value">1.0.15</div>
+                                    <div className="info-value">1.0.16</div>
                                     
                                     <div className="clear"></div>
                                     <div className="info-label">Schema Version</div>

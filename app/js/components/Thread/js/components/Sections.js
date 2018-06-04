@@ -51,11 +51,13 @@ export default class Sections extends React.Component {
     }
 
     componentDidUpdate(){
-        var element =  document.getElementsByClassName('modal-content');
-        if (typeof(element) != 'undefined' && element != null && element.length > 0) {
-            const ps = new PerfectScrollbar('.modal-content');
-            ps.update();
-        }
+        setTimeout(() => {
+            var element =  document.getElementsByClassName('modal-content');
+            if (typeof(element) != 'undefined' && element != null && element.length > 0) {
+                const ps = new PerfectScrollbar('.modal-content');
+                ps.update();
+            }
+        }, 100);
     }
 
     openModal(section) {

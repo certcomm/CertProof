@@ -227,13 +227,13 @@ function LogEmitter() {
     this.indentTimes = 0;
 };
 
-var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
-    _inherits(AppRoutes, _React$Component);
+var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
+    _inherits(Dashboard, _React$Component);
 
-    function AppRoutes(props) {
-        _classCallCheck(this, AppRoutes);
+    function Dashboard(props) {
+        _classCallCheck(this, Dashboard);
 
-        var _this = _possibleConstructorReturn(this, (AppRoutes.__proto__ || Object.getPrototypeOf(AppRoutes)).call(this, props));
+        var _this = _possibleConstructorReturn(this, (Dashboard.__proto__ || Object.getPrototypeOf(Dashboard)).call(this, props));
 
         _this.store = props.certProofStore;
         _this.entries = [];
@@ -254,7 +254,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
         return _this;
     }
 
-    _createClass(AppRoutes, [{
+    _createClass(Dashboard, [{
         key: "openModal",
         value: function openModal() {
             var rawJson = this.store.getRawJson(),
@@ -983,7 +983,8 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     _this8.readEvidence(filename, filepath);
                 });
                 source.on('error', function (err) {
-                    console.log("Unable to copy file", err);
+                    console.log("Unable to copy file.", err);
+                    _this8.store.setError(" " + err);
                 });
             } else {
                 // call function to read evidence
@@ -1190,7 +1191,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.15"
+                                        "1.0.16"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1346,10 +1347,10 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
         }
     }]);
 
-    return AppRoutes;
+    return Dashboard;
 }(_react2.default.Component)) || _class;
 
-exports.default = AppRoutes;
+exports.default = Dashboard;
 
 
 },{"./../../config/constants.js":1,"./../../config/images.js":2,"./../../prove/app/prove":20,"./Thread/js/components/Thread":11,"mobx-react":179,"moment":184,"perfect-scrollbar":210,"react":"react","react-modal":235,"react-tabs":246}],5:[function(require,module,exports){
@@ -2102,11 +2103,13 @@ var Sections = function (_React$Component) {
     _createClass(Sections, [{
         key: 'componentDidUpdate',
         value: function componentDidUpdate() {
-            var element = document.getElementsByClassName('modal-content');
-            if (typeof element != 'undefined' && element != null && element.length > 0) {
-                var ps = new _perfectScrollbar2.default('.modal-content');
-                ps.update();
-            }
+            setTimeout(function () {
+                var element = document.getElementsByClassName('modal-content');
+                if (typeof element != 'undefined' && element != null && element.length > 0) {
+                    var ps = new _perfectScrollbar2.default('.modal-content');
+                    ps.update();
+                }
+            }, 100);
         }
     }, {
         key: 'openModal',

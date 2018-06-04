@@ -1,4 +1,4 @@
-require=(function(){function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s}return e})()({1:[function(require,module,exports){
+require=(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var TaskConstants = require('../constants/TaskConstants');
 // Define action methods
@@ -117,6 +117,12 @@ var Chosen = createReactClass({
 	componentDidUpdate: function() {
 		// chosen doesn't refresh the options by itself, babysit it
 		$(ReactDOM.findDOMNode(this.refs.select)).trigger('chosen:updated');
+	},
+	handleChange: function(a, b, c) {
+		// force the update makes it so that we reset chosen to whatever
+		// controlled value the parent dictated
+		this.forceUpdate();
+		this.props.onChange && this.props.onChange(a, b, c);
 	},
 	componentDidMount: function() {
 		var props = this.props;
@@ -465,9 +471,9 @@ var ShowOpenTaskToggle = createReactClass({  // hide accepted and nla
 	render: function(){
 		var disabled = false;
 		var hasModifiedTasks = false;
-		if(this.props.items.length < 2) {
-			disabled = true;
-		}
+		//if(this.props.items.length < 2) {
+		//	disabled = true;
+		//}
 		if(this.props.items.length <= 0) {
 			return null;
 		} else {
@@ -2408,7 +2414,6 @@ module.exports = keyMirror({
 	TASKS_FILTER_BY: null,
 	TASK_SLIDE_TOGGLE: null
 });
-
 },{"fbjs/lib/keyMirror":22}],11:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
@@ -2424,7 +2429,6 @@ AppDispatcher.handleAction = function(action) {
 }
 
 module.exports = AppDispatcher;
-
 },{"flux":"flux"}],12:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
@@ -8922,7 +8926,7 @@ var App = {
 		  React.createElement(TaskApp, {mode: this.data.mode, hideHeader: hideHeader, expandTask: expandTask, isDiffMode: isDiffMode, currentUser: this.currentUser ? this.currentUser : '', divId: divId, taskNum: taskNum, storeId: this.storeId, diffVersion1: diffVersion1, diffVersion2: diffVersion2, isChecklist: data.isChecklist}),
 		  document.getElementById(divId)
 		);
-		},
+	},
 	setWritersData: function(writers, favWriters, data) {
 		var duplicateValues = [];
 		var taskData = data;
