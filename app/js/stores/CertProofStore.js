@@ -42,10 +42,15 @@ export class CertProofStore {
 	}
 
 	setUploadEvidenceDetails(filename, filepath){
-		this.uploadedFileName = filename;
+		if(filename)
+			this.uploadedFileName = filename;
+		else if(filename == null)
+			this.uploadedFileName = '';
 
 		if(filepath)
 			this.uploadedFilePath = filepath;
+		else if(filepath == null)
+			this.uploadedFilePath = '';
 	}
 
 	setUploadedEvidenceFlag(isUploaded){

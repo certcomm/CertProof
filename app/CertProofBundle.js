@@ -969,33 +969,44 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
             // get file name and file apth from store
             var filename = this.store.getFileName(),
                 filepath = this.store.getFilePath(),
-                localFilepath = Constants.default.evidenceFolder + filename;
+                localFilepath = Constants.default.evidenceFolder + filename,
+                isFileExist = FileSystem.existsSync(filepath);
 
-            if (filepath) {
-                // if file path exist it means file is already exist into folder (app - reopend)
-                // copy file into our app folder directory for further functionality
-                var source = FileSystem.createReadStream(filepath);
-                var dest = FileSystem.createWriteStream(localFilepath);
+            if (isFileExist) {
+                if (filepath) {
+                    // if file path exist it means file is already exist into folder (app - reopend)
+                    // copy file into our app folder directory for further functionality
+                    var source = FileSystem.createReadStream(filepath);
+                    var dest = FileSystem.createWriteStream(localFilepath);
 
-                source.pipe(dest);
-                source.on('end', function () {
+                    source.pipe(dest);
+                    source.on('end', function () {
+                        // call function to read evidence
+                        _this8.readEvidence(filename, filepath);
+                    });
+                    source.on('error', function (err) {
+                        _this8.store.setError(" " + err);
+                    });
+                } else {
                     // call function to read evidence
-                    _this8.readEvidence(filename, filepath);
-                });
-                source.on('error', function (err) {
-                    console.log("Unable to copy file.", err);
-                    _this8.store.setError(" " + err);
-                });
+                    this.readEvidence(filename, localFilepath);
+                }
             } else {
-                // call function to read evidence
-                this.readEvidence(filename, localFilepath);
+                this.store.setError("File not found. Please upload file again.");
             }
         }
     }, {
         key: "navigateToUploadEvidence",
         value: function navigateToUploadEvidence() {
+            var isErr = this.store.getError();
+
             this.store.setData({});
             this.store.setUploadedEvidenceFlag(false);
+
+            if (isErr != "") {
+                this.store.setUploadEvidenceDetails(null, null);
+                this.store.setError('');
+            }
         }
     }, {
         key: "toggleSlider",
@@ -1158,7 +1169,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     storeFileName
                                 )
                             ),
-                            _react2.default.createElement(
+                            err == "" ? _react2.default.createElement(
                                 "div",
                                 { className: "advanced-container" },
                                 _react2.default.createElement(
@@ -1266,9 +1277,9 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         )
                                     )
                                 )
-                            )
+                            ) : null
                         ),
-                        _react2.default.createElement(
+                        err == "" ? _react2.default.createElement(
                             "div",
                             { className: "evidence-prove-container" },
                             _react2.default.createElement(
@@ -1316,7 +1327,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement("div", { className: "fr prove-failed-icon" })
                                 )
                             )
-                        ),
+                        ) : null,
                         _react2.default.createElement("div", { className: "clear" }),
                         _react2.default.createElement(
                             "div",
@@ -3810,7 +3821,6 @@ var UploadEvidence = (0, _mobxReact.observer)(_class = function (_React$Componen
         key: 'render',
         value: function render() {
             var uploadeEvidenveName = this.store.getFileName();
-
             return _react2.default.createElement(
                 'div',
                 { className: 'text-center' },
@@ -3941,9 +3951,9 @@ var CertProofStore = exports.CertProofStore = (_class = function () {
 	}, {
 		key: 'setUploadEvidenceDetails',
 		value: function setUploadEvidenceDetails(filename, filepath) {
-			this.uploadedFileName = filename;
+			if (filename) this.uploadedFileName = filename;else if (filename == null) this.uploadedFileName = '';
 
-			if (filepath) this.uploadedFilePath = filepath;
+			if (filepath) this.uploadedFilePath = filepath;else if (filepath == null) this.uploadedFilePath = '';
 		}
 	}, {
 		key: 'setUploadedEvidenceFlag',

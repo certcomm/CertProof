@@ -99,7 +99,6 @@ export default class UploadEvidence extends React.Component {
     
 	render() {
         var uploadeEvidenveName = this.store.getFileName();
-
         return (
             <div className="text-center">
                 <div className="header">

@@ -660,32 +660,43 @@ export default class Dashboard extends React.Component {
         // get file name and file apth from store
         var filename = this.store.getFileName(),
             filepath = this.store.getFilePath(),
-            localFilepath = Constants.default.evidenceFolder+filename;
+            localFilepath = Constants.default.evidenceFolder+filename,
+            isFileExist = FileSystem.existsSync(filepath);
         
-        if(filepath){
-            // if file path exist it means file is already exist into folder (app - reopend)
-            // copy file into our app folder directory for further functionality
-            var source = FileSystem.createReadStream(filepath);
-            var dest = FileSystem.createWriteStream(localFilepath);
+        if(isFileExist){
+            if(filepath){
+                // if file path exist it means file is already exist into folder (app - reopend)
+                // copy file into our app folder directory for further functionality
+                var source = FileSystem.createReadStream(filepath);
+                var dest = FileSystem.createWriteStream(localFilepath);
 
-            source.pipe(dest);
-            source.on('end', () => {
+                source.pipe(dest);
+                source.on('end', () => {
+                    // call function to read evidence
+                    this.readEvidence(filename, filepath);
+                });
+                source.on('error', (err) => {
+                    this.store.setError(" "+ err);
+                });
+            }else{
                 // call function to read evidence
-                this.readEvidence(filename, filepath);
-            });
-            source.on('error', (err) => {
-                console.log("Unable to copy file.", err);
-                this.store.setError(" "+ err);
-            });
+                this.readEvidence(filename, localFilepath);
+            }
         }else{
-            // call function to read evidence
-            this.readEvidence(filename, localFilepath);
+            this.store.setError("File not found. Please upload file again.");
         }
     }
 
     navigateToUploadEvidence(){
+        var isErr = this.store.getError();
+
         this.store.setData({});
         this.store.setUploadedEvidenceFlag(false)
+
+        if(isErr != ""){
+            this.store.setUploadEvidenceDetails(null, null);
+            this.store.setError('')
+        }
     }
     
     toggleSlider(el, e){
@@ -828,69 +839,77 @@ export default class Dashboard extends React.Component {
                             <div className="xpanel-info-sub-container" title={"Current Evidence File: "+storeFileName}>
                                 <span className="zip-file-name">{storeFileName}</span>
                             </div>
-
-                            <div className="advanced-container">
-                                <div className="more">
-                                    <div className="col fancy" onClick={this.toggleSlider.bind(this, "hide-me")}><span>More Details</span></div>
-                                </div>
-                                <div className="clear" />
-                                <div className="advanced-sub-container hide-me hidden">
-                                    <div className="info-label">CertProof App Version</div>
-                                    <div className="fl bold"> : </div>
-                                    <div className="info-value">1.0.16</div>
-                                    
-                                    <div className="clear"></div>
-                                    <div className="info-label">Schema Version</div>
-                                    <div className="fl bold"> : </div>
-                                    <div className="info-value">Inc-10</div>
-                                    
-                                    <div className="clear"></div>
-                                    <div className="info-label">Live Thread</div>
-                                    <div className="fl bold"> : </div>
-                                    <div className="info-value">
-                                        <a className="link" onClick={this.navigateToLiveThread.bind(this, ttnURL)}>{ttnURL}</a>
+                            
+                            {
+                                err == "" ? (
+                                    <div className="advanced-container">
+                                        <div className="more">
+                                            <div className="col fancy" onClick={this.toggleSlider.bind(this, "hide-me")}><span>More Details</span></div>
+                                        </div>
+                                        <div className="clear" />
+                                        <div className="advanced-sub-container hide-me hidden">
+                                            <div className="info-label">CertProof App Version</div>
+                                            <div className="fl bold"> : </div>
+                                            <div className="info-value">1.0.16</div>
+                                            
+                                            <div className="clear"></div>
+                                            <div className="info-label">Schema Version</div>
+                                            <div className="fl bold"> : </div>
+                                            <div className="info-value">Inc-10</div>
+                                            
+                                            <div className="clear"></div>
+                                            <div className="info-label">Live Thread</div>
+                                            <div className="fl bold"> : </div>
+                                            <div className="info-value">
+                                                <a className="link" onClick={this.navigateToLiveThread.bind(this, ttnURL)}>{ttnURL}</a>
+                                            </div>
+        
+                                            <div className="clear"></div>
+                                            <div className="info-label">CertComm global TTN</div>
+                                            <div className="fl bold"> : </div>
+                                            <div className="info-value">{ttnGlobal}</div>
+        
+                                            <div className="clear"></div>
+                                            <div className="info-label">Raw Evidence</div>
+                                            <div className="fl bold"> : </div>
+                                            <div className="info-value"><a className="link" onClick={this.openModal}>View</a></div>
+                                        </div>
                                     </div>
-
-                                    <div className="clear"></div>
-                                    <div className="info-label">CertComm global TTN</div>
-                                    <div className="fl bold"> : </div>
-                                    <div className="info-value">{ttnGlobal}</div>
-
-                                    <div className="clear"></div>
-                                    <div className="info-label">Raw Evidence</div>
-                                    <div className="fl bold"> : </div>
-                                    <div className="info-value"><a className="link" onClick={this.openModal}>View</a></div>
-                                </div>
-                            </div>
+                                ) : null
+                            }
                         </div>
-                        <div className="evidence-prove-container">
-                            <div className="evidence-prove-form">
-                                <div>
-                                    <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
-                                    <div onClick={this.proveEvidence.bind(this)} className="fl prove-gear-btn gear btn-success" />
-                                    <div className="prove-info-sign" />
+                        {
+                            err == "" ? (
+                                <div className="evidence-prove-container">
+                                    <div className="evidence-prove-form">
+                                        <div>
+                                            <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
+                                            <div onClick={this.proveEvidence.bind(this)} className="fl prove-gear-btn gear btn-success" />
+                                            <div className="prove-info-sign" />
+                                        </div>
+                                    </div>
+                                    <div className="progress-bar-container hidden">
+                                        <div className="proving-btn">
+                                            Proving
+                                            <div className="fr fa-spin"></div>
+                                        </div>
+                                        {/* <div className="cancel-link" style={{marginTop: 10}}>Cancel</div> */}
+                                    </div>
+                                    <div className="verification-container hidden">
+                                        <div className="btn-primary proved-btn">
+                                            Proved
+                                            <div className="fr proved-icon"></div>
+                                        </div>
+                                    </div>
+                                    <div className="verification-failed-container hidden">
+                                        <div className="btn-primary prove-failed-btn">
+                                            Proof Failed
+                                            <div className="fr prove-failed-icon"></div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="progress-bar-container hidden">
-                                <div className="proving-btn">
-                                    Proving
-                                    <div className="fr fa-spin"></div>
-                                </div>
-                                {/* <div className="cancel-link" style={{marginTop: 10}}>Cancel</div> */}
-                            </div>
-                            <div className="verification-container hidden">
-                                <div className="btn-primary proved-btn">
-                                    Proved
-                                    <div className="fr proved-icon"></div>
-                                </div>
-                            </div>
-                            <div className="verification-failed-container hidden">
-                                <div className="btn-primary prove-failed-btn">
-                                    Proof Failed
-                                    <div className="fr prove-failed-icon"></div>
-                                </div>
-                            </div>
-                        </div>
+                            ) : null
+                        }
                         <div className="clear" />
                         <div className={"log-container-ps "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "log-container")}>
                             <div className="log-text" dangerouslySetInnerHTML={{__html: this.state.log}} />
