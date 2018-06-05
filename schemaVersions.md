@@ -37,3 +37,4 @@
 | 3 |added TtnUrl|
 | 4 |added writerImageMappings|
 | 5 |added sacHash and renamed manifest.json to sacManifest.json|
+
