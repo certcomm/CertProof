@@ -53,8 +53,8 @@ deploy:
   file: dist/*
   skip_cleanup: true
   overwrite: true
-  name: "certproof-mac-linux-latest"
-  body: "CertProof mac and linux latest release"
+  name: "certproof-${TRAVIS_OS_NAME}-latest"
+  body: "CertProof ${TRAVIS_OS_NAME} latest release"
   draft: true
   on:
     branch: master
