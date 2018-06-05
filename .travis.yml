@@ -56,5 +56,6 @@ deploy:
   name: "certproof-${TRAVIS_OS_NAME}-latest"
   body: "CertProof ${TRAVIS_OS_NAME} latest release"
   draft: true
+  tag_name: "certproof-${TRAVIS_OS_NAME}-latest"
   on:
     branch: master
