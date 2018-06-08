@@ -53,9 +53,9 @@ deploy:
   file: dist/*
   skip_cleanup: true
   overwrite: true
-  name: "certproof-${TRAVIS_OS_NAME}-latest"
-  body: "CertProof ${TRAVIS_OS_NAME} latest release"
+  name: "certproof-${TRAVIS_OS_NAME}-latest-${TRAVIS_COMMIT}"
+  body: "CertProof ${TRAVIS_OS_NAME} latest ${TRAVIS_COMMIT} release"
   draft: true
-  tag_name: "certproof-${TRAVIS_OS_NAME}-latest"
+  tag_name: "certproof-${TRAVIS_OS_NAME}-latest-${TRAVIS_COMMIT}"
   on:
     branch: master

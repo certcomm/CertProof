@@ -23,8 +23,8 @@ test_script:
 artifacts:
 - path: dist\*
 deploy:
-  release: certproof-win-latest
-  description: 'CertProof windows latest release'
+  release: certproof-win-latest-$(APPVEYOR_REPO_COMMIT)
+  description: 'CertProof windows latest $(APPVEYOR_REPO_COMMIT) release'
   provider: GitHub
   auth_token:
     secure: OnTqF98RecRT7q6J9WVXhbqJG0kLis8FAiyA4y6BoxQHvPHbt43mEXifx3kPQ5ly
