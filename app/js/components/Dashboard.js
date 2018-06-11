@@ -81,7 +81,7 @@ export default class Dashboard extends React.Component {
     
     viewRawEvidene(json, type) {
         this.setState({rawJson: json, type: type});
-        document.getElementsByClassName("pretty-json")[0].scrollIntoView();
+        document.getElementsByClassName("pretty-json")[0].children[0].scrollIntoView()
     }
 
     configSectionModal(){
@@ -850,7 +850,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.16</div>
+                                            <div className="info-value">1.0.17</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>

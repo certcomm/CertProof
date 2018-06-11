@@ -287,7 +287,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         key: "viewRawEvidene",
         value: function viewRawEvidene(json, type) {
             this.setState({ rawJson: json, type: type });
-            document.getElementsByClassName("pretty-json")[0].scrollIntoView();
+            document.getElementsByClassName("pretty-json")[0].children[0].scrollIntoView();
         }
     }, {
         key: "configSectionModal",
@@ -1202,7 +1202,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.16"
+                                        "1.0.17"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -2121,6 +2121,24 @@ var Sections = function (_React$Component) {
                     ps.update();
                 }
             }, 100);
+        }
+    }, {
+        key: 'componentDidMount',
+        value: function componentDidMount() {
+            $("body").click(function (e) {
+                if ($(".hc-details") && $(".hc-details").parents(".el-container") && $(".hc-details").parents(".el-container").parent('div')[0]) {
+                    var lastElName = $(".hc-details").parents(".el-container").parent('div')[0].lastChild.getAttribute('id');
+                    if (e.target.id == lastElName || $(e.target).parents("#" + lastElName).length) {
+                        setTimeout(function () {
+                            var viewEl = $(".hc-details:visible");
+                            if (viewEl[0]) {
+                                viewEl.css({ display: 'table' });
+                                viewEl[0].scrollIntoView();
+                            }
+                        }, 100);
+                    }
+                }
+            });
         }
     }, {
         key: 'openModal',
@@ -3785,7 +3803,7 @@ var UploadEvidence = (0, _mobxReact.observer)(_class = function (_React$Componen
     }, {
         key: 'removeEvidence',
         value: function removeEvidence() {
-            this.store.setUploadEvidenceDetails('', '');
+            this.store.setUploadEvidenceDetails(null, null);
         }
     }, {
         key: 'updateEvidenceProof',

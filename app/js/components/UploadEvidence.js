@@ -61,7 +61,7 @@ export default class UploadEvidence extends React.Component {
     }
     
     removeEvidence(){
-        this.store.setUploadEvidenceDetails('', '');
+        this.store.setUploadEvidenceDetails(null, null);
     }
     
     updateEvidenceProof(e, dirPath){

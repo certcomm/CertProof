@@ -60,6 +60,23 @@ export default class Sections extends React.Component {
         }, 100);
     }
 
+    componentDidMount(){
+        $("body").click(function(e) {
+            if($(".hc-details") && $(".hc-details").parents(".el-container") && $(".hc-details").parents(".el-container").parent('div')[0]){
+                var lastElName = $(".hc-details").parents(".el-container").parent('div')[0].lastChild.getAttribute('id');
+                if (e.target.id == lastElName || $(e.target).parents("#"+lastElName).length) {
+                    setTimeout(() => {
+                        var viewEl = $(".hc-details:visible");
+                        if(viewEl[0]){
+                            viewEl.css({display: 'table'});
+                            viewEl[0].scrollIntoView();
+                        }
+                    }, 100);
+                }
+            }
+        });
+    }
+
     openModal(section) {
         this.setState({modalIsOpen: true, section: section});
     }
