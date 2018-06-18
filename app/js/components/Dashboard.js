@@ -37,6 +37,10 @@ export default class Dashboard extends React.Component {
         this.store = props.certProofStore;
         this.entries = [];
         this.logEmitter = {};
+        this.evidenceType = '';
+        this.networkJson = '';
+        this.allNetworks = '';
+        this.addedNode = '';
 
         this.state = {
             modalIsOpen: false,
@@ -179,7 +183,19 @@ export default class Dashboard extends React.Component {
     
     componentWillMount(){
         this.store.resetRawJson();
-    }
+
+        // var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+        // FileSystem.readFile(fileName, (err, content) => {
+        //     if(err){
+        //         console.log("Err while reading data from "+Constants.default.networkJsonFileName, err);
+        //         return;
+        //     }
+        //     var parseJson = JSON.parse(content);
+        //     this.networkJson = parseJson;
+        // })
+
+        this.networkJson = this.store.getNetworkJson();
+     }
 
     componentDidMount() {
 		var me = this;
@@ -533,10 +549,13 @@ export default class Dashboard extends React.Component {
         var filename;
         if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo) {
             filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
+            this.evidenceType = 'Certified L2';
         } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
             filename = "L1_INC_EV_"+ttn+"_"+cnum+".zip"
+            this.evidenceType = 'Certified L1';
         } else {
             filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
+            this.evidenceType = 'Backup';
         } 
         return filename;
     }
@@ -728,6 +747,9 @@ export default class Dashboard extends React.Component {
     }
 
     proveEvidence(e){
+        // should hide network's div
+        this.showNetworks(e);
+
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
         document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
 
@@ -795,6 +817,241 @@ export default class Dashboard extends React.Component {
         shell.openExternal(link);
     }
 
+    removeDefaultFromNetworkJson(){
+        var json = this.networkJson;
+        if(json && json.length > 0){
+            json.map(ntwk => {
+                return ntwk.value.map(node => {
+                    return node.default = false;
+                })
+            })
+        }
+        return json;
+    }
+
+    addNodeBak(){
+        //  check if networkjson exist
+        if(this.networkJson && this.networkJson.length > 0){
+            // should set default false from whole network jsons
+            this.networkJson = this.removeDefaultFromNetworkJson();
+            
+            // get last record of json
+            var lastRecord = this.networkJson[this.networkJson.length-1];
+            //  check if custom obj exist in json
+            if(lastRecord.name == "custom"){
+                //  add new node object under custom value array
+                var obj = {
+                    url: this.addedNode,
+                    default: true
+                }
+                lastRecord.value.push(obj);
+            }else{
+                // if not exist then create object and push into network json
+                var obj = {
+                    name: "custom",
+                    value: [
+                        {
+                            url: this.addedNode,
+                            default: true
+                        }
+                    ]
+                };
+                this.networkJson.push(obj);
+            }
+        }
+        
+        console.log("this.networkJson", this.networkJson);
+    }
+
+    addNode(nname, e){
+        var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+        
+        //  add new node object under custom value array
+        var obj = {
+            url: this.addedNode,
+            custom: true,
+            default: true
+        }
+
+        //  check if networkjson exist
+        if(this.networkJson && this.networkJson.length > 0){
+            // should set default false from whole network jsons
+            // this.networkJson = this.removeDefaultFromNetworkJson();
+
+            this.networkJson.map((parentObj, pi) => {
+                this.allNetworks.map((childObj, ci) => {
+                    if(parentObj.name == nname){
+                        // do not add if already added
+                        var existPIndex = parentObj.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                        if(existPIndex < 0){
+                            parentObj.value.push(obj);
+                        }else{
+                            parentObj.value[pi].default = false;
+                        }
+                    }
+                    if(childObj.name == nname){
+                        var existCIndex = childObj.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                        if(existCIndex < 0){
+                            childObj.value.push(obj);
+                        }else{
+                            childObj.value[ci].default = false;
+                        }
+                    }
+                })
+            });
+
+            FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
+                if(err){
+                    console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
+                }else{
+                    console.log("File Updated");
+                }
+            });
+        }
+
+        this.cancelCustomNode(e);
+    }
+
+    removeNode(url, nname, e){
+        var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+
+        this.networkJson.map(parentObj => {
+            this.allNetworks.map((childObj) => {
+                // delete added custom node
+                if(parentObj.name == nname){
+                    var existPIndex = parentObj.value.map(function(e) { return e.url; }).indexOf(url);
+                    if(existPIndex >= 0){
+                        if(parentObj.value[existPIndex].default){
+                            var getPAppDefaultIndex = parentObj.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                            if(getPAppDefaultIndex >= 0){
+                                parentObj.value[getPAppDefaultIndex].default = true;
+                            }
+                        }
+                        parentObj.value.splice(existPIndex, 1);
+                    }
+                }
+
+                if(childObj.name == nname){
+                    var existCIndex = childObj.value.map(function(e) { return e.url; }).indexOf(url);
+                    if(existCIndex >= 0){
+                        if(childObj.value[existCIndex].default){
+                            var getCAppDefaultIndex = childObj.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                            if(getCAppDefaultIndex >= 0){
+                                childObj.value[getCAppDefaultIndex].default = true;
+                            }
+                        }
+                        childObj.value.splice(existCIndex, 1);
+                    }
+                }
+            })
+        });
+        
+        FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
+            if(err){
+                console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
+            }else{
+                console.log("File Updated");
+            }
+        });
+    }
+
+    addCustomNode(e){
+        $(e.target).parents('.node-row').find('.node-row-add-container').show()
+        $(e.target).parents('.add-custom-node-btn').hide();
+    }
+
+    cancelCustomNode(e){
+        $(e.target).parents('.node-row').find('.add-custom-node-btn').show();
+        $(e.target).parents('.node-row-add-container').hide();
+        $(e.target).parents('.node-row-add-container').find('input').val('');
+    }
+
+    showNetworks(e){
+        var el = "evidence-network-container";
+        var x = document.getElementsByClassName(el)[0];
+        if (x.style.display === "none" || x.style.display == "") {
+            x.style.display = "block";
+        } else {
+            x.style.display = "none";
+        }
+
+        setTimeout(()=>{
+            var element6 =  document.getElementsByClassName('log-container-ps');
+            if (element6 && element6.length > 0) {
+                new PerfectScrollbar('.log-container-ps').update();
+            }
+            var element7 =  document.getElementsByClassName('modal-xpanel-lhs-container');
+            if (element7 && element7.length > 0) {
+                new PerfectScrollbar('.modal-xpanel-lhs-container').update();
+            }
+        }, 50);
+    }
+
+    getNetworkHTML(blockchainAnchorsOn){
+        if(this.networkJson != ""){
+            var allNetworks = [];
+            if(blockchainAnchorsOn){
+                blockchainAnchorsOn.map(node => {
+                    var networkList = [...allNetworks, ...node.networks];
+                    networkList.map(networkName => {
+                        var existRecord = this.networkJson.map(function(e) {
+                            if(e.name == networkName){
+                                allNetworks = [...allNetworks, e];
+                            }
+                            return e.name;
+                        }).indexOf(networkName);
+                    });
+                });
+            }else{
+                allNetworks = [this.networkJson[0]];
+            }
+            this.allNetworks = allNetworks;
+            
+            return allNetworks.map(ntwrk => {
+                return <div key={"node-row-"+Math.random()} className="node-row">
+                    <div className="node-row-header">{ntwrk.name}</div>
+                    {
+                        ntwrk.value.map(node => {
+                            return <div key={"node-row-sub-container-"+Math.random()} className="node-row-sub-container">
+                                <div className="node-row-url fl">{node.url}</div>
+                                {
+                                    node.custom ? (
+                                        <div className="node-row-btn btn fr" onClick={this.removeNode.bind(this, node.url, ntwrk.name)}>Remove</div>
+                                    ) : null
+                                }
+                                {
+                                    !node.default ? (
+                                        <div className="node-row-btn btn fr">Set Default</div>
+                                    ) : null
+                                }
+                                <div className="clear" />
+                            </div>
+                        })
+                    }
+                    <div className="node-row-sub-container node-row-add-container hidden">
+                        <div className="node-row-url fl">
+                            <input
+                                onChange = {(e)=> {
+                                    this.addedNode = e.target.value;
+                                }}
+                                ref="custom-node-input"
+                                placeholder="Add custom node" className="single-line" />
+                        </div>
+                        <div className="node-row-btn btn fr" onClick={this.cancelCustomNode.bind(this)}>Cancel</div>
+                        <div className="node-row-btn btn fr" onClick={this.addNode.bind(this, ntwrk.name)}>Add</div>
+                        <div className="clear" />
+                    </div>
+                    <div className="node-row-sub-container add-custom-node-btn">
+                        <div className="node-row-btn btn" onClick={this.addCustomNode}>Add custom node</div>
+                    </div>
+                    <div className="clear" />
+                </div>
+            })
+        }else{
+            return null;
+        }
+    }
+
 	render() {
         var storeFileName = this.store.getFileName(),
             data = this.store.getData(),
@@ -806,6 +1063,28 @@ export default class Dashboard extends React.Component {
             ttnGlobal = (data.header) ? data.header.ttnGlobal : "NA",
             err = this.store.getError();
         
+        if(!evidenceData || !evidenceData.blockchainAnchorsOn){
+            evidenceData.blockchainAnchorsOn = [
+                {
+                    type: "Ethereum",
+                    networks: [
+                        "test_rinkeby",
+                        "mainnet"
+                    ]
+                },
+                {
+                    type: "HyperledgerStatic",
+                    networks: [
+                        "staticNode1",
+                        "staticNode2"
+                    ]
+                }
+            ]
+        }
+        
+        // call this function to get network's and node's html
+        var netwrkHtml = this.getNetworkHTML(evidenceData.blockchainAnchorsOn);
+
         // set state
         this.state.stateData = data;
 
@@ -855,6 +1134,11 @@ export default class Dashboard extends React.Component {
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
                                             <div className="fl bold"> : </div>
+                                            <div className="info-value">{this.evidenceType}</div>
+                                            
+                                            <div className="clear"></div>
+                                            <div className="info-label">Evidence Type</div>
+                                            <div className="fl bold"> : </div>
                                             <div className="info-value">Inc-10</div>
                                             
                                             <div className="clear"></div>
@@ -884,7 +1168,13 @@ export default class Dashboard extends React.Component {
                                     <div className="evidence-prove-form">
                                         <div>
                                             <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
-                                            <div onClick={this.proveEvidence.bind(this)} className="fl prove-gear-btn gear btn-success" />
+                                            <div onClick={()=> {
+                                                if(this.evidenceType == 'Certified L2'){
+                                                    this.showNetworks(this);
+                                                }else{
+                                                    this.proveEvidence(this);
+                                                }
+                                            }} className="fl prove-gear-btn gear btn-success" />
                                             <div className="prove-info-sign" />
                                         </div>
                                     </div>
@@ -905,6 +1195,27 @@ export default class Dashboard extends React.Component {
                                         <div className="btn-primary prove-failed-btn">
                                             Proof Failed
                                             <div className="fr prove-failed-icon"></div>
+                                        </div>
+                                    </div>
+                                    <div className="evidence-network-container hidden">
+                                        <div className="node-container">
+                                            {netwrkHtml}
+                                            {/* <div className="node-row node-row-add-container hidden">
+                                                <div className="node-row-url fl">
+                                                    <input
+                                                        onChange = {(e)=> {
+                                                            this.addedNode = e.target.value;
+                                                        }}
+                                                        ref="custom-node-input"
+                                                        placeholder="Add custom node" className="single-line" />
+                                                </div>
+                                                <div className="node-row-btn btn fr" onClick={this.cancelCustomNode}>Cancel</div>
+                                                <div className="node-row-btn btn fr" onClick={this.addNode.bind(this)}>Add</div>
+                                                <div className="clear" />
+                                            </div>
+                                            <div className="node-row add-custom-node-btn">
+                                                <div className="node-row-btn btn" onClick={this.addCustomNode}>Add custom node</div>
+                                            </div> */}
                                         </div>
                                     </div>
                                 </div>

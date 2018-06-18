@@ -236,10 +236,28 @@ a.breadcrumb {
   background-color: #1c84c6; border-color: #1c84c6; color: #FFFFFF;
 }
 .xpanel .evidence-prove-container{
+  /* display: inline-block; */
+}
+/* .xpanel .evidence-network-container .node-container .node-row, */.xpanel .evidence-network-container .node-container .node-row-sub-container{
+  border-bottom: solid 1px #EFEFEF; padding: 9px 0;
+}
+.xpanel .evidence-network-container .node-container .node-row:last-child, .xpanel .evidence-network-container .node-container .node-row .node-row-sub-container:last-child{
+  border-bottom: none; padding: 9px 0;
+}
+.xpanel .evidence-network-container .node-container .node-row-header{
+  background-color: #EFEFEF; padding: 5px; font-weight: bold; border: solid 1px #DDDDDD;
+}
+.xpanel .evidence-network-container .node-container .node-row-url{
+  /*  */
+}
+.xpanel .evidence-network-container .node-container .node-row-btn{
+  padding: 0px 10px;
+}
+.xpanel .evidence-prove-form{
   display: inline-block;
 }
 .xpanel .proving-btn {
-  border: 3px solid #1c84c6; color: #1c84c6; border-radius: 6px; cursor: pointer; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px;
+  border: 3px solid #1c84c6; color: #1c84c6; border-radius: 6px; cursor: pointer; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px; display: inline-block;
 }
 .xpanel .proving-btn .fa-spin:after {
   content: "\E03D"; font-family: "tmail"; font-size: 24px;
@@ -259,7 +277,7 @@ a.breadcrumb {
   }
 }
 .xpanel .proved-btn {
-  border: 1px solid #1AB394; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px;
+  border: 1px solid #1AB394; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px; display: inline-block;
 }
 .xpanel .proved-icon:after {
   content: "\E00D"; font-family: "tmail"; font-size: 24px;
@@ -292,6 +310,10 @@ a.breadcrumb {
 /*        Progress bar       */
 .progress-bar-container, .verification-container {
   /* padding: 20px; border: solid 1px #DDDDDD; background-color: #EFEFEF; border-radius: 10px; height: 90px; text-align: center; */
+}
+.evidence-network-container {
+  text-align: left; font-size: 13px; border: solid 1px #EFEFEF;
+  margin-top: 14px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all;
 }
 .evidence-prove-form .link-container {
   line-height: 18px; margin-left: 10px; text-align: center;
