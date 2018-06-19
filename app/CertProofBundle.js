@@ -1311,48 +1311,75 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         }
     }, {
         key: "removeNode",
-        value: function removeNode(url, nname, e) {
-            var _this11 = this;
+        value: function removeNode(node, nname, e) {
+            var url = node.url;
+
+            // if default node selected
+            if (node.default) {
+                // run loop to get app default url
+                var shouldDelete = true;
+                this.allNetworks.map(function (localStoreJson1) {
+                    // if network is same as selected
+                    if (localStoreJson1.name == nname) {
+                        // get appdefault url index
+                        var getCAppDefaultIndex1 = localStoreJson1.value.map(function (e) {
+                            return e.appDefault;
+                        }).indexOf(true);
+                        if (getCAppDefaultIndex1 >= 0) {
+                            var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default " + localStoreJson1.value[getCAppDefaultIndex1].url;
+
+                            var r = confirm(warnMgs);
+                            if (r !== true) {
+                                shouldDelete = false;
+                            }
+                        }
+                    }
+                });
+
+                // should stop if return false
+                if (shouldDelete === false) return false;
+            }
 
             var fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
 
             this.networkJson.map(function (globalFileJson) {
-                _this11.allNetworks.map(function (localStoreJson) {
-                    // delete added custom node
-                    if (globalFileJson.name == nname) {
-                        var existPIndex = globalFileJson.value.map(function (e) {
-                            return e.url;
-                        }).indexOf(url);
-                        if (existPIndex >= 0) {
-                            if (globalFileJson.value[existPIndex].default) {
-                                var getPAppDefaultIndex = globalFileJson.value.map(function (e) {
-                                    return e.appDefault;
-                                }).indexOf(true);
-                                if (getPAppDefaultIndex >= 0) {
-                                    globalFileJson.value[getPAppDefaultIndex].default = true;
-                                }
+                // delete added custom node
+                if (globalFileJson.name == nname) {
+                    var existPIndex = globalFileJson.value.map(function (e) {
+                        return e.url;
+                    }).indexOf(url);
+                    if (existPIndex >= 0) {
+                        if (globalFileJson.value[existPIndex].default) {
+                            var getPAppDefaultIndex = globalFileJson.value.map(function (e) {
+                                return e.appDefault;
+                            }).indexOf(true);
+                            if (getPAppDefaultIndex >= 0) {
+                                globalFileJson.value[getPAppDefaultIndex].default = true;
                             }
-                            globalFileJson.value.splice(existPIndex, 1);
                         }
+                        globalFileJson.value.splice(existPIndex, 1);
                     }
+                }
+            });
 
-                    if (localStoreJson.name == nname) {
-                        var existCIndex = localStoreJson.value.map(function (e) {
-                            return e.url;
-                        }).indexOf(url);
-                        if (existCIndex >= 0) {
-                            if (localStoreJson.value[existCIndex].default) {
-                                var getCAppDefaultIndex = localStoreJson.value.map(function (e) {
-                                    return e.appDefault;
-                                }).indexOf(true);
-                                if (getCAppDefaultIndex >= 0) {
-                                    localStoreJson.value[getCAppDefaultIndex].default = true;
-                                }
+            this.allNetworks.map(function (localStoreJson) {
+                // delete added custom node
+                if (localStoreJson.name == nname) {
+                    var existCIndex = localStoreJson.value.map(function (e) {
+                        return e.url;
+                    }).indexOf(url);
+                    if (existCIndex >= 0) {
+                        if (localStoreJson.value[existCIndex].default) {
+                            var getCAppDefaultIndex = localStoreJson.value.map(function (e) {
+                                return e.appDefault;
+                            }).indexOf(true);
+                            if (getCAppDefaultIndex >= 0) {
+                                localStoreJson.value[getCAppDefaultIndex].default = true;
                             }
-                            localStoreJson.value.splice(existCIndex, 1);
                         }
+                        localStoreJson.value.splice(existCIndex, 1);
                     }
-                });
+                }
             });
 
             FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), { spaces: 4 }, function (err) {
@@ -1366,12 +1393,12 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "setDefaultNode",
         value: function setDefaultNode(url, nname, e) {
-            var _this12 = this;
+            var _this11 = this;
 
             var fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
 
             this.networkJson.map(function (globalFileJson, gi) {
-                _this12.allNetworks.map(function (localStoreJson, li) {
+                _this11.allNetworks.map(function (localStoreJson, li) {
                     // change default set node
                     if (globalFileJson.name == nname) {
                         var existPIndex = globalFileJson.value.map(function (e, i) {
@@ -1417,6 +1444,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "cancelCustomNode",
         value: function cancelCustomNode(e) {
+            this.addedNode = "";
             $(e.target).parents('.node-row').find('.add-custom-node-btn').show();
             $(e.target).parents('.node-row-add-container').hide();
             $(e.target).parents('.node-row-add-container').find('input').val('');
@@ -1446,7 +1474,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "getNetworkHTML",
         value: function getNetworkHTML(blockchainAnchorsOn) {
-            var _this13 = this;
+            var _this12 = this;
 
             if (this.networkJson != "") {
                 var allNetworks = [];
@@ -1454,7 +1482,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     blockchainAnchorsOn.map(function (node) {
                         var networkList = [].concat(_toConsumableArray(allNetworks), _toConsumableArray(node.networks));
                         networkList.map(function (networkName) {
-                            var existRecord = _this13.networkJson.map(function (e) {
+                            var existRecord = _this12.networkJson.map(function (e) {
                                 if (e.name == networkName) {
                                     allNetworks = [].concat(_toConsumableArray(allNetworks), [e]);
                                 }
@@ -1478,7 +1506,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                         ),
                         ntwrk.value.map(function (node) {
                             if (node.default) {
-                                _this13.defaultNodeUrls = [].concat(_toConsumableArray(_this13.defaultNodeUrls), [node.url]);
+                                _this12.defaultNodeUrls = [].concat(_toConsumableArray(_this12.defaultNodeUrls), [node.url]);
                             }
                             return _react2.default.createElement(
                                 "div",
@@ -1490,12 +1518,12 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                 ),
                                 node.custom ? _react2.default.createElement(
                                     "div",
-                                    { className: "node-row-btn btn fr", onClick: _this13.removeNode.bind(_this13, node.url, ntwrk.name) },
+                                    { className: "node-row-btn btn fr", onClick: _this12.removeNode.bind(_this12, node, ntwrk.name) },
                                     "Remove"
                                 ) : null,
                                 !node.default ? _react2.default.createElement(
                                     "div",
-                                    { className: "node-row-btn btn fr", onClick: _this13.setDefaultNode.bind(_this13, node.url, ntwrk.name) },
+                                    { className: "node-row-btn btn fr", onClick: _this12.setDefaultNode.bind(_this12, node.url, ntwrk.name) },
                                     "Set Default"
                                 ) : null,
                                 _react2.default.createElement("div", { className: "clear" })
@@ -1509,19 +1537,19 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                 { className: "node-row-url fl" },
                                 _react2.default.createElement("input", {
                                     onChange: function onChange(e) {
-                                        _this13.addedNode = e.target.value;
+                                        _this12.addedNode = e.target.value;
                                     },
                                     ref: "custom-node-input",
                                     placeholder: "Add custom node", className: "single-line" })
                             ),
                             _react2.default.createElement(
                                 "div",
-                                { className: "node-row-btn btn fr", onClick: _this13.cancelCustomNode.bind(_this13) },
+                                { className: "node-row-btn btn fr", onClick: _this12.cancelCustomNode.bind(_this12) },
                                 "Cancel"
                             ),
                             _react2.default.createElement(
                                 "div",
-                                { className: "node-row-btn btn fr", onClick: _this13.addNode.bind(_this13, ntwrk.name) },
+                                { className: "node-row-btn btn fr", onClick: _this12.addNode.bind(_this12, ntwrk.name) },
                                 "Add"
                             ),
                             _react2.default.createElement("div", { className: "clear" })
@@ -1531,7 +1559,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                             { className: "node-row-sub-container add-custom-node-btn" },
                             _react2.default.createElement(
                                 "div",
-                                { className: "node-row-btn btn", onClick: _this13.addCustomNode },
+                                { className: "node-row-btn btn", onClick: _this12.addCustomNode },
                                 "Add custom node"
                             )
                         ),
@@ -1545,7 +1573,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "render",
         value: function render() {
-            var _this14 = this;
+            var _this13 = this;
 
             var storeFileName = this.store.getFileName(),
                 data = this.store.getData(),
@@ -1660,7 +1688,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.18"
+                                        "1.0.19"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1768,10 +1796,10 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         "Prove"
                                     ),
                                     _react2.default.createElement("div", { onClick: function onClick() {
-                                            if (_this14.evidenceType == 'Certified L2') {
-                                                _this14.showNetworks(_this14);
+                                            if (_this13.evidenceType == 'Certified L2') {
+                                                _this13.showNetworks(_this13);
                                             } else {
-                                                _this14.proveEvidence(_this14);
+                                                _this13.proveEvidence(_this13);
                                             }
                                         }, className: "fl prove-gear-btn gear btn-success" }),
                                     _react2.default.createElement("div", { className: "prove-info-sign" })

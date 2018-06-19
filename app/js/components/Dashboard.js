@@ -887,40 +887,67 @@ export default class Dashboard extends React.Component {
         this.cancelCustomNode(e);
     }
 
-    removeNode(url, nname, e){
-        var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+    removeNode(node, nname, e){
+        var url = node.url;
 
-        this.networkJson.map(globalFileJson => {
-            this.allNetworks.map((localStoreJson) => {
-                // delete added custom node
-                if(globalFileJson.name == nname){
-                    var existPIndex = globalFileJson.value.map(function(e) { return e.url; }).indexOf(url);
-                    if(existPIndex >= 0){
-                        if(globalFileJson.value[existPIndex].default){
-                            var getPAppDefaultIndex = globalFileJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
-                            if(getPAppDefaultIndex >= 0){
-                                globalFileJson.value[getPAppDefaultIndex].default = true;
-                            }
-                        }
-                        globalFileJson.value.splice(existPIndex, 1);
-                    }
-                }
+        // if default node selected
+        if(node.default){
+            // run loop to get app default url
+            var shouldDelete = true;
+            this.allNetworks.map((localStoreJson1) => {
+                // if network is same as selected
+                if(localStoreJson1.name == nname){
+                    // get appdefault url index
+                    var getCAppDefaultIndex1 = localStoreJson1.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                    if(getCAppDefaultIndex1 >= 0){
+                        var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default "+localStoreJson1.value[getCAppDefaultIndex1].url;
 
-                if(localStoreJson.name == nname){
-                    var existCIndex = localStoreJson.value.map(function(e) { return e.url; }).indexOf(url);
-                    if(existCIndex >= 0){
-                        if(localStoreJson.value[existCIndex].default){
-                            var getCAppDefaultIndex = localStoreJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
-                            if(getCAppDefaultIndex >= 0){
-                                localStoreJson.value[getCAppDefaultIndex].default = true;
-                            }
+                        var r = confirm(warnMgs);
+                        if (r !== true) {
+                            shouldDelete = false;
                         }
-                        localStoreJson.value.splice(existCIndex, 1);
                     }
                 }
             })
-        });
+
+            // should stop if return false
+            if(shouldDelete === false) return false;
+        }
         
+        var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+
+        this.networkJson.map(globalFileJson => {
+            // delete added custom node
+            if(globalFileJson.name == nname){
+                var existPIndex = globalFileJson.value.map(function(e) { return e.url; }).indexOf(url);
+                if(existPIndex >= 0){
+                    if(globalFileJson.value[existPIndex].default){
+                        var getPAppDefaultIndex = globalFileJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                        if(getPAppDefaultIndex >= 0){
+                            globalFileJson.value[getPAppDefaultIndex].default = true;
+                        }
+                    }
+                    globalFileJson.value.splice(existPIndex, 1);
+                }
+            }
+        });
+
+        this.allNetworks.map((localStoreJson) => {
+            // delete added custom node
+            if(localStoreJson.name == nname){
+                var existCIndex = localStoreJson.value.map(function(e) { return e.url; }).indexOf(url);
+                if(existCIndex >= 0){
+                    if(localStoreJson.value[existCIndex].default){
+                        var getCAppDefaultIndex = localStoreJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                        if(getCAppDefaultIndex >= 0){
+                            localStoreJson.value[getCAppDefaultIndex].default = true;
+                        }
+                    }
+                    localStoreJson.value.splice(existCIndex, 1);
+                }
+            }
+        })
+    
         FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
             if(err){
                 console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
@@ -978,6 +1005,7 @@ export default class Dashboard extends React.Component {
     }
 
     cancelCustomNode(e){
+        this.addedNode = "";
         $(e.target).parents('.node-row').find('.add-custom-node-btn').show();
         $(e.target).parents('.node-row-add-container').hide();
         $(e.target).parents('.node-row-add-container').find('input').val('');
@@ -1036,7 +1064,7 @@ export default class Dashboard extends React.Component {
                                 <div className="node-row-url fl">{node.url}</div>
                                 {
                                     node.custom ? (
-                                        <div className="node-row-btn btn fr" onClick={this.removeNode.bind(this, node.url, ntwrk.name)}>Remove</div>
+                                        <div className="node-row-btn btn fr" onClick={this.removeNode.bind(this, node, ntwrk.name)}>Remove</div>
                                     ) : null
                                 }
                                 {
@@ -1152,7 +1180,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.18</div>
+                                            <div className="info-value">1.0.19</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
