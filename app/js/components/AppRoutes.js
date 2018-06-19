@@ -55,6 +55,8 @@ export default class AppRoutes extends React.Component {
                         console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
                         return;
                     }else{
+                        var parseJson = JSON.parse(json);
+                        this.store.setNetworkJson(parseJson);
                         console.log("File Created");
                     }
                 });

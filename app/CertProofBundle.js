@@ -236,6 +236,8 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
                             console.log("Err while writing data into " + Constants.default.networkJsonFileName, err);
                             return;
                         } else {
+                            var parseJson = JSON.parse(json);
+                            _this2.store.setNetworkJson(parseJson);
                             console.log("File Created");
                         }
                     });
@@ -348,6 +350,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         _this.networkJson = '';
         _this.allNetworks = '';
         _this.addedNode = '';
+        _this.defaultNodeUrls = [];
 
         _this.state = {
             modalIsOpen: false,
@@ -582,16 +585,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         value: function componentWillMount() {
             this.store.resetRawJson();
 
-            // var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
-            // FileSystem.readFile(fileName, (err, content) => {
-            //     if(err){
-            //         console.log("Err while reading data from "+Constants.default.networkJsonFileName, err);
-            //         return;
-            //     }
-            //     var parseJson = JSON.parse(content);
-            //     this.networkJson = parseJson;
-            // })
-
+            // get network json from store
             this.networkJson = this.store.getNetworkJson();
         }
     }, {
@@ -1163,7 +1157,8 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
             var _this9 = this;
 
             // should hide network's div
-            this.showNetworks(e);
+            var x = document.getElementsByClassName("evidence-network-container")[0];
+            if (x.style.display === "block") x.style.display = "none";
 
             document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
             document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
@@ -1193,6 +1188,9 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                         }
                     }, 50);
                 };
+
+                _this9.defaultNodeUrls = [].concat(_toConsumableArray(new Set(_this9.defaultNodeUrls)));
+                console.log(_this9.defaultNodeUrls);
 
                 _prove2.default.proveExtractedEvidenceZip(_this9.logEmitter, Constants.default.extractedEvidenceFolder, proveZip).then(function (response) {
                     console.error("Success!" + response);
@@ -1244,42 +1242,22 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
             return json;
         }
     }, {
-        key: "addNodeBak",
-        value: function addNodeBak() {
-            //  check if networkjson exist
-            if (this.networkJson && this.networkJson.length > 0) {
-                // should set default false from whole network jsons
-                this.networkJson = this.removeDefaultFromNetworkJson();
-
-                // get last record of json
-                var lastRecord = this.networkJson[this.networkJson.length - 1];
-                //  check if custom obj exist in json
-                if (lastRecord.name == "custom") {
-                    //  add new node object under custom value array
-                    var obj = {
-                        url: this.addedNode,
-                        default: true
-                    };
-                    lastRecord.value.push(obj);
-                } else {
-                    // if not exist then create object and push into network json
-                    var obj = {
-                        name: "custom",
-                        value: [{
-                            url: this.addedNode,
-                            default: true
-                        }]
-                    };
-                    this.networkJson.push(obj);
-                }
-            }
-
-            console.log("this.networkJson", this.networkJson);
-        }
-    }, {
         key: "addNode",
         value: function addNode(nname, e) {
             var _this10 = this;
+
+            if (this.addedNode.trim() == "") {
+                alert("Field should not be empty.");
+                $(e.target).parents('.node-row-add-container').find('input').focus();
+                return false;
+            }
+
+            var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+            if (!regexp.test(this.addedNode)) {
+                alert("Invalid URL. Please type correct URL.");
+                $(e.target).parents('.node-row-add-container').find('input').focus();
+                return false;
+            }
 
             var fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
 
@@ -1294,27 +1272,27 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 // should set default false from whole network jsons
                 // this.networkJson = this.removeDefaultFromNetworkJson();
 
-                this.networkJson.map(function (parentObj, pi) {
-                    _this10.allNetworks.map(function (childObj, ci) {
-                        if (parentObj.name == nname) {
+                this.networkJson.map(function (globalFileJson, pi) {
+                    _this10.allNetworks.map(function (localStoreJson, ci) {
+                        if (globalFileJson.name == nname) {
                             // do not add if already added
-                            var existPIndex = parentObj.value.map(function (e) {
+                            var existPIndex = globalFileJson.value.map(function (e) {
                                 return e.url;
                             }).indexOf(obj.url);
                             if (existPIndex < 0) {
-                                parentObj.value.push(obj);
+                                globalFileJson.value.push(obj);
                             } else {
-                                parentObj.value[pi].default = false;
+                                if (globalFileJson.value[pi]) globalFileJson.value[pi].default = false;
                             }
                         }
-                        if (childObj.name == nname) {
-                            var existCIndex = childObj.value.map(function (e) {
+                        if (localStoreJson.name == nname) {
+                            var existCIndex = localStoreJson.value.map(function (e) {
                                 return e.url;
                             }).indexOf(obj.url);
                             if (existCIndex < 0) {
-                                childObj.value.push(obj);
+                                localStoreJson.value.push(obj);
                             } else {
-                                childObj.value[ci].default = false;
+                                if (localStoreJson.value[ci]) localStoreJson.value[ci].default = false;
                             }
                         }
                     });
@@ -1338,40 +1316,84 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
             var fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
 
-            this.networkJson.map(function (parentObj) {
-                _this11.allNetworks.map(function (childObj) {
+            this.networkJson.map(function (globalFileJson) {
+                _this11.allNetworks.map(function (localStoreJson) {
                     // delete added custom node
-                    if (parentObj.name == nname) {
-                        var existPIndex = parentObj.value.map(function (e) {
+                    if (globalFileJson.name == nname) {
+                        var existPIndex = globalFileJson.value.map(function (e) {
                             return e.url;
                         }).indexOf(url);
                         if (existPIndex >= 0) {
-                            if (parentObj.value[existPIndex].default) {
-                                var getPAppDefaultIndex = parentObj.value.map(function (e) {
+                            if (globalFileJson.value[existPIndex].default) {
+                                var getPAppDefaultIndex = globalFileJson.value.map(function (e) {
                                     return e.appDefault;
                                 }).indexOf(true);
                                 if (getPAppDefaultIndex >= 0) {
-                                    parentObj.value[getPAppDefaultIndex].default = true;
+                                    globalFileJson.value[getPAppDefaultIndex].default = true;
                                 }
                             }
-                            parentObj.value.splice(existPIndex, 1);
+                            globalFileJson.value.splice(existPIndex, 1);
                         }
                     }
 
-                    if (childObj.name == nname) {
-                        var existCIndex = childObj.value.map(function (e) {
+                    if (localStoreJson.name == nname) {
+                        var existCIndex = localStoreJson.value.map(function (e) {
                             return e.url;
                         }).indexOf(url);
                         if (existCIndex >= 0) {
-                            if (childObj.value[existCIndex].default) {
-                                var getCAppDefaultIndex = childObj.value.map(function (e) {
+                            if (localStoreJson.value[existCIndex].default) {
+                                var getCAppDefaultIndex = localStoreJson.value.map(function (e) {
                                     return e.appDefault;
                                 }).indexOf(true);
                                 if (getCAppDefaultIndex >= 0) {
-                                    childObj.value[getCAppDefaultIndex].default = true;
+                                    localStoreJson.value[getCAppDefaultIndex].default = true;
                                 }
                             }
-                            childObj.value.splice(existCIndex, 1);
+                            localStoreJson.value.splice(existCIndex, 1);
+                        }
+                    }
+                });
+            });
+
+            FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), { spaces: 4 }, function (err) {
+                if (err) {
+                    console.log("Err while writing data into " + Constants.default.networkJsonFileName, err);
+                } else {
+                    console.log("File Updated");
+                }
+            });
+        }
+    }, {
+        key: "setDefaultNode",
+        value: function setDefaultNode(url, nname, e) {
+            var _this12 = this;
+
+            var fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
+
+            this.networkJson.map(function (globalFileJson, gi) {
+                _this12.allNetworks.map(function (localStoreJson, li) {
+                    // change default set node
+                    if (globalFileJson.name == nname) {
+                        var existPIndex = globalFileJson.value.map(function (e, i) {
+                            if (e.url != url) {
+                                if (globalFileJson.value[i]) globalFileJson.value[i].default = false;
+                            }
+                            return e.url;
+                        }).indexOf(url);
+                        if (existPIndex >= 0) {
+                            if (globalFileJson.value[existPIndex]) globalFileJson.value[existPIndex].default = true;
+                        }
+                    }
+
+                    if (localStoreJson.name == nname) {
+                        var existCIndex = localStoreJson.value.map(function (e, i) {
+                            if (e.url != url) {
+                                if (localStoreJson.value[i]) localStoreJson.value[i].default = false;
+                            }
+                            return e.url;
+                        }).indexOf(url);
+                        if (existCIndex >= 0) {
+                            if (localStoreJson.value[existCIndex]) localStoreJson.value[existCIndex].default = true;
                         }
                     }
                 });
@@ -1390,6 +1412,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         value: function addCustomNode(e) {
             $(e.target).parents('.node-row').find('.node-row-add-container').show();
             $(e.target).parents('.add-custom-node-btn').hide();
+            $(e.target).parents('.node-row').find('.node-row-add-container input').focus();
         }
     }, {
         key: "cancelCustomNode",
@@ -1423,7 +1446,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "getNetworkHTML",
         value: function getNetworkHTML(blockchainAnchorsOn) {
-            var _this12 = this;
+            var _this13 = this;
 
             if (this.networkJson != "") {
                 var allNetworks = [];
@@ -1431,7 +1454,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     blockchainAnchorsOn.map(function (node) {
                         var networkList = [].concat(_toConsumableArray(allNetworks), _toConsumableArray(node.networks));
                         networkList.map(function (networkName) {
-                            var existRecord = _this12.networkJson.map(function (e) {
+                            var existRecord = _this13.networkJson.map(function (e) {
                                 if (e.name == networkName) {
                                     allNetworks = [].concat(_toConsumableArray(allNetworks), [e]);
                                 }
@@ -1454,6 +1477,9 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                             ntwrk.name
                         ),
                         ntwrk.value.map(function (node) {
+                            if (node.default) {
+                                _this13.defaultNodeUrls = [].concat(_toConsumableArray(_this13.defaultNodeUrls), [node.url]);
+                            }
                             return _react2.default.createElement(
                                 "div",
                                 { key: "node-row-sub-container-" + Math.random(), className: "node-row-sub-container" },
@@ -1464,12 +1490,12 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                 ),
                                 node.custom ? _react2.default.createElement(
                                     "div",
-                                    { className: "node-row-btn btn fr", onClick: _this12.removeNode.bind(_this12, node.url, ntwrk.name) },
+                                    { className: "node-row-btn btn fr", onClick: _this13.removeNode.bind(_this13, node.url, ntwrk.name) },
                                     "Remove"
                                 ) : null,
                                 !node.default ? _react2.default.createElement(
                                     "div",
-                                    { className: "node-row-btn btn fr" },
+                                    { className: "node-row-btn btn fr", onClick: _this13.setDefaultNode.bind(_this13, node.url, ntwrk.name) },
                                     "Set Default"
                                 ) : null,
                                 _react2.default.createElement("div", { className: "clear" })
@@ -1483,19 +1509,19 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                 { className: "node-row-url fl" },
                                 _react2.default.createElement("input", {
                                     onChange: function onChange(e) {
-                                        _this12.addedNode = e.target.value;
+                                        _this13.addedNode = e.target.value;
                                     },
                                     ref: "custom-node-input",
                                     placeholder: "Add custom node", className: "single-line" })
                             ),
                             _react2.default.createElement(
                                 "div",
-                                { className: "node-row-btn btn fr", onClick: _this12.cancelCustomNode.bind(_this12) },
+                                { className: "node-row-btn btn fr", onClick: _this13.cancelCustomNode.bind(_this13) },
                                 "Cancel"
                             ),
                             _react2.default.createElement(
                                 "div",
-                                { className: "node-row-btn btn fr", onClick: _this12.addNode.bind(_this12, ntwrk.name) },
+                                { className: "node-row-btn btn fr", onClick: _this13.addNode.bind(_this13, ntwrk.name) },
                                 "Add"
                             ),
                             _react2.default.createElement("div", { className: "clear" })
@@ -1505,7 +1531,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                             { className: "node-row-sub-container add-custom-node-btn" },
                             _react2.default.createElement(
                                 "div",
-                                { className: "node-row-btn btn", onClick: _this12.addCustomNode },
+                                { className: "node-row-btn btn", onClick: _this13.addCustomNode },
                                 "Add custom node"
                             )
                         ),
@@ -1519,7 +1545,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "render",
         value: function render() {
-            var _this13 = this;
+            var _this14 = this;
 
             var storeFileName = this.store.getFileName(),
                 data = this.store.getData(),
@@ -1542,7 +1568,10 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
             }
 
             // call this function to get network's and node's html
-            var netwrkHtml = this.getNetworkHTML(evidenceData.blockchainAnchorsOn);
+            var netwrkHtml = null;
+            if (this.evidenceType == 'Certified L2') {
+                netwrkHtml = this.getNetworkHTML(evidenceData.blockchainAnchorsOn);
+            }
 
             // set state
             this.state.stateData = data;
@@ -1631,7 +1660,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.17"
+                                        "1.0.18"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1739,10 +1768,10 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         "Prove"
                                     ),
                                     _react2.default.createElement("div", { onClick: function onClick() {
-                                            if (_this13.evidenceType == 'Certified L2') {
-                                                _this13.showNetworks(_this13);
+                                            if (_this14.evidenceType == 'Certified L2') {
+                                                _this14.showNetworks(_this14);
                                             } else {
-                                                _this13.proveEvidence(_this13);
+                                                _this14.proveEvidence(_this14);
                                             }
                                         }, className: "fl prove-gear-btn gear btn-success" }),
                                     _react2.default.createElement("div", { className: "prove-info-sign" })

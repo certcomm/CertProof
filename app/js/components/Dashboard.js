@@ -41,6 +41,7 @@ export default class Dashboard extends React.Component {
         this.networkJson = '';
         this.allNetworks = '';
         this.addedNode = '';
+        this.defaultNodeUrls = [];
 
         this.state = {
             modalIsOpen: false,
@@ -184,16 +185,7 @@ export default class Dashboard extends React.Component {
     componentWillMount(){
         this.store.resetRawJson();
 
-        // var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
-        // FileSystem.readFile(fileName, (err, content) => {
-        //     if(err){
-        //         console.log("Err while reading data from "+Constants.default.networkJsonFileName, err);
-        //         return;
-        //     }
-        //     var parseJson = JSON.parse(content);
-        //     this.networkJson = parseJson;
-        // })
-
+        // get network json from store
         this.networkJson = this.store.getNetworkJson();
      }
 
@@ -748,7 +740,8 @@ export default class Dashboard extends React.Component {
 
     proveEvidence(e){
         // should hide network's div
-        this.showNetworks(e);
+        var x = document.getElementsByClassName("evidence-network-container")[0];
+        if (x.style.display === "block") x.style.display = "none";
 
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
         document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
@@ -778,6 +771,9 @@ export default class Dashboard extends React.Component {
                     }
                 }, 50);
             }
+
+            this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
+            console.log(this.defaultNodeUrls);
 
             prover.proveExtractedEvidenceZip(this.logEmitter, Constants.default.extractedEvidenceFolder, proveZip)
             .then((response) => {
@@ -829,41 +825,20 @@ export default class Dashboard extends React.Component {
         return json;
     }
 
-    addNodeBak(){
-        //  check if networkjson exist
-        if(this.networkJson && this.networkJson.length > 0){
-            // should set default false from whole network jsons
-            this.networkJson = this.removeDefaultFromNetworkJson();
-            
-            // get last record of json
-            var lastRecord = this.networkJson[this.networkJson.length-1];
-            //  check if custom obj exist in json
-            if(lastRecord.name == "custom"){
-                //  add new node object under custom value array
-                var obj = {
-                    url: this.addedNode,
-                    default: true
-                }
-                lastRecord.value.push(obj);
-            }else{
-                // if not exist then create object and push into network json
-                var obj = {
-                    name: "custom",
-                    value: [
-                        {
-                            url: this.addedNode,
-                            default: true
-                        }
-                    ]
-                };
-                this.networkJson.push(obj);
-            }
-        }
-        
-        console.log("this.networkJson", this.networkJson);
-    }
-
     addNode(nname, e){
+        if(this.addedNode.trim() == ""){
+            alert("Field should not be empty.");
+            $(e.target).parents('.node-row-add-container').find('input').focus();
+            return false;
+        }
+
+        var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
+        if(!regexp.test(this.addedNode)){
+            alert("Invalid URL. Please type correct URL.");
+            $(e.target).parents('.node-row-add-container').find('input').focus();
+            return false;
+        }
+    
         var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
         
         //  add new node object under custom value array
@@ -878,23 +853,23 @@ export default class Dashboard extends React.Component {
             // should set default false from whole network jsons
             // this.networkJson = this.removeDefaultFromNetworkJson();
 
-            this.networkJson.map((parentObj, pi) => {
-                this.allNetworks.map((childObj, ci) => {
-                    if(parentObj.name == nname){
+            this.networkJson.map((globalFileJson, pi) => {
+                this.allNetworks.map((localStoreJson, ci) => {
+                    if(globalFileJson.name == nname){
                         // do not add if already added
-                        var existPIndex = parentObj.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                        var existPIndex = globalFileJson.value.map(function(e) { return e.url; }).indexOf(obj.url);
                         if(existPIndex < 0){
-                            parentObj.value.push(obj);
+                            globalFileJson.value.push(obj);
                         }else{
-                            parentObj.value[pi].default = false;
+                            if(globalFileJson.value[pi]) globalFileJson.value[pi].default = false;
                         }
                     }
-                    if(childObj.name == nname){
-                        var existCIndex = childObj.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                    if(localStoreJson.name == nname){
+                        var existCIndex = localStoreJson.value.map(function(e) { return e.url; }).indexOf(obj.url);
                         if(existCIndex < 0){
-                            childObj.value.push(obj);
+                            localStoreJson.value.push(obj);
                         }else{
-                            childObj.value[ci].default = false;
+                            if(localStoreJson.value[ci]) localStoreJson.value[ci].default = false;
                         }
                     }
                 })
@@ -915,32 +890,73 @@ export default class Dashboard extends React.Component {
     removeNode(url, nname, e){
         var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
 
-        this.networkJson.map(parentObj => {
-            this.allNetworks.map((childObj) => {
+        this.networkJson.map(globalFileJson => {
+            this.allNetworks.map((localStoreJson) => {
                 // delete added custom node
-                if(parentObj.name == nname){
-                    var existPIndex = parentObj.value.map(function(e) { return e.url; }).indexOf(url);
+                if(globalFileJson.name == nname){
+                    var existPIndex = globalFileJson.value.map(function(e) { return e.url; }).indexOf(url);
                     if(existPIndex >= 0){
-                        if(parentObj.value[existPIndex].default){
-                            var getPAppDefaultIndex = parentObj.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                        if(globalFileJson.value[existPIndex].default){
+                            var getPAppDefaultIndex = globalFileJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
                             if(getPAppDefaultIndex >= 0){
-                                parentObj.value[getPAppDefaultIndex].default = true;
+                                globalFileJson.value[getPAppDefaultIndex].default = true;
                             }
                         }
-                        parentObj.value.splice(existPIndex, 1);
+                        globalFileJson.value.splice(existPIndex, 1);
                     }
                 }
 
-                if(childObj.name == nname){
-                    var existCIndex = childObj.value.map(function(e) { return e.url; }).indexOf(url);
+                if(localStoreJson.name == nname){
+                    var existCIndex = localStoreJson.value.map(function(e) { return e.url; }).indexOf(url);
                     if(existCIndex >= 0){
-                        if(childObj.value[existCIndex].default){
-                            var getCAppDefaultIndex = childObj.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                        if(localStoreJson.value[existCIndex].default){
+                            var getCAppDefaultIndex = localStoreJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
                             if(getCAppDefaultIndex >= 0){
-                                childObj.value[getCAppDefaultIndex].default = true;
+                                localStoreJson.value[getCAppDefaultIndex].default = true;
                             }
                         }
-                        childObj.value.splice(existCIndex, 1);
+                        localStoreJson.value.splice(existCIndex, 1);
+                    }
+                }
+            })
+        });
+        
+        FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
+            if(err){
+                console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
+            }else{
+                console.log("File Updated");
+            }
+        });
+    }
+
+    setDefaultNode(url, nname, e){
+        var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+
+        this.networkJson.map((globalFileJson, gi) => {
+            this.allNetworks.map((localStoreJson, li) => {
+                // change default set node
+                if(globalFileJson.name == nname){
+                    var existPIndex = globalFileJson.value.map(function(e, i) {
+                        if(e.url != url){
+                            if(globalFileJson.value[i]) globalFileJson.value[i].default = false;
+                        }
+                        return e.url;
+                    }).indexOf(url);
+                    if(existPIndex >= 0){
+                        if(globalFileJson.value[existPIndex]) globalFileJson.value[existPIndex].default = true;
+                    }
+                }
+
+                if(localStoreJson.name == nname){
+                    var existCIndex = localStoreJson.value.map(function(e, i) {
+                        if(e.url != url){
+                            if(localStoreJson.value[i]) localStoreJson.value[i].default = false;
+                        }
+                        return e.url;
+                    }).indexOf(url);
+                    if(existCIndex >= 0){
+                        if(localStoreJson.value[existCIndex]) localStoreJson.value[existCIndex].default = true;
                     }
                 }
             })
@@ -958,6 +974,7 @@ export default class Dashboard extends React.Component {
     addCustomNode(e){
         $(e.target).parents('.node-row').find('.node-row-add-container').show()
         $(e.target).parents('.add-custom-node-btn').hide();
+        $(e.target).parents('.node-row').find('.node-row-add-container input').focus();
     }
 
     cancelCustomNode(e){
@@ -1012,6 +1029,9 @@ export default class Dashboard extends React.Component {
                     <div className="node-row-header">{ntwrk.name}</div>
                     {
                         ntwrk.value.map(node => {
+                            if(node.default){
+                                this.defaultNodeUrls = [...this.defaultNodeUrls, node.url]
+                            }
                             return <div key={"node-row-sub-container-"+Math.random()} className="node-row-sub-container">
                                 <div className="node-row-url fl">{node.url}</div>
                                 {
@@ -1021,7 +1041,7 @@ export default class Dashboard extends React.Component {
                                 }
                                 {
                                     !node.default ? (
-                                        <div className="node-row-btn btn fr">Set Default</div>
+                                        <div className="node-row-btn btn fr" onClick={this.setDefaultNode.bind(this, node.url, ntwrk.name)}>Set Default</div>
                                     ) : null
                                 }
                                 <div className="clear" />
@@ -1083,7 +1103,10 @@ export default class Dashboard extends React.Component {
         }
         
         // call this function to get network's and node's html
-        var netwrkHtml = this.getNetworkHTML(evidenceData.blockchainAnchorsOn);
+        var netwrkHtml = null
+        if(this.evidenceType == 'Certified L2'){
+            netwrkHtml = this.getNetworkHTML(evidenceData.blockchainAnchorsOn);
+        }
 
         // set state
         this.state.stateData = data;
@@ -1129,7 +1152,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.17</div>
+                                            <div className="info-value">1.0.18</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
@@ -1200,22 +1223,6 @@ export default class Dashboard extends React.Component {
                                     <div className="evidence-network-container hidden">
                                         <div className="node-container">
                                             {netwrkHtml}
-                                            {/* <div className="node-row node-row-add-container hidden">
-                                                <div className="node-row-url fl">
-                                                    <input
-                                                        onChange = {(e)=> {
-                                                            this.addedNode = e.target.value;
-                                                        }}
-                                                        ref="custom-node-input"
-                                                        placeholder="Add custom node" className="single-line" />
-                                                </div>
-                                                <div className="node-row-btn btn fr" onClick={this.cancelCustomNode}>Cancel</div>
-                                                <div className="node-row-btn btn fr" onClick={this.addNode.bind(this)}>Add</div>
-                                                <div className="clear" />
-                                            </div>
-                                            <div className="node-row add-custom-node-btn">
-                                                <div className="node-row-btn btn" onClick={this.addCustomNode}>Add custom node</div>
-                                            </div> */}
                                         </div>
                                     </div>
                                 </div>
