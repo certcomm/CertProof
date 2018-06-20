@@ -16,78 +16,88 @@ export default {
 	errorFileName: "Errors.txt",
 	networkFileFolder: userDataPath+"/networks/",
 	networkJsonFileName: "networks.json",
-	networks: [
+	blockChainAnchorsOn: [
 		{
-			name: "mainnet",
-			value: [
+			type: "Ethereum",
+			networks: [
 				{
-					url: "https://mainnet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-					appDefault: true,
-					default: true
+					name: "mainnet",
+					value: [
+						{
+							url: "https://mainnet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							appDefault: true,
+							default: true
+						},
+						{
+							url: "https://mainnet.certcomm.io/f7dca",
+							default: false
+						}
+					]
 				},
 				{
-					url: "https://mainnet.certcomm.io/f7dca",
-					default: false
+					name: "test_ropsten",
+					value: [
+						{
+							url: "https://ropsten.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							appDefault: true,
+							default: true
+						}
+					]
+				},
+				{
+					name: "test_infuranet",
+					value: [
+						{
+							url: "https://infuranet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							appDefault: true,
+							default: true
+						}
+					]
+				},
+				{
+					name: "test_kovan",
+					value: [
+						{
+							url: "https://kovan.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							appDefault: true,
+							default: true
+						}
+					]
+				},
+				{
+					name: "test_rinkeby",
+					value: [
+						{
+							url: "https://rinkeby.io/Rfiz1l4YFxXO9GRgpOaB",
+							appDefault: true,
+							default: true
+						}
+					]
 				}
 			]
 		},
 		{
-			name: "test_ropsten",
-			value: [
+			type: "HyperledgerStatic",
+			networks: [
 				{
-					url: "https://ropsten.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-					appDefault: true,
-					default: true
-				}
-			]
-		},
-		{
-			name: "test_infuranet",
-			value: [
+					name: "staticNetwork1",
+					value: [
+						{
+							url: "https://staticnode1.io/Rfiz1l4YFxXO9GRgpOaB",
+							appDefault: true,
+							default: true
+						}
+					]
+				},
 				{
-					url: "https://infuranet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-					appDefault: true,
-					default: true
-				}
-			]
-		},
-		{
-			name: "test_kovan",
-			value: [
-				{
-					url: "https://kovan.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-					appDefault: true,
-					default: true
-				}
-			]
-		},
-		{
-			name: "test_rinkeby",
-			value: [
-				{
-					url: "https://rinkeby.io/Rfiz1l4YFxXO9GRgpOaB",
-					appDefault: true,
-					default: true
-				}
-			]
-		},
-		{
-			name: "staticNode1",
-			value: [
-				{
-					url: "https://staticnode1.io/Rfiz1l4YFxXO9GRgpOaB",
-					appDefault: true,
-					default: true
-				}
-			]
-		},
-		{
-			name: "staticNode2",
-			value: [
-				{
-					url: "https://staticnode2.io/Rfiz1l4YFxXO9GRgpOaB",
-					appDefault: true,
-					default: true
+					name: "staticNetwork2",
+					value: [
+						{
+							url: "https://staticnode2.io/Rfiz1l4YFxXO9GRgpOaB",
+							appDefault: true,
+							default: true
+						}
+					]
 				}
 			]
 		}

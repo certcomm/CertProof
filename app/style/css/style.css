@@ -235,23 +235,38 @@ a.breadcrumb {
 .xpanel button.btn-success {
   background-color: #1c84c6; border-color: #1c84c6; color: #FFFFFF;
 }
-.xpanel .evidence-prove-container{
-  /* display: inline-block; */
+/* .evidence-network-container .node-container .node-row, */.evidence-network-container .node-container .node-row-sub-container{
+  border-bottom: solid 1px #EFEFEF; padding: 8px 0;
 }
-/* .xpanel .evidence-network-container .node-container .node-row, */.xpanel .evidence-network-container .node-container .node-row-sub-container{
-  border-bottom: solid 1px #EFEFEF; padding: 9px 0;
+.node-row-sub-container.add-custom-node-btn .node-row-btn-add:before {
+  content: "\E039"; font-family: "tmail"; font-size: 16px;
 }
-.xpanel .evidence-network-container .node-container .node-row:last-child, .xpanel .evidence-network-container .node-container .node-row .node-row-sub-container:last-child{
-  border-bottom: none; padding: 9px 0;
+.node-row-sub-container .node-row-btn-delete:before {
+  content: "\E03A"; font-family: "tmail"; font-size: 16px;
 }
-.xpanel .evidence-network-container .node-container .node-row-header{
+.node-row-sub-container .node-row-btn-delete, .node-row-sub-container.add-custom-node-btn .node-row-btn-add {
+  padding: 0px 5px;
+}
+.help:before{
+  content: "\E007"; font-family: "tmail"; font-size: 16px; margin-right: 6px;
+}
+.node-row-btn-delete-container{
+  width: 30px;
+}
+.node-row-btn-selection-container{
+  width: 120px;
+}
+.evidence-network-container .node-container .node-row-header{
   background-color: #EFEFEF; padding: 5px; font-weight: bold; border: solid 1px #DDDDDD;
 }
-.xpanel .evidence-network-container .node-container .node-row-url{
-  /*  */
+.evidence-network-container .node-container .node-row-url{
+  line-height: 26px;
 }
-.xpanel .evidence-network-container .node-container .node-row-btn{
-  padding: 0px 10px;
+.evidence-network-container .node-container .node-row-url-select{
+  border: 1px solid #E5E6E7; padding: 0px 4px; height: 32px; width: 72px; 
+}
+.evidence-network-container .node-container .node-row-btn{
+  padding: 3px 10px; width: 90px;
 }
 .xpanel .evidence-prove-form{
   display: inline-block;
@@ -289,7 +304,7 @@ a.breadcrumb {
   content: "\E00E"; font-family: "tmail"; font-size: 16px;
 }
 .xpanel .prove-btn {
-  border: 1px solid #E7EAEC; border-radius: 6px 0 0 6px; cursor: pointer; font-size: 24px; padding: 6px 12px; line-height: 29px; width: 80px;
+  border: 1px solid #E7EAEC; border-radius: 6px; cursor: pointer; font-size: 24px; padding: 6px 12px; line-height: 29px; width: 80px;
 }
 .xpanel .prove-gear-btn {
   border: 1px solid #E7EAEC; border-radius: 0 6px 6px 0; cursor: pointer; font-size: 20px; padding: 6px 12px; line-height: 16px; margin-left: -1px; padding-top: 13px;
@@ -308,12 +323,8 @@ a.breadcrumb {
 }
 
 /*        Progress bar       */
-.progress-bar-container, .verification-container {
-  /* padding: 20px; border: solid 1px #DDDDDD; background-color: #EFEFEF; border-radius: 10px; height: 90px; text-align: center; */
-}
 .evidence-network-container {
-  text-align: left; font-size: 13px; border: solid 1px #EFEFEF;
-  margin-top: 14px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all;
+  text-align: left; font-size: 13px; padding: 0 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all;
 }
 .evidence-prove-form .link-container {
   line-height: 18px; margin-left: 10px; text-align: center;
@@ -371,30 +382,22 @@ a.breadcrumb {
   background-color: #2F4050; color: #FFFFFF; font-family: 'Open Sans','Helvetica Neue',Helvetica,Arial,sans-serif; font-size: 11px; font-weight: bold; padding: 12px 0; line-height: 18px; letter-spacing: 1px;
 }
 .evidence-cnum-list{
-  /*border-bottom: solid 1px #EFEFEF; color: #1c84c6; padding: 10px 0; cursor: pointer; font-size: 13px; font-weight: 500; margin-right: 10px; padding-left: 8px;*/
   cursor: pointer; padding: 8px 0 8px 20px;
 }
 .evidence-cnum-list-selected{
   background-color: #1CC09F;
 }
 .evidence-cnum-list-normal{
-  /*border-bottom: solid 1px #EFEFEF; color: #111111; padding: 10px 0; font-size: 13px; font-weight: 500; margin-right: 10px; padding-left: 8px;*/
   color: #A7B1C2 !important; padding: 8px 0 8px 20px; font-size: 12px;
 }
 .hide-evidence-list .evidence-cnum-list{
   padding-left: 40px;
 }
-.evidence-cnum-list-normal .more div.col-m:after {
-  /* content: "?"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px; */
-}
-.evidence-cnum-list-normal .more div.exp-m:after {
-  /* content: "J"; font-family: "tmail"; font-size: 15px; position: absolute; top: 2px; */
-}
 .evidence-cnum-list-normal .more div.exp-m,
 .evidence-cnum-list-normal .more div.col-m {
   position: relative;
 }
-.pretty-json-1 {
+.network-nodes, .pretty-json-1 {
 	position: relative; height: calc(100vh - 180px);
 }
 .pretty-json-2, .pretty-json-3, .pretty-json-4, .pretty-json-5 {

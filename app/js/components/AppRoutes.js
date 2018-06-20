@@ -17,7 +17,7 @@ export default class AppRoutes extends React.Component {
     }
 
     componentWillMount(){
-        var staticNetwork = Constants.default.networks,
+        var staticNetwork = Constants.default.blockChainAnchorsOn,
             json = JSON.stringify(staticNetwork),
             fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
         

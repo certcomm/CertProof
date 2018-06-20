@@ -41,20 +41,26 @@ export default class Dashboard extends React.Component {
         this.networkJson = '';
         this.allNetworks = '';
         this.addedNode = '';
+        this.addedNodeProtocol = 'https://';
         this.defaultNodeUrls = [];
 
         this.state = {
             modalIsOpen: false,
+            blockchainModalIsOpen: false,
             progress: 0,
             stateData: '',
             rawJson: null,
             type: "evidencemenifest",
+            network: '',
+            networktype: '',
             log: "",
             errLog: []
         }
 
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
+
+        this.blockchainModalAction = this.blockchainModalAction.bind(this);
     }
     
     openModal() {
@@ -66,6 +72,11 @@ export default class Dashboard extends React.Component {
 
     closeModal() {
         this.setState({modalIsOpen: false});
+    }
+    
+    blockchainModalAction(isVisible) {
+
+        this.setState({blockchainModalIsOpen: isVisible});
     }
     
     replacer(match, pIndent, pKey, pVal, pEnd) {
@@ -123,7 +134,7 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         <div className="clear" />
                                     </div>
-                                    <div className="hide-evidence-list hidden1">
+                                    <div className="hide-evidence-list">
                                         {
                                             Object.keys(sacJson).reverse().map( (i) => {
                                                 return <div className={"evidence-cnum-list "+(this.state.type == i ? "evidence-cnum-list-selected" : "")} key={"lhs-cset-"+i+Math.random()} onClick={this.viewRawEvidene.bind(this, sacJson[i], i)}>
@@ -177,6 +188,26 @@ export default class Dashboard extends React.Component {
                             </div>
                         </div>
                     </div>
+                </div>
+            </Modal>
+        );
+    }
+
+    configBlockchainNetworksModal(){
+        return (
+            <Modal
+                isOpen={this.state.blockchainModalIsOpen}
+                onRequestClose={this.blockchainModalAction.bind(this, false)}
+                style={customStyles}
+                ariaHideApp={false}
+                contentLabel="Section Modal">
+                <div className={"modal-file-container"}>
+                    <div className="modal-header">
+                        {/* <div className="fl modal-section-title">When you click Prove, the current default Blockchain node URL(s) will be used by the Prover</div> */}
+                        <div className="fr btn-close" onClick={this.blockchainModalAction.bind(this, false)} />
+                        <div className="fr help" title="When you click Prove, the current default Blockchain node URL(s) will be used by the Prover" />
+                    </div>
+                    {this.getNetworkHTMLDialog()}
                 </div>
             </Modal>
         );
@@ -713,18 +744,10 @@ export default class Dashboard extends React.Component {
     toggleSlider(el, e){
         var x = document.getElementsByClassName(el)[0];
         if (x.style.display === "none" || x.style.display == "") {
-            if(el == "hide-evidence-list")
-                document.getElementsByClassName("col-m")[0].className = "exp-m";
-            else
-                document.getElementsByClassName("col")[0].className = "exp fancy";
-            
+            document.getElementsByClassName("col")[0].className = "exp fancy";
             x.style.display = "block";
         } else {
-            if(el == "hide-evidence-list")
-                document.getElementsByClassName("exp-m")[0].className = "col-m";
-            else
-                document.getElementsByClassName("exp")[0].className = "col fancy";
-            
+            document.getElementsByClassName("exp")[0].className = "col fancy";
             x.style.display = "none";
         }
 
@@ -825,55 +848,86 @@ export default class Dashboard extends React.Component {
         return json;
     }
 
-    addNode(nname, e){
+    addNode(nname, ntype, e){
         if(this.addedNode.trim() == ""){
             alert("Field should not be empty.");
             $(e.target).parents('.node-row-add-container').find('input').focus();
             return false;
         }
 
-        var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/
-        if(!regexp.test(this.addedNode)){
+        // add protocol in url
+        var blockchainUrl = this.addedNodeProtocol+this.addedNode;
+        var regexp = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/
+        if(!regexp.test(blockchainUrl)){
             alert("Invalid URL. Please type correct URL.");
             $(e.target).parents('.node-row-add-container').find('input').focus();
             return false;
         }
-    
+
+        // check if url already exist in same network
+        var shouldAdd = true;
+        this.allNetworks.map((localStoreJson1, lsj1) => {
+            if(localStoreJson1.type == ntype){
+                this.allNetworks[lsj1].networks.map((localStoreJsonNetwork1) => {
+                    // if network is same as selected
+                    if(localStoreJsonNetwork1.name == nname){
+                        // get appdefault url index
+                        var getCAppDefaultIndex1 = localStoreJsonNetwork1.value.map(function(e) { return e.url; }).indexOf(blockchainUrl);
+                        if(getCAppDefaultIndex1 >= 0){
+                            shouldAdd = false;
+                        }
+                    }
+                });
+            }
+        })
+
+        // should stop if return false
+        if(shouldAdd === false){
+            alert("Duplicate record.");
+            $(e.target).parents('.node-row-add-container').find('input').focus();
+            return false;
+        }
+        
         var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
         
         //  add new node object under custom value array
         var obj = {
-            url: this.addedNode,
+            url: blockchainUrl,
             custom: true,
             default: true
         }
 
         //  check if networkjson exist
         if(this.networkJson && this.networkJson.length > 0){
-            // should set default false from whole network jsons
-            // this.networkJson = this.removeDefaultFromNetworkJson();
-
             this.networkJson.map((globalFileJson, pi) => {
-                this.allNetworks.map((localStoreJson, ci) => {
-                    if(globalFileJson.name == nname){
-                        // do not add if already added
-                        var existPIndex = globalFileJson.value.map(function(e) { return e.url; }).indexOf(obj.url);
-                        if(existPIndex < 0){
-                            globalFileJson.value.push(obj);
-                        }else{
-                            if(globalFileJson.value[pi]) globalFileJson.value[pi].default = false;
+                if(globalFileJson.type == ntype){
+                    this.networkJson[pi].networks.map((globalFileJsonNetworks, pni) => {
+                        if(globalFileJsonNetworks.name == nname){
+                            // do not add if already added
+                            var existPIndex = globalFileJsonNetworks.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                            if(existPIndex < 0){
+                                globalFileJsonNetworks.value.push(obj);
+                            }else{
+                                if(globalFileJsonNetworks.value[pni]) globalFileJsonNetworks.value[pni].default = false;
+                            }
                         }
-                    }
-                    if(localStoreJson.name == nname){
-                        var existCIndex = localStoreJson.value.map(function(e) { return e.url; }).indexOf(obj.url);
-                        if(existCIndex < 0){
-                            localStoreJson.value.push(obj);
-                        }else{
-                            if(localStoreJson.value[ci]) localStoreJson.value[ci].default = false;
-                        }
-                    }
-                })
+                    });
+                }
             });
+            this.allNetworks.map((localStoreJson, ci) => {
+                if(localStoreJson.type == ntype){
+                    this.allNetworks[ci].networks.map((localStoreJsonNetworks, cni) => {
+                        if(localStoreJsonNetworks.name == nname){
+                            var existCIndex = localStoreJsonNetworks.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                            if(existCIndex < 0){
+                                localStoreJsonNetworks.value.push(obj);
+                            }else{
+                                if(localStoreJsonNetworks.value[cni]) localStoreJsonNetworks.value[cni].default = false;
+                            }
+                        }
+                    });
+                }
+            })
 
             FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
                 if(err){
@@ -887,26 +941,30 @@ export default class Dashboard extends React.Component {
         this.cancelCustomNode(e);
     }
 
-    removeNode(node, nname, e){
+    removeNode(node, nname, ntype, e){
         var url = node.url;
 
         // if default node selected
         if(node.default){
             // run loop to get app default url
             var shouldDelete = true;
-            this.allNetworks.map((localStoreJson1) => {
-                // if network is same as selected
-                if(localStoreJson1.name == nname){
-                    // get appdefault url index
-                    var getCAppDefaultIndex1 = localStoreJson1.value.map(function(e) { return e.appDefault; }).indexOf(true);
-                    if(getCAppDefaultIndex1 >= 0){
-                        var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default "+localStoreJson1.value[getCAppDefaultIndex1].url;
+            this.allNetworks.map((localStoreJson1, lsj1) => {
+                if(localStoreJson1.type == ntype){
+                    this.allNetworks[lsj1].networks.map((localStoreJsonNetwork1) => {
+                        // if network is same as selected
+                        if(localStoreJsonNetwork1.name == nname){
+                            // get appdefault url index
+                            var getCAppDefaultIndex1 = localStoreJsonNetwork1.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                            if(getCAppDefaultIndex1 >= 0){
+                                var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default "+localStoreJsonNetwork1.value[getCAppDefaultIndex1].url;
 
-                        var r = confirm(warnMgs);
-                        if (r !== true) {
-                            shouldDelete = false;
+                                var r = confirm(warnMgs);
+                                if (r !== true) {
+                                    shouldDelete = false;
+                                }
+                            }
                         }
-                    }
+                    });
                 }
             })
 
@@ -916,37 +974,45 @@ export default class Dashboard extends React.Component {
         
         var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
 
-        this.networkJson.map(globalFileJson => {
-            // delete added custom node
-            if(globalFileJson.name == nname){
-                var existPIndex = globalFileJson.value.map(function(e) { return e.url; }).indexOf(url);
-                if(existPIndex >= 0){
-                    if(globalFileJson.value[existPIndex].default){
-                        var getPAppDefaultIndex = globalFileJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
-                        if(getPAppDefaultIndex >= 0){
-                            globalFileJson.value[getPAppDefaultIndex].default = true;
+        this.networkJson.map((globalFileJson, gfj1) => {
+            if(globalFileJson.type == ntype){
+                this.networkJson[gfj1].networks.map(globalFileJsonNetwork => {
+                    // delete added custom node
+                    if(globalFileJsonNetwork.name == nname){
+                        var existPIndex = globalFileJsonNetwork.value.map(function(e) { return e.url; }).indexOf(url);
+                        if(existPIndex >= 0){
+                            if(globalFileJsonNetwork.value[existPIndex].default){
+                                var getPAppDefaultIndex = globalFileJsonNetwork.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                                if(getPAppDefaultIndex >= 0){
+                                    globalFileJsonNetwork.value[getPAppDefaultIndex].default = true;
+                                }
+                            }
+                            globalFileJsonNetwork.value.splice(existPIndex, 1);
                         }
                     }
-                    globalFileJson.value.splice(existPIndex, 1);
-                }
+                });
             }
         });
 
-        this.allNetworks.map((localStoreJson) => {
-            // delete added custom node
-            if(localStoreJson.name == nname){
-                var existCIndex = localStoreJson.value.map(function(e) { return e.url; }).indexOf(url);
-                if(existCIndex >= 0){
-                    if(localStoreJson.value[existCIndex].default){
-                        var getCAppDefaultIndex = localStoreJson.value.map(function(e) { return e.appDefault; }).indexOf(true);
-                        if(getCAppDefaultIndex >= 0){
-                            localStoreJson.value[getCAppDefaultIndex].default = true;
+        this.allNetworks.map((localStoreJson, lsji) => {
+            if(localStoreJson.type == ntype){
+                this.allNetworks[lsji].networks.map((localStoreJsonNetwork) => {
+                    // delete added custom node
+                    if(localStoreJsonNetwork.name == nname){
+                        var existCIndex = localStoreJsonNetwork.value.map(function(e) { return e.url; }).indexOf(url);
+                        if(existCIndex >= 0){
+                            if(localStoreJsonNetwork.value[existCIndex].default){
+                                var getCAppDefaultIndex = localStoreJsonNetwork.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                                if(getCAppDefaultIndex >= 0){
+                                    localStoreJsonNetwork.value[getCAppDefaultIndex].default = true;
+                                }
+                            }
+                            localStoreJsonNetwork.value.splice(existCIndex, 1);
                         }
                     }
-                    localStoreJson.value.splice(existCIndex, 1);
-                }
+                });
             }
-        })
+        });
     
         FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
             if(err){
@@ -957,38 +1023,47 @@ export default class Dashboard extends React.Component {
         });
     }
 
-    setDefaultNode(url, nname, e){
+    setDefaultNode(url, nname, ntype, e){
         var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
 
         this.networkJson.map((globalFileJson, gi) => {
-            this.allNetworks.map((localStoreJson, li) => {
-                // change default set node
-                if(globalFileJson.name == nname){
-                    var existPIndex = globalFileJson.value.map(function(e, i) {
-                        if(e.url != url){
-                            if(globalFileJson.value[i]) globalFileJson.value[i].default = false;
+            if(globalFileJson.type == ntype){
+                this.networkJson[gi].networks.map((globalFileJsonNetwork) => {
+                    // change default set node
+                    if(globalFileJsonNetwork.name == nname){
+                        var existPIndex = globalFileJsonNetwork.value.map(function(e, i) {
+                            if(e.url != url){
+                                if(globalFileJsonNetwork.value[i]) globalFileJsonNetwork.value[i].default = false;
+                            }
+                            return e.url;
+                        }).indexOf(url);
+                        if(existPIndex >= 0){
+                            if(globalFileJsonNetwork.value[existPIndex]) globalFileJsonNetwork.value[existPIndex].default = true;
                         }
-                        return e.url;
-                    }).indexOf(url);
-                    if(existPIndex >= 0){
-                        if(globalFileJson.value[existPIndex]) globalFileJson.value[existPIndex].default = true;
                     }
-                }
-
-                if(localStoreJson.name == nname){
-                    var existCIndex = localStoreJson.value.map(function(e, i) {
-                        if(e.url != url){
-                            if(localStoreJson.value[i]) localStoreJson.value[i].default = false;
-                        }
-                        return e.url;
-                    }).indexOf(url);
-                    if(existCIndex >= 0){
-                        if(localStoreJson.value[existCIndex]) localStoreJson.value[existCIndex].default = true;
-                    }
-                }
-            })
+                });
+            }
         });
-        
+
+        this.allNetworks.map((localStoreJson, li) => {
+            if(localStoreJson.type == ntype){
+                this.allNetworks[li].networks.map((localStoreJsonNetwork) => {
+                    // change default set node
+                    if(localStoreJsonNetwork.name == nname){
+                        var existCIndex = localStoreJsonNetwork.value.map(function(e, i) {
+                            if(e.url != url){
+                                if(localStoreJsonNetwork.value[i]) localStoreJsonNetwork.value[i].default = false;
+                            }
+                            return e.url;
+                        }).indexOf(url);
+                        if(existCIndex >= 0){
+                            if(localStoreJsonNetwork.value[existCIndex]) localStoreJsonNetwork.value[existCIndex].default = true;
+                        }
+                    }
+                });
+            }
+        });
+    
         FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
             if(err){
                 console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
@@ -1006,45 +1081,43 @@ export default class Dashboard extends React.Component {
 
     cancelCustomNode(e){
         this.addedNode = "";
+        this.addedNodeProtocol = "https://";
+
         $(e.target).parents('.node-row').find('.add-custom-node-btn').show();
         $(e.target).parents('.node-row-add-container').hide();
         $(e.target).parents('.node-row-add-container').find('input').val('');
     }
-
-    showNetworks(e){
-        var el = "evidence-network-container";
-        var x = document.getElementsByClassName(el)[0];
-        if (x.style.display === "none" || x.style.display == "") {
-            x.style.display = "block";
-        } else {
-            x.style.display = "none";
-        }
-
-        setTimeout(()=>{
-            var element6 =  document.getElementsByClassName('log-container-ps');
-            if (element6 && element6.length > 0) {
-                new PerfectScrollbar('.log-container-ps').update();
-            }
-            var element7 =  document.getElementsByClassName('modal-xpanel-lhs-container');
-            if (element7 && element7.length > 0) {
-                new PerfectScrollbar('.modal-xpanel-lhs-container').update();
-            }
-        }, 50);
+    
+    viewNetworkNode(network, networktype) {
+        this.setState({network: network, networktype: networktype});
+        document.getElementsByClassName("network-nodes")[0].children[0].scrollIntoView()
     }
 
-    getNetworkHTML(blockchainAnchorsOn){
-        if(this.networkJson != ""){
+    getNetworkHTMLDialog(){
+        var rawJson = this.store.getRawJson(),
+            sacJson = rawJson.sac,
+            evidenceData = this.store.getEvidenceManifestData(),
+            blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
+        
+        if(this.networkJson != "" && this.evidenceType == 'Certified L2'){
             var allNetworks = [];
             if(blockchainAnchorsOn){
-                blockchainAnchorsOn.map(node => {
-                    var networkList = [...allNetworks, ...node.networks];
-                    networkList.map(networkName => {
-                        var existRecord = this.networkJson.map(function(e) {
-                            if(e.name == networkName){
-                                allNetworks = [...allNetworks, e];
-                            }
-                            return e.name;
-                        }).indexOf(networkName);
+                blockchainAnchorsOn.map(networkType => {
+                    this.networkJson.map((e) => {
+                        if(e.type == networkType.type){
+                            var ntwrkObj = {type: networkType.type};
+                            e.networks.map(en => {
+                                networkType.networks.map(networkName => {
+                                    if(en.name == networkName){
+                                        if(!ntwrkObj.networks){
+                                            ntwrkObj.networks = [];
+                                        }
+                                        ntwrkObj.networks.push(en);
+                                    }
+                                });
+                            });
+                            allNetworks.push(ntwrkObj);
+                        }
                     });
                 });
             }else{
@@ -1052,54 +1125,102 @@ export default class Dashboard extends React.Component {
             }
             this.allNetworks = allNetworks;
             
-            return allNetworks.map(ntwrk => {
-                return <div key={"node-row-"+Math.random()} className="node-row">
-                    <div className="node-row-header">{ntwrk.name}</div>
-                    {
-                        ntwrk.value.map(node => {
-                            if(node.default){
-                                this.defaultNodeUrls = [...this.defaultNodeUrls, node.url]
+            return <div id="modal-blockchain-content-container" className="modal-content">
+                <div className="panel-container">
+                    <div className="xpanel-modal xpanel-modal-inspenia">
+                        <div className="xpanel-lhs-container">
+                            {
+                                allNetworks.map((ntwrkType, i) => {
+                                    return <div key={"lhs-cset-"+i+Math.random()}>
+                                        <div className="evidence-cnum-list-normal">
+                                            <div className="info-label">{ntwrkType.type}</div>
+                                            <div className="clear" />
+                                        </div>
+                                        <div className="hide-evidence-list">
+                                            {
+                                                ntwrkType.networks && ntwrkType.networks.map( (ntwrk, i) => {
+                                                    var selectionCls = "";
+                                                    if(i == 0 && this.state.network == ''){
+                                                        this.state.network = ntwrk;
+                                                        this.state.networkType = ntwrkType.type;
+                                                        selectionCls = "evidence-cnum-list-selected";
+                                                    }else if(this.state.network.name == ntwrk.name){
+                                                        selectionCls = "evidence-cnum-list-selected";
+                                                    }
+
+                                                    return <div className={"evidence-cnum-list "+selectionCls} key={"lhs-cset-"+i+Math.random()} onClick={this.viewNetworkNode.bind(this, ntwrk, ntwrkType.type)}>
+                                                        <div className="info-label">{ntwrk.name}</div>
+                                                        <div className="clear" />
+                                                    </div>
+                                                })
+                                            }
+                                        </div>
+                                    </div>
+                                })
                             }
-                            return <div key={"node-row-sub-container-"+Math.random()} className="node-row-sub-container">
-                                <div className="node-row-url fl">{node.url}</div>
-                                {
-                                    node.custom ? (
-                                        <div className="node-row-btn btn fr" onClick={this.removeNode.bind(this, node, ntwrk.name)}>Remove</div>
-                                    ) : null
-                                }
-                                {
-                                    !node.default ? (
-                                        <div className="node-row-btn btn fr" onClick={this.setDefaultNode.bind(this, node.url, ntwrk.name)}>Set Default</div>
-                                    ) : null
-                                }
-                                <div className="clear" />
-                            </div>
-                        })
-                    }
-                    <div className="node-row-sub-container node-row-add-container hidden">
-                        <div className="node-row-url fl">
-                            <input
-                                onChange = {(e)=> {
-                                    this.addedNode = e.target.value;
-                                }}
-                                ref="custom-node-input"
-                                placeholder="Add custom node" className="single-line" />
                         </div>
-                        <div className="node-row-btn btn fr" onClick={this.cancelCustomNode.bind(this)}>Cancel</div>
-                        <div className="node-row-btn btn fr" onClick={this.addNode.bind(this, ntwrk.name)}>Add</div>
-                        <div className="clear" />
                     </div>
-                    <div className="node-row-sub-container add-custom-node-btn">
-                        <div className="node-row-btn btn" onClick={this.addCustomNode}>Add custom node</div>
+                    <div className="ypanel-modal">
+                        <div className="evidence-network-container">
+                            <div className="node-container">
+                                <div className='network-nodes node-row'>
+                                    {
+                                        this.state && this.state.network && this.state.network.value.map(node => {
+                                            if(node.default){
+                                                this.defaultNodeUrls = [...this.defaultNodeUrls, node.url]
+                                            }
+                                            return <div key={"node-row-sub-container-"+Math.random()} className="node-row-sub-container">
+                                                <div className="node-row-url fl">{node.url}</div>
+                                                <div className="node-row-btn-delete-container fr">
+                                                    {
+                                                        node.custom ? (
+                                                            <div className="node-row-btn-delete btn" onClick={this.removeNode.bind(this, node, this.state.network.name, this.state.networkType)} title="Remove"></div>
+                                                        ) : <div>&nbsp;</div>
+                                                    }
+                                                </div>
+                                                <div className="node-row-btn-selection-container fr">
+                                                    {
+                                                        !node.default ? (
+                                                            <div className="node-row-btn btn" onClick={this.setDefaultNode.bind(this, node.url, this.state.network.name, this.state.networkType)}>Set As Default</div>
+                                                        ) : <div className="default node-row-btn btn">Default</div>
+                                                    }
+                                                </div>
+                                                <div className="clear" />
+                                            </div>
+                                        })
+                                    }
+                                    <div className="node-row-sub-container node-row-add-container hidden">
+                                        <div className="node-row-url fl">
+                                            <select onChange={(e) => {this.addedNodeProtocol = e.target.value;}} defaultValue="https://" className="node-row-url-select">
+                                                <option value="https://">https://</option>
+                                                <option value="http://">http://</option>
+                                            </select>
+                                            <input
+                                                onChange = {(e)=> {
+                                                    this.addedNode = e.target.value;
+                                                }}
+                                                ref="custom-node-input"
+                                                placeholder="Add Blockchain Node URL" className="single-line" />
+                                        </div>
+                                        <div className="node-row-btn btn fr" style={{marginLeft: 10}} onClick={this.cancelCustomNode.bind(this)}>Cancel</div>
+                                        <div className="node-row-btn btn fr" onClick={this.addNode.bind(this, this.state.network.name, this.state.networkType)}>Add</div>
+                                        <div className="clear" />
+                                    </div>
+                                    <div className="node-row-sub-container add-custom-node-btn">
+                                        <div className="node-row-btn-add btn" onClick={this.addCustomNode}title="Add Blockchain Node URL"></div>
+                                    </div>
+                                    <div className="clear" />
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div className="clear" />
                 </div>
-            })
+            </div>
         }else{
             return null;
         }
     }
-
+    
 	render() {
         var storeFileName = this.store.getFileName(),
             data = this.store.getData(),
@@ -1123,19 +1244,13 @@ export default class Dashboard extends React.Component {
                 {
                     type: "HyperledgerStatic",
                     networks: [
-                        "staticNode1",
-                        "staticNode2"
+                        "staticNetwork1",
+                        "staticNetwork2"
                     ]
                 }
             ]
         }
         
-        // call this function to get network's and node's html
-        var netwrkHtml = null
-        if(this.evidenceType == 'Certified L2'){
-            netwrkHtml = this.getNetworkHTML(evidenceData.blockchainAnchorsOn);
-        }
-
         // set state
         this.state.stateData = data;
 
@@ -1208,6 +1323,17 @@ export default class Dashboard extends React.Component {
                                             <div className="info-label">Raw Evidence</div>
                                             <div className="fl bold"> : </div>
                                             <div className="info-value"><a className="link" onClick={this.openModal}>View</a></div>
+
+                                            <div className="clear"></div>
+                                            {
+                                                this.evidenceType == 'Certified L2' ? (
+                                                    <div>
+                                                        <div className="info-label">Blockchain URLs</div>
+                                                        <div className="fl bold"> : </div>
+                                                        <div className="info-value"><a className="link" onClick={this.blockchainModalAction.bind(this, true)}>View</a></div>
+                                                    </div>
+                                                ) : null
+                                            }
                                         </div>
                                     </div>
                                 ) : null
@@ -1219,13 +1345,6 @@ export default class Dashboard extends React.Component {
                                     <div className="evidence-prove-form">
                                         <div>
                                             <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
-                                            <div onClick={()=> {
-                                                if(this.evidenceType == 'Certified L2'){
-                                                    this.showNetworks(this);
-                                                }else{
-                                                    this.proveEvidence(this);
-                                                }
-                                            }} className="fl prove-gear-btn gear btn-success" />
                                             <div className="prove-info-sign" />
                                         </div>
                                     </div>
@@ -1246,11 +1365,6 @@ export default class Dashboard extends React.Component {
                                         <div className="btn-primary prove-failed-btn">
                                             Proof Failed
                                             <div className="fr prove-failed-icon"></div>
-                                        </div>
-                                    </div>
-                                    <div className="evidence-network-container hidden">
-                                        <div className="node-container">
-                                            {netwrkHtml}
                                         </div>
                                     </div>
                                 </div>
@@ -1276,6 +1390,7 @@ export default class Dashboard extends React.Component {
                     {<Thread key={"thread-"+err} data={data} err={err} parentStore={this.store} />}
                 </div>
                 {this.configSectionModal()}
+                {this.configBlockchainNetworksModal()}
             </div>
         );
 	}

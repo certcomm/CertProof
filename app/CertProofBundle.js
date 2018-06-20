@@ -71,57 +71,63 @@ exports.default = {
 	errorFileName: "Errors.txt",
 	networkFileFolder: userDataPath + "/networks/",
 	networkJsonFileName: "networks.json",
-	networks: [{
-		name: "mainnet",
-		value: [{
-			url: "https://mainnet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-			appDefault: true,
-			default: true
+	blockChainAnchorsOn: [{
+		type: "Ethereum",
+		networks: [{
+			name: "mainnet",
+			value: [{
+				url: "https://mainnet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+				appDefault: true,
+				default: true
+			}, {
+				url: "https://mainnet.certcomm.io/f7dca",
+				default: false
+			}]
 		}, {
-			url: "https://mainnet.certcomm.io/f7dca",
-			default: false
+			name: "test_ropsten",
+			value: [{
+				url: "https://ropsten.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+				appDefault: true,
+				default: true
+			}]
+		}, {
+			name: "test_infuranet",
+			value: [{
+				url: "https://infuranet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+				appDefault: true,
+				default: true
+			}]
+		}, {
+			name: "test_kovan",
+			value: [{
+				url: "https://kovan.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+				appDefault: true,
+				default: true
+			}]
+		}, {
+			name: "test_rinkeby",
+			value: [{
+				url: "https://rinkeby.io/Rfiz1l4YFxXO9GRgpOaB",
+				appDefault: true,
+				default: true
+			}]
 		}]
 	}, {
-		name: "test_ropsten",
-		value: [{
-			url: "https://ropsten.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-			appDefault: true,
-			default: true
-		}]
-	}, {
-		name: "test_infuranet",
-		value: [{
-			url: "https://infuranet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-			appDefault: true,
-			default: true
-		}]
-	}, {
-		name: "test_kovan",
-		value: [{
-			url: "https://kovan.infura.io/Rfiz1l4YFxXO9GRgpOaB",
-			appDefault: true,
-			default: true
-		}]
-	}, {
-		name: "test_rinkeby",
-		value: [{
-			url: "https://rinkeby.io/Rfiz1l4YFxXO9GRgpOaB",
-			appDefault: true,
-			default: true
-		}]
-	}, {
-		name: "staticNode1",
-		value: [{
-			url: "https://staticnode1.io/Rfiz1l4YFxXO9GRgpOaB",
-			appDefault: true,
-			default: true
-		}]
-	}, {
-		name: "staticNode2",
-		value: [{
-			url: "https://staticnode2.io/Rfiz1l4YFxXO9GRgpOaB",
-			appDefault: true,
-			default: true
+		type: "HyperledgerStatic",
+		networks: [{
+			name: "staticNetwork1",
+			value: [{
+				url: "https://staticnode1.io/Rfiz1l4YFxXO9GRgpOaB",
+				appDefault: true,
+				default: true
+			}]
+		}, {
+			name: "staticNetwork2",
+			value: [{
+				url: "https://staticnode2.io/Rfiz1l4YFxXO9GRgpOaB",
+				appDefault: true,
+				default: true
+			}]
 		}]
 	}]
 };
@@ -198,7 +204,7 @@ var AppRoutes = (0, _mobxReact.observer)(_class = function (_React$Component) {
         value: function componentWillMount() {
             var _this2 = this;
 
-            var staticNetwork = Constants.default.networks,
+            var staticNetwork = Constants.default.blockChainAnchorsOn,
                 json = JSON.stringify(staticNetwork),
                 fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
 
@@ -350,20 +356,26 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         _this.networkJson = '';
         _this.allNetworks = '';
         _this.addedNode = '';
+        _this.addedNodeProtocol = 'https://';
         _this.defaultNodeUrls = [];
 
         _this.state = {
             modalIsOpen: false,
+            blockchainModalIsOpen: false,
             progress: 0,
             stateData: '',
             rawJson: null,
             type: "evidencemenifest",
+            network: '',
+            networktype: '',
             log: "",
             errLog: []
         };
 
         _this.openModal = _this.openModal.bind(_this);
         _this.closeModal = _this.closeModal.bind(_this);
+
+        _this.blockchainModalAction = _this.blockchainModalAction.bind(_this);
         return _this;
     }
 
@@ -378,6 +390,12 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         key: "closeModal",
         value: function closeModal() {
             this.setState({ modalIsOpen: false });
+        }
+    }, {
+        key: "blockchainModalAction",
+        value: function blockchainModalAction(isVisible) {
+
+            this.setState({ blockchainModalIsOpen: isVisible });
         }
     }, {
         key: "replacer",
@@ -481,7 +499,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     ),
                                     _react2.default.createElement(
                                         "div",
-                                        { className: "hide-evidence-list hidden1" },
+                                        { className: "hide-evidence-list" },
                                         Object.keys(sacJson).reverse().map(function (i) {
                                             return _react2.default.createElement(
                                                 "div",
@@ -577,6 +595,30 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                             )
                         )
                     )
+                )
+            );
+        }
+    }, {
+        key: "configBlockchainNetworksModal",
+        value: function configBlockchainNetworksModal() {
+            return _react2.default.createElement(
+                _reactModal2.default,
+                {
+                    isOpen: this.state.blockchainModalIsOpen,
+                    onRequestClose: this.blockchainModalAction.bind(this, false),
+                    style: customStyles,
+                    ariaHideApp: false,
+                    contentLabel: "Section Modal" },
+                _react2.default.createElement(
+                    "div",
+                    { className: "modal-file-container" },
+                    _react2.default.createElement(
+                        "div",
+                        { className: "modal-header" },
+                        _react2.default.createElement("div", { className: "fr btn-close", onClick: this.blockchainModalAction.bind(this, false) }),
+                        _react2.default.createElement("div", { className: "fr help", title: "When you click Prove, the current default Blockchain node URL(s) will be used by the Prover" })
+                    ),
+                    this.getNetworkHTMLDialog()
                 )
             );
         }
@@ -1132,12 +1174,10 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         value: function toggleSlider(el, e) {
             var x = document.getElementsByClassName(el)[0];
             if (x.style.display === "none" || x.style.display == "") {
-                if (el == "hide-evidence-list") document.getElementsByClassName("col-m")[0].className = "exp-m";else document.getElementsByClassName("col")[0].className = "exp fancy";
-
+                document.getElementsByClassName("col")[0].className = "exp fancy";
                 x.style.display = "block";
             } else {
-                if (el == "hide-evidence-list") document.getElementsByClassName("exp-m")[0].className = "col-m";else document.getElementsByClassName("exp")[0].className = "col fancy";
-
+                document.getElementsByClassName("exp")[0].className = "col fancy";
                 x.style.display = "none";
             }
 
@@ -1243,7 +1283,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         }
     }, {
         key: "addNode",
-        value: function addNode(nname, e) {
+        value: function addNode(nname, ntype, e) {
             var _this10 = this;
 
             if (this.addedNode.trim() == "") {
@@ -1252,9 +1292,37 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 return false;
             }
 
-            var regexp = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
-            if (!regexp.test(this.addedNode)) {
+            // add protocol in url
+            var blockchainUrl = this.addedNodeProtocol + this.addedNode;
+            var regexp = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
+            if (!regexp.test(blockchainUrl)) {
                 alert("Invalid URL. Please type correct URL.");
+                $(e.target).parents('.node-row-add-container').find('input').focus();
+                return false;
+            }
+
+            // check if url already exist in same network
+            var shouldAdd = true;
+            this.allNetworks.map(function (localStoreJson1, lsj1) {
+                if (localStoreJson1.type == ntype) {
+                    _this10.allNetworks[lsj1].networks.map(function (localStoreJsonNetwork1) {
+                        // if network is same as selected
+                        if (localStoreJsonNetwork1.name == nname) {
+                            // get appdefault url index
+                            var getCAppDefaultIndex1 = localStoreJsonNetwork1.value.map(function (e) {
+                                return e.url;
+                            }).indexOf(blockchainUrl);
+                            if (getCAppDefaultIndex1 >= 0) {
+                                shouldAdd = false;
+                            }
+                        }
+                    });
+                }
+            });
+
+            // should stop if return false
+            if (shouldAdd === false) {
+                alert("Duplicate record.");
                 $(e.target).parents('.node-row-add-container').find('input').focus();
                 return false;
             }
@@ -1263,39 +1331,44 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
             //  add new node object under custom value array
             var obj = {
-                url: this.addedNode,
+                url: blockchainUrl,
                 custom: true,
                 default: true
 
                 //  check if networkjson exist
             };if (this.networkJson && this.networkJson.length > 0) {
-                // should set default false from whole network jsons
-                // this.networkJson = this.removeDefaultFromNetworkJson();
-
                 this.networkJson.map(function (globalFileJson, pi) {
-                    _this10.allNetworks.map(function (localStoreJson, ci) {
-                        if (globalFileJson.name == nname) {
-                            // do not add if already added
-                            var existPIndex = globalFileJson.value.map(function (e) {
-                                return e.url;
-                            }).indexOf(obj.url);
-                            if (existPIndex < 0) {
-                                globalFileJson.value.push(obj);
-                            } else {
-                                if (globalFileJson.value[pi]) globalFileJson.value[pi].default = false;
+                    if (globalFileJson.type == ntype) {
+                        _this10.networkJson[pi].networks.map(function (globalFileJsonNetworks, pni) {
+                            if (globalFileJsonNetworks.name == nname) {
+                                // do not add if already added
+                                var existPIndex = globalFileJsonNetworks.value.map(function (e) {
+                                    return e.url;
+                                }).indexOf(obj.url);
+                                if (existPIndex < 0) {
+                                    globalFileJsonNetworks.value.push(obj);
+                                } else {
+                                    if (globalFileJsonNetworks.value[pni]) globalFileJsonNetworks.value[pni].default = false;
+                                }
                             }
-                        }
-                        if (localStoreJson.name == nname) {
-                            var existCIndex = localStoreJson.value.map(function (e) {
-                                return e.url;
-                            }).indexOf(obj.url);
-                            if (existCIndex < 0) {
-                                localStoreJson.value.push(obj);
-                            } else {
-                                if (localStoreJson.value[ci]) localStoreJson.value[ci].default = false;
+                        });
+                    }
+                });
+                this.allNetworks.map(function (localStoreJson, ci) {
+                    if (localStoreJson.type == ntype) {
+                        _this10.allNetworks[ci].networks.map(function (localStoreJsonNetworks, cni) {
+                            if (localStoreJsonNetworks.name == nname) {
+                                var existCIndex = localStoreJsonNetworks.value.map(function (e) {
+                                    return e.url;
+                                }).indexOf(obj.url);
+                                if (existCIndex < 0) {
+                                    localStoreJsonNetworks.value.push(obj);
+                                } else {
+                                    if (localStoreJsonNetworks.value[cni]) localStoreJsonNetworks.value[cni].default = false;
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
                 });
 
                 FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), { spaces: 4 }, function (err) {
@@ -1311,28 +1384,34 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         }
     }, {
         key: "removeNode",
-        value: function removeNode(node, nname, e) {
+        value: function removeNode(node, nname, ntype, e) {
+            var _this11 = this;
+
             var url = node.url;
 
             // if default node selected
             if (node.default) {
                 // run loop to get app default url
                 var shouldDelete = true;
-                this.allNetworks.map(function (localStoreJson1) {
-                    // if network is same as selected
-                    if (localStoreJson1.name == nname) {
-                        // get appdefault url index
-                        var getCAppDefaultIndex1 = localStoreJson1.value.map(function (e) {
-                            return e.appDefault;
-                        }).indexOf(true);
-                        if (getCAppDefaultIndex1 >= 0) {
-                            var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default " + localStoreJson1.value[getCAppDefaultIndex1].url;
+                this.allNetworks.map(function (localStoreJson1, lsj1) {
+                    if (localStoreJson1.type == ntype) {
+                        _this11.allNetworks[lsj1].networks.map(function (localStoreJsonNetwork1) {
+                            // if network is same as selected
+                            if (localStoreJsonNetwork1.name == nname) {
+                                // get appdefault url index
+                                var getCAppDefaultIndex1 = localStoreJsonNetwork1.value.map(function (e) {
+                                    return e.appDefault;
+                                }).indexOf(true);
+                                if (getCAppDefaultIndex1 >= 0) {
+                                    var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default " + localStoreJsonNetwork1.value[getCAppDefaultIndex1].url;
 
-                            var r = confirm(warnMgs);
-                            if (r !== true) {
-                                shouldDelete = false;
+                                    var r = confirm(warnMgs);
+                                    if (r !== true) {
+                                        shouldDelete = false;
+                                    }
+                                }
                             }
-                        }
+                        });
                     }
                 });
 
@@ -1342,43 +1421,51 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
             var fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
 
-            this.networkJson.map(function (globalFileJson) {
-                // delete added custom node
-                if (globalFileJson.name == nname) {
-                    var existPIndex = globalFileJson.value.map(function (e) {
-                        return e.url;
-                    }).indexOf(url);
-                    if (existPIndex >= 0) {
-                        if (globalFileJson.value[existPIndex].default) {
-                            var getPAppDefaultIndex = globalFileJson.value.map(function (e) {
-                                return e.appDefault;
-                            }).indexOf(true);
-                            if (getPAppDefaultIndex >= 0) {
-                                globalFileJson.value[getPAppDefaultIndex].default = true;
+            this.networkJson.map(function (globalFileJson, gfj1) {
+                if (globalFileJson.type == ntype) {
+                    _this11.networkJson[gfj1].networks.map(function (globalFileJsonNetwork) {
+                        // delete added custom node
+                        if (globalFileJsonNetwork.name == nname) {
+                            var existPIndex = globalFileJsonNetwork.value.map(function (e) {
+                                return e.url;
+                            }).indexOf(url);
+                            if (existPIndex >= 0) {
+                                if (globalFileJsonNetwork.value[existPIndex].default) {
+                                    var getPAppDefaultIndex = globalFileJsonNetwork.value.map(function (e) {
+                                        return e.appDefault;
+                                    }).indexOf(true);
+                                    if (getPAppDefaultIndex >= 0) {
+                                        globalFileJsonNetwork.value[getPAppDefaultIndex].default = true;
+                                    }
+                                }
+                                globalFileJsonNetwork.value.splice(existPIndex, 1);
                             }
                         }
-                        globalFileJson.value.splice(existPIndex, 1);
-                    }
+                    });
                 }
             });
 
-            this.allNetworks.map(function (localStoreJson) {
-                // delete added custom node
-                if (localStoreJson.name == nname) {
-                    var existCIndex = localStoreJson.value.map(function (e) {
-                        return e.url;
-                    }).indexOf(url);
-                    if (existCIndex >= 0) {
-                        if (localStoreJson.value[existCIndex].default) {
-                            var getCAppDefaultIndex = localStoreJson.value.map(function (e) {
-                                return e.appDefault;
-                            }).indexOf(true);
-                            if (getCAppDefaultIndex >= 0) {
-                                localStoreJson.value[getCAppDefaultIndex].default = true;
+            this.allNetworks.map(function (localStoreJson, lsji) {
+                if (localStoreJson.type == ntype) {
+                    _this11.allNetworks[lsji].networks.map(function (localStoreJsonNetwork) {
+                        // delete added custom node
+                        if (localStoreJsonNetwork.name == nname) {
+                            var existCIndex = localStoreJsonNetwork.value.map(function (e) {
+                                return e.url;
+                            }).indexOf(url);
+                            if (existCIndex >= 0) {
+                                if (localStoreJsonNetwork.value[existCIndex].default) {
+                                    var getCAppDefaultIndex = localStoreJsonNetwork.value.map(function (e) {
+                                        return e.appDefault;
+                                    }).indexOf(true);
+                                    if (getCAppDefaultIndex >= 0) {
+                                        localStoreJsonNetwork.value[getCAppDefaultIndex].default = true;
+                                    }
+                                }
+                                localStoreJsonNetwork.value.splice(existCIndex, 1);
                             }
                         }
-                        localStoreJson.value.splice(existCIndex, 1);
-                    }
+                    });
                 }
             });
 
@@ -1392,38 +1479,47 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         }
     }, {
         key: "setDefaultNode",
-        value: function setDefaultNode(url, nname, e) {
-            var _this11 = this;
+        value: function setDefaultNode(url, nname, ntype, e) {
+            var _this12 = this;
 
             var fileName = Constants.default.networkFileFolder + Constants.default.networkJsonFileName;
 
             this.networkJson.map(function (globalFileJson, gi) {
-                _this11.allNetworks.map(function (localStoreJson, li) {
-                    // change default set node
-                    if (globalFileJson.name == nname) {
-                        var existPIndex = globalFileJson.value.map(function (e, i) {
-                            if (e.url != url) {
-                                if (globalFileJson.value[i]) globalFileJson.value[i].default = false;
+                if (globalFileJson.type == ntype) {
+                    _this12.networkJson[gi].networks.map(function (globalFileJsonNetwork) {
+                        // change default set node
+                        if (globalFileJsonNetwork.name == nname) {
+                            var existPIndex = globalFileJsonNetwork.value.map(function (e, i) {
+                                if (e.url != url) {
+                                    if (globalFileJsonNetwork.value[i]) globalFileJsonNetwork.value[i].default = false;
+                                }
+                                return e.url;
+                            }).indexOf(url);
+                            if (existPIndex >= 0) {
+                                if (globalFileJsonNetwork.value[existPIndex]) globalFileJsonNetwork.value[existPIndex].default = true;
                             }
-                            return e.url;
-                        }).indexOf(url);
-                        if (existPIndex >= 0) {
-                            if (globalFileJson.value[existPIndex]) globalFileJson.value[existPIndex].default = true;
                         }
-                    }
+                    });
+                }
+            });
 
-                    if (localStoreJson.name == nname) {
-                        var existCIndex = localStoreJson.value.map(function (e, i) {
-                            if (e.url != url) {
-                                if (localStoreJson.value[i]) localStoreJson.value[i].default = false;
+            this.allNetworks.map(function (localStoreJson, li) {
+                if (localStoreJson.type == ntype) {
+                    _this12.allNetworks[li].networks.map(function (localStoreJsonNetwork) {
+                        // change default set node
+                        if (localStoreJsonNetwork.name == nname) {
+                            var existCIndex = localStoreJsonNetwork.value.map(function (e, i) {
+                                if (e.url != url) {
+                                    if (localStoreJsonNetwork.value[i]) localStoreJsonNetwork.value[i].default = false;
+                                }
+                                return e.url;
+                            }).indexOf(url);
+                            if (existCIndex >= 0) {
+                                if (localStoreJsonNetwork.value[existCIndex]) localStoreJsonNetwork.value[existCIndex].default = true;
                             }
-                            return e.url;
-                        }).indexOf(url);
-                        if (existCIndex >= 0) {
-                            if (localStoreJson.value[existCIndex]) localStoreJson.value[existCIndex].default = true;
                         }
-                    }
-                });
+                    });
+                }
             });
 
             FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), { spaces: 4 }, function (err) {
@@ -1445,49 +1541,47 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         key: "cancelCustomNode",
         value: function cancelCustomNode(e) {
             this.addedNode = "";
+            this.addedNodeProtocol = "https://";
+
             $(e.target).parents('.node-row').find('.add-custom-node-btn').show();
             $(e.target).parents('.node-row-add-container').hide();
             $(e.target).parents('.node-row-add-container').find('input').val('');
         }
     }, {
-        key: "showNetworks",
-        value: function showNetworks(e) {
-            var el = "evidence-network-container";
-            var x = document.getElementsByClassName(el)[0];
-            if (x.style.display === "none" || x.style.display == "") {
-                x.style.display = "block";
-            } else {
-                x.style.display = "none";
-            }
-
-            setTimeout(function () {
-                var element6 = document.getElementsByClassName('log-container-ps');
-                if (element6 && element6.length > 0) {
-                    new _perfectScrollbar2.default('.log-container-ps').update();
-                }
-                var element7 = document.getElementsByClassName('modal-xpanel-lhs-container');
-                if (element7 && element7.length > 0) {
-                    new _perfectScrollbar2.default('.modal-xpanel-lhs-container').update();
-                }
-            }, 50);
+        key: "viewNetworkNode",
+        value: function viewNetworkNode(network, networktype) {
+            this.setState({ network: network, networktype: networktype });
+            document.getElementsByClassName("network-nodes")[0].children[0].scrollIntoView();
         }
     }, {
-        key: "getNetworkHTML",
-        value: function getNetworkHTML(blockchainAnchorsOn) {
-            var _this12 = this;
+        key: "getNetworkHTMLDialog",
+        value: function getNetworkHTMLDialog() {
+            var _this13 = this;
 
-            if (this.networkJson != "") {
+            var rawJson = this.store.getRawJson(),
+                sacJson = rawJson.sac,
+                evidenceData = this.store.getEvidenceManifestData(),
+                blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
+
+            if (this.networkJson != "" && this.evidenceType == 'Certified L2') {
                 var allNetworks = [];
                 if (blockchainAnchorsOn) {
-                    blockchainAnchorsOn.map(function (node) {
-                        var networkList = [].concat(_toConsumableArray(allNetworks), _toConsumableArray(node.networks));
-                        networkList.map(function (networkName) {
-                            var existRecord = _this12.networkJson.map(function (e) {
-                                if (e.name == networkName) {
-                                    allNetworks = [].concat(_toConsumableArray(allNetworks), [e]);
-                                }
-                                return e.name;
-                            }).indexOf(networkName);
+                    blockchainAnchorsOn.map(function (networkType) {
+                        _this13.networkJson.map(function (e) {
+                            if (e.type == networkType.type) {
+                                var ntwrkObj = { type: networkType.type };
+                                e.networks.map(function (en) {
+                                    networkType.networks.map(function (networkName) {
+                                        if (en.name == networkName) {
+                                            if (!ntwrkObj.networks) {
+                                                ntwrkObj.networks = [];
+                                            }
+                                            ntwrkObj.networks.push(en);
+                                        }
+                                    });
+                                });
+                                allNetworks.push(ntwrkObj);
+                            }
                         });
                     });
                 } else {
@@ -1495,77 +1589,163 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 }
                 this.allNetworks = allNetworks;
 
-                return allNetworks.map(function (ntwrk) {
-                    return _react2.default.createElement(
+                return _react2.default.createElement(
+                    "div",
+                    { id: "modal-blockchain-content-container", className: "modal-content" },
+                    _react2.default.createElement(
                         "div",
-                        { key: "node-row-" + Math.random(), className: "node-row" },
+                        { className: "panel-container" },
                         _react2.default.createElement(
                             "div",
-                            { className: "node-row-header" },
-                            ntwrk.name
-                        ),
-                        ntwrk.value.map(function (node) {
-                            if (node.default) {
-                                _this12.defaultNodeUrls = [].concat(_toConsumableArray(_this12.defaultNodeUrls), [node.url]);
-                            }
-                            return _react2.default.createElement(
-                                "div",
-                                { key: "node-row-sub-container-" + Math.random(), className: "node-row-sub-container" },
-                                _react2.default.createElement(
-                                    "div",
-                                    { className: "node-row-url fl" },
-                                    node.url
-                                ),
-                                node.custom ? _react2.default.createElement(
-                                    "div",
-                                    { className: "node-row-btn btn fr", onClick: _this12.removeNode.bind(_this12, node, ntwrk.name) },
-                                    "Remove"
-                                ) : null,
-                                !node.default ? _react2.default.createElement(
-                                    "div",
-                                    { className: "node-row-btn btn fr", onClick: _this12.setDefaultNode.bind(_this12, node.url, ntwrk.name) },
-                                    "Set Default"
-                                ) : null,
-                                _react2.default.createElement("div", { className: "clear" })
-                            );
-                        }),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "node-row-sub-container node-row-add-container hidden" },
+                            { className: "xpanel-modal xpanel-modal-inspenia" },
                             _react2.default.createElement(
                                 "div",
-                                { className: "node-row-url fl" },
-                                _react2.default.createElement("input", {
-                                    onChange: function onChange(e) {
-                                        _this12.addedNode = e.target.value;
-                                    },
-                                    ref: "custom-node-input",
-                                    placeholder: "Add custom node", className: "single-line" })
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "node-row-btn btn fr", onClick: _this12.cancelCustomNode.bind(_this12) },
-                                "Cancel"
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "node-row-btn btn fr", onClick: _this12.addNode.bind(_this12, ntwrk.name) },
-                                "Add"
-                            ),
-                            _react2.default.createElement("div", { className: "clear" })
-                        ),
-                        _react2.default.createElement(
-                            "div",
-                            { className: "node-row-sub-container add-custom-node-btn" },
-                            _react2.default.createElement(
-                                "div",
-                                { className: "node-row-btn btn", onClick: _this12.addCustomNode },
-                                "Add custom node"
+                                { className: "xpanel-lhs-container" },
+                                allNetworks.map(function (ntwrkType, i) {
+                                    return _react2.default.createElement(
+                                        "div",
+                                        { key: "lhs-cset-" + i + Math.random() },
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "evidence-cnum-list-normal" },
+                                            _react2.default.createElement(
+                                                "div",
+                                                { className: "info-label" },
+                                                ntwrkType.type
+                                            ),
+                                            _react2.default.createElement("div", { className: "clear" })
+                                        ),
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "hide-evidence-list" },
+                                            ntwrkType.networks && ntwrkType.networks.map(function (ntwrk, i) {
+                                                var selectionCls = "";
+                                                if (i == 0 && _this13.state.network == '') {
+                                                    _this13.state.network = ntwrk;
+                                                    _this13.state.networkType = ntwrkType.type;
+                                                    selectionCls = "evidence-cnum-list-selected";
+                                                } else if (_this13.state.network.name == ntwrk.name) {
+                                                    selectionCls = "evidence-cnum-list-selected";
+                                                }
+
+                                                return _react2.default.createElement(
+                                                    "div",
+                                                    { className: "evidence-cnum-list " + selectionCls, key: "lhs-cset-" + i + Math.random(), onClick: _this13.viewNetworkNode.bind(_this13, ntwrk, ntwrkType.type) },
+                                                    _react2.default.createElement(
+                                                        "div",
+                                                        { className: "info-label" },
+                                                        ntwrk.name
+                                                    ),
+                                                    _react2.default.createElement("div", { className: "clear" })
+                                                );
+                                            })
+                                        )
+                                    );
+                                })
                             )
                         ),
-                        _react2.default.createElement("div", { className: "clear" })
-                    );
-                });
+                        _react2.default.createElement(
+                            "div",
+                            { className: "ypanel-modal" },
+                            _react2.default.createElement(
+                                "div",
+                                { className: "evidence-network-container" },
+                                _react2.default.createElement(
+                                    "div",
+                                    { className: "node-container" },
+                                    _react2.default.createElement(
+                                        "div",
+                                        { className: "network-nodes node-row" },
+                                        this.state && this.state.network && this.state.network.value.map(function (node) {
+                                            if (node.default) {
+                                                _this13.defaultNodeUrls = [].concat(_toConsumableArray(_this13.defaultNodeUrls), [node.url]);
+                                            }
+                                            return _react2.default.createElement(
+                                                "div",
+                                                { key: "node-row-sub-container-" + Math.random(), className: "node-row-sub-container" },
+                                                _react2.default.createElement(
+                                                    "div",
+                                                    { className: "node-row-url fl" },
+                                                    node.url
+                                                ),
+                                                _react2.default.createElement(
+                                                    "div",
+                                                    { className: "node-row-btn-delete-container fr" },
+                                                    node.custom ? _react2.default.createElement("div", { className: "node-row-btn-delete btn", onClick: _this13.removeNode.bind(_this13, node, _this13.state.network.name, _this13.state.networkType), title: "Remove" }) : _react2.default.createElement(
+                                                        "div",
+                                                        null,
+                                                        "\xA0"
+                                                    )
+                                                ),
+                                                _react2.default.createElement(
+                                                    "div",
+                                                    { className: "node-row-btn-selection-container fr" },
+                                                    !node.default ? _react2.default.createElement(
+                                                        "div",
+                                                        { className: "node-row-btn btn", onClick: _this13.setDefaultNode.bind(_this13, node.url, _this13.state.network.name, _this13.state.networkType) },
+                                                        "Set As Default"
+                                                    ) : _react2.default.createElement(
+                                                        "div",
+                                                        { className: "default node-row-btn btn" },
+                                                        "Default"
+                                                    )
+                                                ),
+                                                _react2.default.createElement("div", { className: "clear" })
+                                            );
+                                        }),
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "node-row-sub-container node-row-add-container hidden" },
+                                            _react2.default.createElement(
+                                                "div",
+                                                { className: "node-row-url fl" },
+                                                _react2.default.createElement(
+                                                    "select",
+                                                    { onChange: function onChange(e) {
+                                                            _this13.addedNodeProtocol = e.target.value;
+                                                        }, defaultValue: "https://", className: "node-row-url-select" },
+                                                    _react2.default.createElement(
+                                                        "option",
+                                                        { value: "https://" },
+                                                        "https://"
+                                                    ),
+                                                    _react2.default.createElement(
+                                                        "option",
+                                                        { value: "http://" },
+                                                        "http://"
+                                                    )
+                                                ),
+                                                _react2.default.createElement("input", {
+                                                    onChange: function onChange(e) {
+                                                        _this13.addedNode = e.target.value;
+                                                    },
+                                                    ref: "custom-node-input",
+                                                    placeholder: "Add Blockchain Node URL", className: "single-line" })
+                                            ),
+                                            _react2.default.createElement(
+                                                "div",
+                                                { className: "node-row-btn btn fr", style: { marginLeft: 10 }, onClick: this.cancelCustomNode.bind(this) },
+                                                "Cancel"
+                                            ),
+                                            _react2.default.createElement(
+                                                "div",
+                                                { className: "node-row-btn btn fr", onClick: this.addNode.bind(this, this.state.network.name, this.state.networkType) },
+                                                "Add"
+                                            ),
+                                            _react2.default.createElement("div", { className: "clear" })
+                                        ),
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "node-row-sub-container add-custom-node-btn" },
+                                            _react2.default.createElement("div", { className: "node-row-btn-add btn", onClick: this.addCustomNode, title: "Add Blockchain Node URL" })
+                                        ),
+                                        _react2.default.createElement("div", { className: "clear" })
+                                    )
+                                )
+                            )
+                        )
+                    )
+                );
             } else {
                 return null;
             }
@@ -1573,8 +1753,6 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "render",
         value: function render() {
-            var _this13 = this;
-
             var storeFileName = this.store.getFileName(),
                 data = this.store.getData(),
                 evidenceData = this.store.getEvidenceManifestData(),
@@ -1591,14 +1769,8 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     networks: ["test_rinkeby", "mainnet"]
                 }, {
                     type: "HyperledgerStatic",
-                    networks: ["staticNode1", "staticNode2"]
+                    networks: ["staticNetwork1", "staticNetwork2"]
                 }];
-            }
-
-            // call this function to get network's and node's html
-            var netwrkHtml = null;
-            if (this.evidenceType == 'Certified L2') {
-                netwrkHtml = this.getNetworkHTML(evidenceData.blockchainAnchorsOn);
             }
 
             // set state
@@ -1777,7 +1949,31 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                             { className: "link", onClick: this.openModal },
                                             "View"
                                         )
-                                    )
+                                    ),
+                                    _react2.default.createElement("div", { className: "clear" }),
+                                    this.evidenceType == 'Certified L2' ? _react2.default.createElement(
+                                        "div",
+                                        null,
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "info-label" },
+                                            "Blockchain URLs"
+                                        ),
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "fl bold" },
+                                            " : "
+                                        ),
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "info-value" },
+                                            _react2.default.createElement(
+                                                "a",
+                                                { className: "link", onClick: this.blockchainModalAction.bind(this, true) },
+                                                "View"
+                                            )
+                                        )
+                                    ) : null
                                 )
                             ) : null
                         ),
@@ -1795,13 +1991,6 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         { onClick: this.proveEvidence.bind(this), className: "fl prove-btn btn-success" },
                                         "Prove"
                                     ),
-                                    _react2.default.createElement("div", { onClick: function onClick() {
-                                            if (_this13.evidenceType == 'Certified L2') {
-                                                _this13.showNetworks(_this13);
-                                            } else {
-                                                _this13.proveEvidence(_this13);
-                                            }
-                                        }, className: "fl prove-gear-btn gear btn-success" }),
                                     _react2.default.createElement("div", { className: "prove-info-sign" })
                                 )
                             ),
@@ -1834,15 +2023,6 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     "Proof Failed",
                                     _react2.default.createElement("div", { className: "fr prove-failed-icon" })
                                 )
-                            ),
-                            _react2.default.createElement(
-                                "div",
-                                { className: "evidence-network-container hidden" },
-                                _react2.default.createElement(
-                                    "div",
-                                    { className: "node-container" },
-                                    netwrkHtml
-                                )
                             )
                         ) : null,
                         _react2.default.createElement("div", { className: "clear" }),
@@ -1870,7 +2050,8 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     { className: "ypanel" },
                     _react2.default.createElement(_Thread2.default, { key: "thread-" + err, data: data, err: err, parentStore: this.store })
                 ),
-                this.configSectionModal()
+                this.configSectionModal(),
+                this.configBlockchainNetworksModal()
             );
         }
     }]);
