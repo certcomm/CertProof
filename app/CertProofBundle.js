@@ -1196,10 +1196,6 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         value: function proveEvidence(e) {
             var _this9 = this;
 
-            // should hide network's div
-            var x = document.getElementsByClassName("evidence-network-container")[0];
-            if (x.style.display === "block") x.style.display = "none";
-
             document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
             document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
 
@@ -1343,6 +1339,9 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                             if (globalFileJsonNetworks.name == nname) {
                                 // do not add if already added
                                 var existPIndex = globalFileJsonNetworks.value.map(function (e) {
+                                    if (e.url != obj.url) {
+                                        e.default = false;
+                                    }
                                     return e.url;
                                 }).indexOf(obj.url);
                                 if (existPIndex < 0) {
@@ -1359,6 +1358,9 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                         _this10.allNetworks[ci].networks.map(function (localStoreJsonNetworks, cni) {
                             if (localStoreJsonNetworks.name == nname) {
                                 var existCIndex = localStoreJsonNetworks.value.map(function (e) {
+                                    if (e.url != obj.url) {
+                                        e.default = false;
+                                    }
                                     return e.url;
                                 }).indexOf(obj.url);
                                 if (existCIndex < 0) {
@@ -1860,7 +1862,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.19"
+                                        "1.0.20"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(

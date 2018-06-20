@@ -762,10 +762,6 @@ export default class Dashboard extends React.Component {
     }
 
     proveEvidence(e){
-        // should hide network's div
-        var x = document.getElementsByClassName("evidence-network-container")[0];
-        if (x.style.display === "block") x.style.display = "none";
-
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
         document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
 
@@ -904,7 +900,12 @@ export default class Dashboard extends React.Component {
                     this.networkJson[pi].networks.map((globalFileJsonNetworks, pni) => {
                         if(globalFileJsonNetworks.name == nname){
                             // do not add if already added
-                            var existPIndex = globalFileJsonNetworks.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                            var existPIndex = globalFileJsonNetworks.value.map(function(e) {
+                                if(e.url != obj.url ){
+                                    e.default = false;
+                                }
+                                return e.url;
+                            }).indexOf(obj.url);
                             if(existPIndex < 0){
                                 globalFileJsonNetworks.value.push(obj);
                             }else{
@@ -918,7 +919,12 @@ export default class Dashboard extends React.Component {
                 if(localStoreJson.type == ntype){
                     this.allNetworks[ci].networks.map((localStoreJsonNetworks, cni) => {
                         if(localStoreJsonNetworks.name == nname){
-                            var existCIndex = localStoreJsonNetworks.value.map(function(e) { return e.url; }).indexOf(obj.url);
+                            var existCIndex = localStoreJsonNetworks.value.map(function(e) {
+                                if(e.url != obj.url ){
+                                    e.default = false;
+                                }
+                                return e.url;
+                            }).indexOf(obj.url);
                             if(existCIndex < 0){
                                 localStoreJsonNetworks.value.push(obj);
                             }else{
@@ -1295,7 +1301,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.19</div>
+                                            <div className="info-value">1.0.20</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
