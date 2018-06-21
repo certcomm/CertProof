@@ -112,23 +112,6 @@ exports.default = {
 				default: true
 			}]
 		}]
-	}, {
-		type: "HyperledgerStatic",
-		networks: [{
-			name: "staticNetwork1",
-			value: [{
-				url: "https://staticnode1.io/Rfiz1l4YFxXO9GRgpOaB",
-				appDefault: true,
-				default: true
-			}]
-		}, {
-			name: "staticNetwork2",
-			value: [{
-				url: "https://staticnode2.io/Rfiz1l4YFxXO9GRgpOaB",
-				appDefault: true,
-				default: true
-			}]
-		}]
 	}]
 };
 
@@ -1366,7 +1349,9 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                 if (existCIndex < 0) {
                                     localStoreJsonNetworks.value.push(obj);
                                 } else {
-                                    if (localStoreJsonNetworks.value[cni]) localStoreJsonNetworks.value[cni].default = false;
+                                    if (localStoreJsonNetworks.value[cni]) {
+                                        if (localStoreJsonNetworks.value[cni].url != obj.url) localStoreJsonNetworks.value[cni].default = false;
+                                    }
                                 }
                             }
                         });
@@ -1566,29 +1551,32 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
 
             if (this.networkJson != "" && this.evidenceType == 'Certified L2') {
-                var allNetworks = [];
-                if (blockchainAnchorsOn) {
-                    blockchainAnchorsOn.map(function (networkType) {
-                        _this13.networkJson.map(function (e) {
-                            if (e.type == networkType.type) {
-                                var ntwrkObj = { type: networkType.type };
-                                e.networks.map(function (en) {
-                                    networkType.networks.map(function (networkName) {
-                                        if (en.name == networkName) {
-                                            if (!ntwrkObj.networks) {
-                                                ntwrkObj.networks = [];
-                                            }
-                                            ntwrkObj.networks.push(en);
-                                        }
-                                    });
-                                });
-                                allNetworks.push(ntwrkObj);
-                            }
-                        });
-                    });
-                } else {
-                    allNetworks = [this.networkJson[0]];
+                if (!blockchainAnchorsOn) {
+                    blockchainAnchorsOn = evidenceData.blockchainAnchorsOn = [{
+                        type: "Ethereum",
+                        networks: ["test_rinkeby", "mainnet"]
+                    }];
                 }
+
+                var allNetworks = [];
+                blockchainAnchorsOn.map(function (networkType) {
+                    _this13.networkJson.map(function (e) {
+                        if (e.type == networkType.type) {
+                            var ntwrkObj = { type: networkType.type };
+                            e.networks.map(function (en) {
+                                networkType.networks.map(function (networkName) {
+                                    if (en.name == networkName) {
+                                        if (!ntwrkObj.networks) {
+                                            ntwrkObj.networks = [];
+                                        }
+                                        ntwrkObj.networks.push(en);
+                                    }
+                                });
+                            });
+                            allNetworks.push(ntwrkObj);
+                        }
+                    });
+                });
                 this.allNetworks = allNetworks;
 
                 return _react2.default.createElement(
@@ -1688,7 +1676,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                                         "Set As Default"
                                                     ) : _react2.default.createElement(
                                                         "div",
-                                                        { className: "default node-row-btn btn" },
+                                                        { className: "default node-row-btn" },
                                                         "Default"
                                                     )
                                                 ),
@@ -1764,16 +1752,6 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 ttnURL = evidenceData.ttnUrl ? evidenceData.ttnUrl : "NA",
                 ttnGlobal = data.header ? data.header.ttnGlobal : "NA",
                 err = this.store.getError();
-
-            if (!evidenceData || !evidenceData.blockchainAnchorsOn) {
-                evidenceData.blockchainAnchorsOn = [{
-                    type: "Ethereum",
-                    networks: ["test_rinkeby", "mainnet"]
-                }, {
-                    type: "HyperledgerStatic",
-                    networks: ["staticNetwork1", "staticNetwork2"]
-                }];
-            }
 
             // set state
             this.state.stateData = data;
@@ -1862,7 +1840,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.20"
+                                        "1.0.21"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1972,7 +1950,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                             _react2.default.createElement(
                                                 "a",
                                                 { className: "link", onClick: this.blockchainModalAction.bind(this, true) },
-                                                "View"
+                                                "Update"
                                             )
                                         )
                                     ) : null

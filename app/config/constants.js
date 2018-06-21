@@ -75,31 +75,6 @@ export default {
 					]
 				}
 			]
-		},
-		{
-			type: "HyperledgerStatic",
-			networks: [
-				{
-					name: "staticNetwork1",
-					value: [
-						{
-							url: "https://staticnode1.io/Rfiz1l4YFxXO9GRgpOaB",
-							appDefault: true,
-							default: true
-						}
-					]
-				},
-				{
-					name: "staticNetwork2",
-					value: [
-						{
-							url: "https://staticnode2.io/Rfiz1l4YFxXO9GRgpOaB",
-							appDefault: true,
-							default: true
-						}
-					]
-				}
-			]
 		}
 	]
 }

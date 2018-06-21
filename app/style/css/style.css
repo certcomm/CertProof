@@ -256,6 +256,9 @@ a.breadcrumb {
 .node-row-btn-selection-container{
   width: 120px;
 }
+.node-row-btn-selection-container .default{
+  color: #1c84c6; font-weight: bold; text-align: center;
+}
 .evidence-network-container .node-container .node-row-header{
   background-color: #EFEFEF; padding: 5px; font-weight: bold; border: solid 1px #DDDDDD;
 }

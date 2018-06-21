@@ -928,7 +928,10 @@ export default class Dashboard extends React.Component {
                             if(existCIndex < 0){
                                 localStoreJsonNetworks.value.push(obj);
                             }else{
-                                if(localStoreJsonNetworks.value[cni]) localStoreJsonNetworks.value[cni].default = false;
+                                if(localStoreJsonNetworks.value[cni]){
+                                    if(localStoreJsonNetworks.value[cni].url != obj.url)
+                                        localStoreJsonNetworks.value[cni].default = false;
+                                }
                             }
                         }
                     });
@@ -1106,29 +1109,37 @@ export default class Dashboard extends React.Component {
             blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
         
         if(this.networkJson != "" && this.evidenceType == 'Certified L2'){
-            var allNetworks = [];
-            if(blockchainAnchorsOn){
-                blockchainAnchorsOn.map(networkType => {
-                    this.networkJson.map((e) => {
-                        if(e.type == networkType.type){
-                            var ntwrkObj = {type: networkType.type};
-                            e.networks.map(en => {
-                                networkType.networks.map(networkName => {
-                                    if(en.name == networkName){
-                                        if(!ntwrkObj.networks){
-                                            ntwrkObj.networks = [];
-                                        }
-                                        ntwrkObj.networks.push(en);
-                                    }
-                                });
-                            });
-                            allNetworks.push(ntwrkObj);
-                        }
-                    });
-                });
-            }else{
-                allNetworks = [this.networkJson[0]];
+            if(!blockchainAnchorsOn){
+                blockchainAnchorsOn = evidenceData.blockchainAnchorsOn = [
+                    {
+                        type: "Ethereum",
+                        networks: [
+                            "test_rinkeby",
+                            "mainnet"
+                        ]
+                    }
+                ]
             }
+
+            var allNetworks = [];
+            blockchainAnchorsOn.map(networkType => {
+                this.networkJson.map((e) => {
+                    if(e.type == networkType.type){
+                        var ntwrkObj = {type: networkType.type};
+                        e.networks.map(en => {
+                            networkType.networks.map(networkName => {
+                                if(en.name == networkName){
+                                    if(!ntwrkObj.networks){
+                                        ntwrkObj.networks = [];
+                                    }
+                                    ntwrkObj.networks.push(en);
+                                }
+                            });
+                        });
+                        allNetworks.push(ntwrkObj);
+                    }
+                });
+            });
             this.allNetworks = allNetworks;
             
             return <div id="modal-blockchain-content-container" className="modal-content">
@@ -1188,7 +1199,7 @@ export default class Dashboard extends React.Component {
                                                     {
                                                         !node.default ? (
                                                             <div className="node-row-btn btn" onClick={this.setDefaultNode.bind(this, node.url, this.state.network.name, this.state.networkType)}>Set As Default</div>
-                                                        ) : <div className="default node-row-btn btn">Default</div>
+                                                        ) : <div className="default node-row-btn">Default</div>
                                                     }
                                                 </div>
                                                 <div className="clear" />
@@ -1238,25 +1249,6 @@ export default class Dashboard extends React.Component {
             ttnGlobal = (data.header) ? data.header.ttnGlobal : "NA",
             err = this.store.getError();
         
-        if(!evidenceData || !evidenceData.blockchainAnchorsOn){
-            evidenceData.blockchainAnchorsOn = [
-                {
-                    type: "Ethereum",
-                    networks: [
-                        "test_rinkeby",
-                        "mainnet"
-                    ]
-                },
-                {
-                    type: "HyperledgerStatic",
-                    networks: [
-                        "staticNetwork1",
-                        "staticNetwork2"
-                    ]
-                }
-            ]
-        }
-        
         // set state
         this.state.stateData = data;
 
@@ -1301,7 +1293,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.20</div>
+                                            <div className="info-value">1.0.21</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
@@ -1336,7 +1328,7 @@ export default class Dashboard extends React.Component {
                                                     <div>
                                                         <div className="info-label">Blockchain URLs</div>
                                                         <div className="fl bold"> : </div>
-                                                        <div className="info-value"><a className="link" onClick={this.blockchainModalAction.bind(this, true)}>View</a></div>
+                                                        <div className="info-value"><a className="link" onClick={this.blockchainModalAction.bind(this, true)}>Update</a></div>
                                                     </div>
                                                 ) : null
                                             }
