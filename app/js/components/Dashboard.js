@@ -764,6 +764,7 @@ export default class Dashboard extends React.Component {
     proveEvidence(e){
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
         document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
+        document.getElementsByClassName("log-container-ps")[0].classList.remove("hidden");
 
         // both log should be blank on prove click each time
         this.state.log = "";
@@ -826,6 +827,15 @@ export default class Dashboard extends React.Component {
                 implementScrollForProve();
             });
         });
+    }
+
+    reproveEvidence(e){
+        this.state.log = "";
+        this.state.errLog = [];
+
+        document.getElementsByClassName("evidence-prove-form")[0].style.display = "inline-block";
+        document.getElementsByClassName("verification-container")[0].style.display = "none";
+        document.getElementsByClassName("log-container-ps")[0].classList.add("hidden");
     }
 
     navigateToLiveThread(link){
@@ -956,7 +966,7 @@ export default class Dashboard extends React.Component {
         // if default node selected
         if(node.default){
             // run loop to get app default url
-            var shouldDelete = true;
+            var shouldDelete = false;
             this.allNetworks.map((localStoreJson1, lsj1) => {
                 if(localStoreJson1.type == ntype){
                     this.allNetworks[lsj1].networks.map((localStoreJsonNetwork1) => {
@@ -965,12 +975,22 @@ export default class Dashboard extends React.Component {
                             // get appdefault url index
                             var getCAppDefaultIndex1 = localStoreJsonNetwork1.value.map(function(e) { return e.appDefault; }).indexOf(true);
                             if(getCAppDefaultIndex1 >= 0){
-                                var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default "+localStoreJsonNetwork1.value[getCAppDefaultIndex1].url;
+                                var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be the application default "+localStoreJsonNetwork1.value[getCAppDefaultIndex1].url;
 
-                                var r = confirm(warnMgs);
-                                if (r !== true) {
-                                    shouldDelete = false;
-                                }
+                                // var r = confirm(warnMgs);
+                                // if (r !== true) {
+                                //     shouldDelete = false;
+                                // }
+                                swal({
+                                    title: '',
+                                    text: warnMgs,
+                                    showCancelButton: true,
+                                    confirmButtonColor: "#DD6B55",
+                                    confirmButtonText: "Ok",
+                                    closeOnConfirm: false
+                                }, function () {
+                                    shouldDelete = true;
+                                });
                             }
                         }
                     });
@@ -1216,6 +1236,11 @@ export default class Dashboard extends React.Component {
                                                 onChange = {(e)=> {
                                                     this.addedNode = e.target.value;
                                                 }}
+                                                onKeyPress={event => {
+                                                    if (event.key === 'Enter') {
+                                                        this.addNode(this.state.network.name, this.state.networkType, event)
+                                                    }
+                                                }}
                                                 ref="custom-node-input"
                                                 placeholder="Add Blockchain Node URL" className="single-line" />
                                         </div>
@@ -1293,7 +1318,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.21</div>
+                                            <div className="info-value">1.0.22</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
@@ -1357,6 +1382,10 @@ export default class Dashboard extends React.Component {
                                         <div className="btn-primary proved-btn">
                                             Proved
                                             <div className="fr proved-icon"></div>
+                                        </div>
+                                        <div onClick={this.reproveEvidence.bind(this)} className="btn-success re-prove-btn">
+                                            Re-Prove
+                                            <div className="fr re-prove-icon"></div>
                                         </div>
                                     </div>
                                     <div className="verification-failed-container hidden">

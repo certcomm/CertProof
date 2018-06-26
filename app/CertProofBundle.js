@@ -1181,6 +1181,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
 
             document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
             document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
+            document.getElementsByClassName("log-container-ps")[0].classList.remove("hidden");
 
             // both log should be blank on prove click each time
             this.state.log = "";
@@ -1241,6 +1242,16 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                     implementScrollForProve();
                 });
             });
+        }
+    }, {
+        key: "reproveEvidence",
+        value: function reproveEvidence(e) {
+            this.state.log = "";
+            this.state.errLog = [];
+
+            document.getElementsByClassName("evidence-prove-form")[0].style.display = "inline-block";
+            document.getElementsByClassName("verification-container")[0].style.display = "none";
+            document.getElementsByClassName("log-container-ps")[0].classList.add("hidden");
         }
     }, {
         key: "navigateToLiveThread",
@@ -1379,7 +1390,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
             // if default node selected
             if (node.default) {
                 // run loop to get app default url
-                var shouldDelete = true;
+                var shouldDelete = false;
                 this.allNetworks.map(function (localStoreJson1, lsj1) {
                     if (localStoreJson1.type == ntype) {
                         _this11.allNetworks[lsj1].networks.map(function (localStoreJsonNetwork1) {
@@ -1390,12 +1401,22 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     return e.appDefault;
                                 }).indexOf(true);
                                 if (getCAppDefaultIndex1 >= 0) {
-                                    var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be application default " + localStoreJsonNetwork1.value[getCAppDefaultIndex1].url;
+                                    var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be the application default " + localStoreJsonNetwork1.value[getCAppDefaultIndex1].url;
 
-                                    var r = confirm(warnMgs);
-                                    if (r !== true) {
-                                        shouldDelete = false;
-                                    }
+                                    // var r = confirm(warnMgs);
+                                    // if (r !== true) {
+                                    //     shouldDelete = false;
+                                    // }
+                                    swal({
+                                        title: '',
+                                        text: warnMgs,
+                                        showCancelButton: true,
+                                        confirmButtonColor: "#DD6B55",
+                                        confirmButtonText: "Ok",
+                                        closeOnConfirm: false
+                                    }, function () {
+                                        shouldDelete = true;
+                                    });
                                 }
                             }
                         });
@@ -1709,6 +1730,11 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                                     onChange: function onChange(e) {
                                                         _this13.addedNode = e.target.value;
                                                     },
+                                                    onKeyPress: function onKeyPress(event) {
+                                                        if (event.key === 'Enter') {
+                                                            _this13.addNode(_this13.state.network.name, _this13.state.networkType, event);
+                                                        }
+                                                    },
                                                     ref: "custom-node-input",
                                                     placeholder: "Add Blockchain Node URL", className: "single-line" })
                                             ),
@@ -1840,7 +1866,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.21"
+                                        "1.0.22"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1992,6 +2018,12 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     { className: "btn-primary proved-btn" },
                                     "Proved",
                                     _react2.default.createElement("div", { className: "fr proved-icon" })
+                                ),
+                                _react2.default.createElement(
+                                    "div",
+                                    { onClick: this.reproveEvidence.bind(this), className: "btn-success re-prove-btn" },
+                                    "Re-Prove",
+                                    _react2.default.createElement("div", { className: "fr re-prove-icon" })
                                 )
                             ),
                             _react2.default.createElement(

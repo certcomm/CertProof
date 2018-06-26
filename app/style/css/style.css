@@ -295,10 +295,16 @@ a.breadcrumb {
   }
 }
 .xpanel .proved-btn {
-  border: 1px solid #1AB394; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px; display: inline-block;
+  border: 1px solid #1AB394; color: #FFFFFF; border-radius: 0; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 120px; display: inline-block;
 }
 .xpanel .proved-icon:after {
   content: "\E00D"; font-family: "tmail"; font-size: 24px;
+}
+.xpanel .re-prove-btn {
+  cursor: pointer; border: 1px solid #1AB394; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 140px; display: inline-block; margin-left: 10px;
+}
+.xpanel .re-prove-icon:after {
+  content: "a"; font-family: "tmail"; font-size: 24px;
 }
 .xpanel .prove-failed-btn {
   border: 1px solid #bb0909; background-color: #FF0000; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 165px;

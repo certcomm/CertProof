@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.21",
+	"version": "1.0.22",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
@@ -32,7 +32,7 @@
 		"nsis": {
 			"oneClick": false,
 			"perMachine": true,
-			"deleteAppDataOnUninstall": true,
+			"deleteAppDataOnUninstall": false,
 			"allowToChangeInstallationDirectory": true
 		},
 		"linux": {
