@@ -856,7 +856,7 @@ export default class Dashboard extends React.Component {
 
     addNode(nname, ntype, e){
         if(this.addedNode.trim() == ""){
-            alert("Field should not be empty.");
+            swal("Field should not be empty.");
             $(e.target).parents('.node-row-add-container').find('input').focus();
             return false;
         }
@@ -865,7 +865,7 @@ export default class Dashboard extends React.Component {
         var blockchainUrl = this.addedNodeProtocol+this.addedNode;
         var regexp = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/
         if(!regexp.test(blockchainUrl)){
-            alert("Invalid URL. Please type correct URL.");
+            swal("Invalid URL. Please type correct URL.");
             $(e.target).parents('.node-row-add-container').find('input').focus();
             return false;
         }
@@ -889,7 +889,7 @@ export default class Dashboard extends React.Component {
 
         // should stop if return false
         if(shouldAdd === false){
-            alert("Duplicate record.");
+            swal("Duplicate record.");
             $(e.target).parents('.node-row-add-container').find('input').focus();
             return false;
         }
@@ -963,10 +963,61 @@ export default class Dashboard extends React.Component {
     removeNode(node, nname, ntype, e){
         var url = node.url;
 
+        var t = () => {
+            var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+
+            this.networkJson.map((globalFileJson, gfj1) => {
+                if(globalFileJson.type == ntype){
+                    this.networkJson[gfj1].networks.map(globalFileJsonNetwork => {
+                        // delete added custom node
+                        if(globalFileJsonNetwork.name == nname){
+                            var existPIndex = globalFileJsonNetwork.value.map(function(e) { return e.url; }).indexOf(url);
+                            if(existPIndex >= 0){
+                                if(globalFileJsonNetwork.value[existPIndex].default){
+                                    var getPAppDefaultIndex = globalFileJsonNetwork.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                                    if(getPAppDefaultIndex >= 0){
+                                        globalFileJsonNetwork.value[getPAppDefaultIndex].default = true;
+                                    }
+                                }
+                                globalFileJsonNetwork.value.splice(existPIndex, 1);
+                            }
+                        }
+                    });
+                }
+            });
+    
+            this.allNetworks.map((localStoreJson, lsji) => {
+                if(localStoreJson.type == ntype){
+                    this.allNetworks[lsji].networks.map((localStoreJsonNetwork) => {
+                        // delete added custom node
+                        if(localStoreJsonNetwork.name == nname){
+                            var existCIndex = localStoreJsonNetwork.value.map(function(e) { return e.url; }).indexOf(url);
+                            if(existCIndex >= 0){
+                                if(localStoreJsonNetwork.value[existCIndex].default){
+                                    var getCAppDefaultIndex = localStoreJsonNetwork.value.map(function(e) { return e.appDefault; }).indexOf(true);
+                                    if(getCAppDefaultIndex >= 0){
+                                        localStoreJsonNetwork.value[getCAppDefaultIndex].default = true;
+                                    }
+                                }
+                                localStoreJsonNetwork.value.splice(existCIndex, 1);
+                            }
+                        }
+                    });
+                }
+            });
+        
+            FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
+                if(err){
+                    console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
+                }else{
+                    console.log("File Updated");
+                }
+            });
+        }
+
         // if default node selected
         if(node.default){
             // run loop to get app default url
-            var shouldDelete = false;
             this.allNetworks.map((localStoreJson1, lsj1) => {
                 if(localStoreJson1.type == ntype){
                     this.allNetworks[lsj1].networks.map((localStoreJsonNetwork1) => {
@@ -976,80 +1027,24 @@ export default class Dashboard extends React.Component {
                             var getCAppDefaultIndex1 = localStoreJsonNetwork1.value.map(function(e) { return e.appDefault; }).indexOf(true);
                             if(getCAppDefaultIndex1 >= 0){
                                 var warnMgs = "You are removing a node which is the current default node for Ethereum_Mainnet. The new default will be the application default "+localStoreJsonNetwork1.value[getCAppDefaultIndex1].url;
-
-                                // var r = confirm(warnMgs);
-                                // if (r !== true) {
-                                //     shouldDelete = false;
-                                // }
                                 swal({
                                     title: '',
                                     text: warnMgs,
                                     showCancelButton: true,
                                     confirmButtonColor: "#DD6B55",
                                     confirmButtonText: "Ok",
-                                    closeOnConfirm: false
                                 }, function () {
-                                    shouldDelete = true;
+                                    t();
                                 });
                             }
                         }
                     });
                 }
             })
-
-            // should stop if return false
-            if(shouldDelete === false) return false;
+        }else{
+            t();
         }
         
-        var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
-
-        this.networkJson.map((globalFileJson, gfj1) => {
-            if(globalFileJson.type == ntype){
-                this.networkJson[gfj1].networks.map(globalFileJsonNetwork => {
-                    // delete added custom node
-                    if(globalFileJsonNetwork.name == nname){
-                        var existPIndex = globalFileJsonNetwork.value.map(function(e) { return e.url; }).indexOf(url);
-                        if(existPIndex >= 0){
-                            if(globalFileJsonNetwork.value[existPIndex].default){
-                                var getPAppDefaultIndex = globalFileJsonNetwork.value.map(function(e) { return e.appDefault; }).indexOf(true);
-                                if(getPAppDefaultIndex >= 0){
-                                    globalFileJsonNetwork.value[getPAppDefaultIndex].default = true;
-                                }
-                            }
-                            globalFileJsonNetwork.value.splice(existPIndex, 1);
-                        }
-                    }
-                });
-            }
-        });
-
-        this.allNetworks.map((localStoreJson, lsji) => {
-            if(localStoreJson.type == ntype){
-                this.allNetworks[lsji].networks.map((localStoreJsonNetwork) => {
-                    // delete added custom node
-                    if(localStoreJsonNetwork.name == nname){
-                        var existCIndex = localStoreJsonNetwork.value.map(function(e) { return e.url; }).indexOf(url);
-                        if(existCIndex >= 0){
-                            if(localStoreJsonNetwork.value[existCIndex].default){
-                                var getCAppDefaultIndex = localStoreJsonNetwork.value.map(function(e) { return e.appDefault; }).indexOf(true);
-                                if(getCAppDefaultIndex >= 0){
-                                    localStoreJsonNetwork.value[getCAppDefaultIndex].default = true;
-                                }
-                            }
-                            localStoreJsonNetwork.value.splice(existCIndex, 1);
-                        }
-                    }
-                });
-            }
-        });
-    
-        FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
-            if(err){
-                console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
-            }else{
-                console.log("File Updated");
-            }
-        });
     }
 
     setDefaultNode(url, nname, ntype, e){
@@ -1318,7 +1313,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.22</div>
+                                            <div className="info-value">1.0.23</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
