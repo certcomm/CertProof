@@ -1569,7 +1569,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 if (!blockchainAnchorsOn) {
                     blockchainAnchorsOn = evidenceData.blockchainAnchorsOn = [{
                         type: "Ethereum",
-                        networks: ["test_rinkeby", "mainnet"]
+                        networks: ["mainnet"]
                     }];
                 }
 
@@ -1860,7 +1860,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.23"
+                                        "1.0.24"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
