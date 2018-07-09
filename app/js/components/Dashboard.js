@@ -47,6 +47,8 @@ export default class Dashboard extends React.Component {
         this.state = {
             modalIsOpen: false,
             blockchainModalIsOpen: false,
+            blockchainAnchorDisable: false,
+            emptyBlockchainAnchorsOn: false,
             progress: 0,
             stateData: '',
             rawJson: null,
@@ -1117,6 +1119,10 @@ export default class Dashboard extends React.Component {
         document.getElementsByClassName("network-nodes")[0].children[0].scrollIntoView()
     }
 
+    blockchainAnchorDisableFunc(isEnable){
+        this.setState({blockchainAnchorDisable: isEnable});
+    }
+
     getNetworkHTMLDialog(){
         var rawJson = this.store.getRawJson(),
             sacJson = rawJson.sac,
@@ -1124,15 +1130,15 @@ export default class Dashboard extends React.Component {
             blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
         
         if(this.networkJson != "" && this.evidenceType == 'Certified L2'){
-            if(!blockchainAnchorsOn){
-                blockchainAnchorsOn = evidenceData.blockchainAnchorsOn = [
-                    {
-                        type: "Ethereum",
-                        networks: [ "mainnet" ]
-                    }
-                ]
+            if(!blockchainAnchorsOn && !this.state.emptyBlockchainAnchorsOn){
+                setTimeout(()=>{
+                    this.setState({emptyBlockchainAnchorsOn: true});
+                }, 100);
+                return false;
+            }else if(this.state.emptyBlockchainAnchorsOn){
+                return false;
             }
-
+            
             var allNetworks = [];
             blockchainAnchorsOn.map(networkType => {
                 this.networkJson.map((e) => {
@@ -1254,7 +1260,7 @@ export default class Dashboard extends React.Component {
             return null;
         }
     }
-    
+
 	render() {
         var storeFileName = this.store.getFileName(),
             data = this.store.getData(),
@@ -1310,7 +1316,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.24</div>
+                                            <div className="info-value">1.0.25</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
@@ -1341,11 +1347,22 @@ export default class Dashboard extends React.Component {
 
                                             <div className="clear"></div>
                                             {
-                                                this.evidenceType == 'Certified L2' ? (
+                                                this.evidenceType == 'Certified L2' && !this.state.emptyBlockchainAnchorsOn ? (
                                                     <div>
+                                                        <div className="info-label">Show Blockchain Proof </div>
+                                                        <div className="fl bold"> : </div>
+                                                        <div className="info-value"><a className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable)}>{this.state.blockchainAnchorDisable ? "Enable" : "Disable"}</a></div>
+
+                                                        <div className="clear"></div>
                                                         <div className="info-label">Blockchain URLs</div>
                                                         <div className="fl bold"> : </div>
-                                                        <div className="info-value"><a className="link" onClick={this.blockchainModalAction.bind(this, true)}>Update</a></div>
+                                                        <div className="info-value">
+                                                            {
+                                                                !this.state.blockchainAnchorDisable ? (
+                                                                    <a className="link" onClick={this.blockchainModalAction.bind(this, true)}>Update</a>
+                                                                ) : <a className="no-link">Update</a>
+                                                            }
+                                                        </div>
                                                     </div>
                                                 ) : null
                                             }
@@ -1360,7 +1377,11 @@ export default class Dashboard extends React.Component {
                                     <div className="evidence-prove-form">
                                         <div>
                                             <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
-                                            <div className="prove-info-sign" />
+                                            {
+                                                this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L2') ? (
+                                                    <div onClick={() => {swal(this.state.blockchainAnchorDisable ? "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s)" : "Warning: This is an L2 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).")}} className="prove-warning-sign" />
+                                                ) : <div className="prove-info-sign" />
+                                            }
                                         </div>
                                     </div>
                                     <div className="progress-bar-container hidden">

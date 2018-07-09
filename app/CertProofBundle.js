@@ -345,6 +345,8 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
         _this.state = {
             modalIsOpen: false,
             blockchainModalIsOpen: false,
+            blockchainAnchorDisable: false,
+            emptyBlockchainAnchorsOn: false,
             progress: 0,
             stateData: '',
             rawJson: null,
@@ -1556,6 +1558,11 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
             document.getElementsByClassName("network-nodes")[0].children[0].scrollIntoView();
         }
     }, {
+        key: "blockchainAnchorDisableFunc",
+        value: function blockchainAnchorDisableFunc(isEnable) {
+            this.setState({ blockchainAnchorDisable: isEnable });
+        }
+    }, {
         key: "getNetworkHTMLDialog",
         value: function getNetworkHTMLDialog() {
             var _this13 = this;
@@ -1566,11 +1573,13 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                 blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
 
             if (this.networkJson != "" && this.evidenceType == 'Certified L2') {
-                if (!blockchainAnchorsOn) {
-                    blockchainAnchorsOn = evidenceData.blockchainAnchorsOn = [{
-                        type: "Ethereum",
-                        networks: ["mainnet"]
-                    }];
+                if (!blockchainAnchorsOn && !this.state.emptyBlockchainAnchorsOn) {
+                    setTimeout(function () {
+                        _this13.setState({ emptyBlockchainAnchorsOn: true });
+                    }, 100);
+                    return false;
+                } else if (this.state.emptyBlockchainAnchorsOn) {
+                    return false;
                 }
 
                 var allNetworks = [];
@@ -1763,6 +1772,8 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
     }, {
         key: "render",
         value: function render() {
+            var _this14 = this;
+
             var storeFileName = this.store.getFileName(),
                 data = this.store.getData(),
                 evidenceData = this.store.getEvidenceManifestData(),
@@ -1860,7 +1871,7 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                     _react2.default.createElement(
                                         "div",
                                         { className: "info-value" },
-                                        "1.0.24"
+                                        "1.0.25"
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
                                     _react2.default.createElement(
@@ -1951,9 +1962,29 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         )
                                     ),
                                     _react2.default.createElement("div", { className: "clear" }),
-                                    this.evidenceType == 'Certified L2' ? _react2.default.createElement(
+                                    this.evidenceType == 'Certified L2' && !this.state.emptyBlockchainAnchorsOn ? _react2.default.createElement(
                                         "div",
                                         null,
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "info-label" },
+                                            "Show Blockchain Proof "
+                                        ),
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "fl bold" },
+                                            " : "
+                                        ),
+                                        _react2.default.createElement(
+                                            "div",
+                                            { className: "info-value" },
+                                            _react2.default.createElement(
+                                                "a",
+                                                { className: "link", onClick: this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable) },
+                                                this.state.blockchainAnchorDisable ? "Enable" : "Disable"
+                                            )
+                                        ),
+                                        _react2.default.createElement("div", { className: "clear" }),
                                         _react2.default.createElement(
                                             "div",
                                             { className: "info-label" },
@@ -1967,9 +1998,13 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         _react2.default.createElement(
                                             "div",
                                             { className: "info-value" },
-                                            _react2.default.createElement(
+                                            !this.state.blockchainAnchorDisable ? _react2.default.createElement(
                                                 "a",
                                                 { className: "link", onClick: this.blockchainModalAction.bind(this, true) },
+                                                "Update"
+                                            ) : _react2.default.createElement(
+                                                "a",
+                                                { className: "no-link" },
                                                 "Update"
                                             )
                                         )
@@ -1991,7 +2026,9 @@ var Dashboard = (0, _mobxReact.observer)(_class = function (_React$Component) {
                                         { onClick: this.proveEvidence.bind(this), className: "fl prove-btn btn-success" },
                                         "Prove"
                                     ),
-                                    _react2.default.createElement("div", { className: "prove-info-sign" })
+                                    this.state.blockchainAnchorDisable || this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L2' ? _react2.default.createElement("div", { onClick: function onClick() {
+                                            swal(_this14.state.blockchainAnchorDisable ? "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s)" : "Warning: This is an L2 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).");
+                                        }, className: "prove-warning-sign" }) : _react2.default.createElement("div", { className: "prove-info-sign" })
                                 )
                             ),
                             _react2.default.createElement(

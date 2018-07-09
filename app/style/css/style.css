@@ -19,6 +19,9 @@ body {
 .link {
   text-decoration: underline; color: #1c84c6; font-size: 13px; letter-spacing: 0.3px; cursor: pointer;
 }
+.no-link {
+  text-decoration: none; color: #EFEFEF; font-size: 13px; letter-spacing: 0.3px;
+}
 .cancel-link {
   text-decoration: underline; color: #FF0000; font-size: 12px; font-weight: 600; letter-spacing: 0.3px;
 }
@@ -327,14 +330,20 @@ a.breadcrumb {
 .xpanel .gear:before {
   content: "\E014"; font-family: "tmail"; font-size: 26px;
 }
-.xpanel .prove-info-sign {
-  float: left; position: relative; margin: 8px 0px 0px 7px;
+.xpanel .prove-info-sign, .xpanel .prove-warning-sign {
+  float: left; position: relative; margin: 8px 0px 0px 7px; cursor: pointer;
 }
 .xpanel .prove-info-sign:before{
   content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
 }
 .xpanel .prove-info-sign:after{
   content: "\E02F"; font-family: "tmail"; font-size: 11px; color: #fcae4e; position: absolute; left: 7px; top: 8px;
+}
+.xpanel .prove-warning-sign:before{
+  content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
+}
+.xpanel .prove-warning-sign:after{
+  content: "\E037"; font-family: "tmail"; font-size: 13px; color: #fcae4e; position: absolute; left: 6px; top: 8px;
 }
 
 /*        Progress bar       */
