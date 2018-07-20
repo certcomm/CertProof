@@ -30,6 +30,11 @@ The Evidence for a Certified Operation is the input to the CertProof app and is 
 ## CertComm Confidential Evidence File (CCEF)
 The first piece of evidence is the CertComm Confidential Evidence File. As the name suggests, this part of the evidence is **confidential** and is only distributed by the Governor to the parties to the thread. The end user (*transacting party*) needs to upload this file to CertProof in order to perform the proof. The file is a ZIP file in the CCEF format.
 
+The Screenshot below shows a user downloading a CCEF File for a particular changeset in a particuar thread from the Governor that manages that thread.
+
+![CertProof Screenshot4 Alt text](/static_resources/Screenshot_4.png?raw=true "CertProof Screenshot 4")
+
+
 ## CertComm Layer 2 Evidence File (CL2EF) 
 CertComm Layer 2 Evidence Files (CL2EF) consist of File(s) corresponding to the Certified operation written to **IPFS**. This is **public** information. The File(s) represent the Layer 2 "blockchain" evidence for the Layer 2 Blockchain maintained by a Governor. These Files are written by the governor to IPFS. The end user (*transacting party*) does *not* need to directly deal with these files. These files are in JSON format and adhere to the CL2EF format.
 
