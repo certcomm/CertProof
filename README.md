@@ -47,20 +47,38 @@ A key element of CertComm (and the CertProof App) is that they produce and requi
 There are two ways to get the CertProof App. You can directly download the binary installers (available for Windows and Mac) or you can build an installer from this Github source. The former is more convenient. The latter is recommended for maximimum security. Note that the CertProof App is a Javascript app built using *Electron*, *ReactJS* and *MobX*.
 
 ## Download the Installer
+The most convenient way 
 
 ### Download a Windows Installer
+The official windows installer can be found at [Official Installers](https://github.com/certcomm/CertProof/releases). 
+Once there look for the newest Installer (at the top of the page), that starts with **certproof-win-latest-...**.
+Once downloaded, click (or double click) on the installer in order to install it.
 
 ### Download a Mac Installer
+The official Mac installer can be found at [Official Installers](https://github.com/certcomm/CertProof/releases). 
+Once there look for the newest Installer (at the top of the page(, that starts with **certproof-osx-latest-...**.
+
+### Download a Linux Installer
+The official Linux installer can be found at [Official Installers](https://github.com/certcomm/CertProof/releases). 
+Once there look for the newest Installer (at the top of the page(, that starts with **certproof-linux-latest-....**.
+
+
 
 ## Build an Installer from Source
+For the most paranoid/security conscious, they can choose to build the installer from source. This is less conveninent, but the user can be sure that they are dealing with the latest version of the (authoratative code).
 
 ### Build a Windows Installer from Source
+// Instructions coming soon
 
 ### Build a Mac Installer from Source
+// Instructions coming soon
+
+### Build a Linux Installer from Source
+// Instructions coming soon.
 
 # Other Uses
 ## Using the CertProof App to aid in building a *CertComm Governor*
 Another use of the CertProof App is to aid a developer in the building of a *CertComm Governor*. CertComm Governors are parties which mediate the creation and updating of Certified Threads. Every Certified thread operation results in three kinds of output, viz. a **CertComm Confidential Evidence File**, **CertComm Layer 2 Evidence File** and **CertComm Blockchain Anchor**. The CertProof App can be used by a developer who is building a CertComm Governor to verify that their Governor is producing these outputs correctly.
 
 ## Using the CertProof App as an offline Viewer
-The CertProof app can be used as an offline viewer for certified (and non-certified) threads. This ensures that all content will be viewable independent of the rest of the CertComm ecosystem.
+The CertProof app can be used as an offline viewer for certified (and non-certified) threads. This ensures that all content will be viewable independent of the rest of the CertComm ecosystem. The same strategy can be used for backups.
