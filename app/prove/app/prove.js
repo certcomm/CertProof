@@ -2,6 +2,7 @@ var Constants = require("./config/constants.js");
 var errorMessages = require("./config/errorMessages.js");
 var cpJsonUtils = require("./util/cpJsonUtils.js");
 var evidenceUtils = require("./util/evidenceUtils.js");
+var blockchainUtils = require("./util/blockchainUtils.js");
 
 try{
     var fs = window.require('fs-extra');
@@ -228,6 +229,12 @@ module.exports = {
                         cpJsonUtils.ensureJsonHas("1010", op, "transactionNum", "ttnGlobalHash", "sacHash", "ssacHash", "changeNum");
                         opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.sacHash);
                         opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.ssacHash);
+                    }
+                    if((typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
+                        cpJsonUtils.ensureJsonHas("1020", incManifestJson.blockchainAnchorsOn[0], "type", "networks");
+                        //for now prove on first type and first network in the type
+                        var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
+                        blockchainUtils.proveOnBlockChain(this.logEmitter, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
                     }
                     this.logEmitter.log("Proved " + cThinBlockFilePath);                            
                 }

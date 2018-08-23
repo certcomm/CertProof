@@ -1,0 +1,91 @@
+[
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "governorDomainName",
+        "type": "string"
+      },
+      {
+        "name": "shard",
+        "type": "uint16"
+      },
+      {
+        "name": "cblockNum",
+        "type": "uint16"
+      }
+    ],
+    "name": "cThinBlockAnchorExists",
+    "outputs": [
+      {
+        "name": "",
+        "type": "bool"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "governorDomainName",
+        "type": "string"
+      },
+      {
+        "name": "shard",
+        "type": "uint16"
+      },
+      {
+        "name": "cblockNum",
+        "type": "uint16"
+      }
+    ],
+    "name": "getCThinBlockAnchor",
+    "outputs": [
+      {
+        "name": "cThinBlockHash",
+        "type": "string"
+      },
+      {
+        "name": "merkleRootHash",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "constant": true,
+    "inputs": [
+      {
+        "name": "governorDomainName",
+        "type": "string"
+      },
+      {
+        "name": "shard",
+        "type": "uint16"
+      },
+      {
+        "name": "cblockNum",
+        "type": "uint16"
+      },
+      {
+        "name": "externalCThinBlockRefType",
+        "type": "string"
+      }
+    ],
+    "name": "getExternalCThinBlockRef",
+    "outputs": [
+      {
+        "name": "externalCThinBlockRef",
+        "type": "string"
+      }
+    ],
+    "payable": false,
+    "stateMutability": "view",
+    "type": "function"
+  }
+]
