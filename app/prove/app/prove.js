@@ -71,7 +71,7 @@ module.exports = {
         });
     },
     
-    proveEvidence :function(extractResponse) {
+    proveEvidence : async function(extractResponse) {
         var evidenceJson = extractResponse.evidenceJson
         cpJsonUtils.ensureJsonHas("1010", evidenceJson, "ttnGlobal");
         cpJsonUtils.ensureJsonHas("1013", evidenceJson, "governor");
@@ -85,10 +85,10 @@ module.exports = {
         this.governor = evidenceJson.governor;
         this.hasDigitalSignature = evidenceJson.hasDigitalSignature;
         this.hasCBlockInfo = evidenceJson.hasCBlockInfo;
-        return this.proveIncEvidence(evidenceJson,extractResponse.extractedEvidenceFolder, extractResponse.entries, 1);
+        return await this.proveIncEvidence(evidenceJson,extractResponse.extractedEvidenceFolder, extractResponse.entries, 1);
     },
 
-    proveIncEvidence : function (evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum) {
+    proveIncEvidence : async function (evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum) {
         var outer = this;
         return new Promise((resolve, reject) => {
             var ttn = evidenceJson.ttn;
@@ -130,7 +130,7 @@ module.exports = {
                     if (cnum != highestcnum) {
                         this.logEmitter.log("");
                         this.logEmitter.log("");
-                        outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
+                        await outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
                     }
                     resolve("proved")
                     zip.close();
