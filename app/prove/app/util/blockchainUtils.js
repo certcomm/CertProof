@@ -1,3 +1,5 @@
+require("babel-polyfill");
+
 var errorMessages = require("../config/errorMessages.js");
 var Constants = require("../config/constants.js");
 var registryAbi = require("../contract-abi/Registry.json");

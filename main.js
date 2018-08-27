@@ -1,5 +1,3 @@
-import 'babel-polyfill';
-
 const electron = require('electron');
 const {shell, app, dialog, BrowserWindow} = electron;
 const url = require('url');
@@ -100,7 +98,7 @@ function createWindow() {
     });
     
     // to open console in packaged mode for debugging
-    win.webContents.openDevTools();
+    // win.webContents.openDevTools();
 }
 
 var removeEvidence = (dirPath)=>{

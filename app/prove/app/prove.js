@@ -1,3 +1,5 @@
+require("babel-polyfill");
+
 var Constants = require("./config/constants.js");
 var errorMessages = require("./config/errorMessages.js");
 var cpJsonUtils = require("./util/cpJsonUtils.js");
