@@ -2,6 +2,7 @@ var Constants = require("./config/constants.js");
 var errorMessages = require("./config/errorMessages.js");
 var cpJsonUtils = require("./util/cpJsonUtils.js");
 var evidenceUtils = require("./util/evidenceUtils.js");
+var blockchainUtils = require("./util/blockchainUtils.js");
 
 try{
     var fs = window.require('fs-extra');
@@ -70,7 +71,7 @@ module.exports = {
         });
     },
     
-    proveEvidence :function(extractResponse) {
+    proveEvidence : async function(extractResponse) {
         var evidenceJson = extractResponse.evidenceJson
         cpJsonUtils.ensureJsonHas("1010", evidenceJson, "ttnGlobal");
         cpJsonUtils.ensureJsonHas("1013", evidenceJson, "governor");
@@ -84,10 +85,10 @@ module.exports = {
         this.governor = evidenceJson.governor;
         this.hasDigitalSignature = evidenceJson.hasDigitalSignature;
         this.hasCBlockInfo = evidenceJson.hasCBlockInfo;
-        return this.proveIncEvidence(evidenceJson,extractResponse.extractedEvidenceFolder, extractResponse.entries, 1);
+        return await this.proveIncEvidence(evidenceJson,extractResponse.extractedEvidenceFolder, extractResponse.entries, 1);
     },
 
-    proveIncEvidence : function (evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum) {
+    proveIncEvidence : async function (evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum) {
         var outer = this;
         return new Promise((resolve, reject) => {
             var ttn = evidenceJson.ttn;
@@ -99,7 +100,7 @@ module.exports = {
                 storeEntries: true
             });
 
-            zip.on('ready', () => {
+            zip.on('ready', async () => {
                 this.entries = zip.entries();
                 this.logEmitter = outer.logEmitter;
                 if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)){
@@ -119,7 +120,7 @@ module.exports = {
                     var sacManifestJson = cpJsonUtils.parseJson(sacManifestData.toString('utf-8'));
                     outer.validateSacManifest(cnum, sacManifestJson);
 
-                    outer.proveCThinBlockInfo(cnum, incManifestJson, sacManifestJson, zip);
+                    await outer.proveCThinBlockInfo(reject, cnum, incManifestJson, sacManifestJson, zip);
                     outer.proveChangeset(cnum, sacManifestJson, zip)
                     outer.proveSsac(cnum, sacManifestJson.ssacHash, zip);
                     if (cnum==1) {
@@ -129,7 +130,7 @@ module.exports = {
                     if (cnum != highestcnum) {
                         this.logEmitter.log("");
                         this.logEmitter.log("");
-                        outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
+                        await outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
                     }
                     resolve("proved")
                     zip.close();
@@ -208,7 +209,7 @@ module.exports = {
         evidenceUtils.ensureIncEvidenceSchemaVersionSupported(this.logEmitter, incManifestJson.incEvidenceSchemaVersion)    
     },
 
-    proveCThinBlockInfo : function(cnum, incManifestJson, sacManifestJson, zip) {
+    proveCThinBlockInfo : async function(reject, cnum, incManifestJson, sacManifestJson, zip) {
         if(incManifestJson.hasCBlockInfo) {
             this.logEmitter.log("Proving CThinBlock for cnum:"+ cnum);                            
             try {
@@ -228,6 +229,12 @@ module.exports = {
                         cpJsonUtils.ensureJsonHas("1010", op, "transactionNum", "ttnGlobalHash", "sacHash", "ssacHash", "changeNum");
                         opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.sacHash);
                         opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.ssacHash);
+                    }
+                    if((typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
+                        cpJsonUtils.ensureJsonHas("1020", incManifestJson.blockchainAnchorsOn[0], "type", "networks");
+                        //for now prove on first type and first network in the type
+                        var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
+                        await blockchainUtils.proveOnBlockChain(this.logEmitter, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
                     }
                     this.logEmitter.log("Proved " + cThinBlockFilePath);                            
                 }

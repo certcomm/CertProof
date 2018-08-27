@@ -41,9 +41,9 @@ module.exports = {
 		"2011":"Inconsistent governor",
 		"2012":"Missing manifest file",
 		// Blockchain Tests 
-		"3001":"#SAC in incremental evidence does not match #SAC on Blockchain using Merkel path",//TODO
-		"3002":"#SSAC in incremental evidence does not match #SSAC on Blockchain using Merkel path",//TODO
-		"3003":"#CBlockInfo in incremental evidence does not match #CBlockInfo on Blockchain",//TODO
+		"3001":"Block does not exists on Blockchain",
+		"3002":"CThinBlockHash in incremental evidence does not match CThinBlockHash on Blockchain",
+		"3003":"MerkleRootHash in incremental evidence does not match MerkleRootHash on Blockchain",
 	},
 	throwError: function(errorCode, msgSuffix) {
 	    var errorMessage = this.errors[errorCode] + ", " + msgSuffix;

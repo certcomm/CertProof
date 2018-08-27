@@ -1,6 +1,8 @@
 # CertProof App
 The CertProof App is an integral part of the overall **CertComm** ecosystem. CertComm is used for **certified communication and collaboration** backed by the Blockchain. You can learn more about CertComm at https://certcomm.io. CertComm is particularly useful for communication and collaboration in high-stakes, low-trust situations.
 
+CertComm dramatically improves trust, truth, consistency, confusion, finger-pointing, efficiency and agility in B2B and B2C high-stakes communication and collaboration.
+
 The CertProof app is used to view and prove Certified Threads. The user must upload either a *CertComm* evidence file or a *CertComm* backup file into the *CertProof* App. The actual proof has two parts to it, viz. an *Internal Proof* and a *Blockchain Proof*. The Internal Proof is completely self-contained. It does not require a network connection in order to work. The Blockchain proof is an *additional* proof that verifies the evidence against information written by a CertComm *governor* such as https://tmail21.com to the blockchain. Both proofs must pass for maximum assurance of non-tampering.
 
 When an evidence file is uploaded to CertProof, both the internal proof and the blockchain proof are executed. However, when a backup file is uploaded only the internal proof is executed. Also, the CertProof App is open source and can be used to prove Certified Thread evidence even if the *Governor* that produced the evidence becomes non-responsive or non-cooperative. This is a critical element of the CertComm ecosystem.
@@ -30,6 +32,11 @@ The Evidence for a Certified Operation is the input to the CertProof app and is 
 ## CertComm Confidential Evidence File (CCEF)
 The first piece of evidence is the CertComm Confidential Evidence File. As the name suggests, this part of the evidence is **confidential** and is only distributed by the Governor to the parties to the thread. The end user (*transacting party*) needs to upload this file to CertProof in order to perform the proof. The file is a ZIP file in the CCEF format.
 
+The Screenshot below shows a user downloading a CCEF File for a particular changeset in a particuar thread from the Governor that manages that thread.
+
+![CertProof Screenshot4 Alt text](/static_resources/Screenshot_4.png?raw=true "CertProof Screenshot 4")
+
+
 ## CertComm Layer 2 Evidence File (CL2EF) 
 CertComm Layer 2 Evidence Files (CL2EF) consist of File(s) corresponding to the Certified operation written to **IPFS**. This is **public** information. The File(s) represent the Layer 2 "blockchain" evidence for the Layer 2 Blockchain maintained by a Governor. These Files are written by the governor to IPFS. The end user (*transacting party*) does *not* need to directly deal with these files. These files are in JSON format and adhere to the CL2EF format.
 
@@ -40,20 +47,38 @@ A key element of CertComm (and the CertProof App) is that they produce and requi
 There are two ways to get the CertProof App. You can directly download the binary installers (available for Windows and Mac) or you can build an installer from this Github source. The former is more convenient. The latter is recommended for maximimum security. Note that the CertProof App is a Javascript app built using *Electron*, *ReactJS* and *MobX*.
 
 ## Download the Installer
+The most convenient way 
 
 ### Download a Windows Installer
+The official windows installer can be found at [Official Installers](https://github.com/certcomm/CertProof/releases). 
+Once there look for the newest Installer (at the top of the page), that starts with **certproof-win-latest-...**.
+Once downloaded, click (or double click) on the installer in order to install it.
 
 ### Download a Mac Installer
+The official Mac installer can be found at [Official Installers](https://github.com/certcomm/CertProof/releases). 
+Once there look for the newest Installer (at the top of the page(, that starts with **certproof-osx-latest-...**.
+
+### Download a Linux Installer
+The official Linux installer can be found at [Official Installers](https://github.com/certcomm/CertProof/releases). 
+Once there look for the newest Installer (at the top of the page(, that starts with **certproof-linux-latest-....**.
+
+
 
 ## Build an Installer from Source
+For the most paranoid/security conscious, they can choose to build the installer from source. This is less conveninent, but the user can be sure that they are dealing with the latest version of the (authoratative code).
 
 ### Build a Windows Installer from Source
+// Instructions coming soon
 
 ### Build a Mac Installer from Source
+// Instructions coming soon
+
+### Build a Linux Installer from Source
+// Instructions coming soon.
 
 # Other Uses
 ## Using the CertProof App to aid in building a *CertComm Governor*
 Another use of the CertProof App is to aid a developer in the building of a *CertComm Governor*. CertComm Governors are parties which mediate the creation and updating of Certified Threads. Every Certified thread operation results in three kinds of output, viz. a **CertComm Confidential Evidence File**, **CertComm Layer 2 Evidence File** and **CertComm Blockchain Anchor**. The CertProof App can be used by a developer who is building a CertComm Governor to verify that their Governor is producing these outputs correctly.
 
 ## Using the CertProof App as an offline Viewer
-The CertProof app can be used as an offline viewer for certified (and non-certified) threads. This ensures that all content will be viewable independent of the rest of the CertComm ecosystem.
+The CertProof app can be used as an offline viewer for certified (and non-certified) threads. This ensures that all content will be viewable independent of the rest of the CertComm ecosystem. The same strategy can be used for backups.
