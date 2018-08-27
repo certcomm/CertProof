@@ -98,7 +98,7 @@ function createWindow() {
     });
     
     // to open console in packaged mode for debugging
-    // win.webContents.openDevTools();
+    win.webContents.openDevTools();
 }
 
 var removeEvidence = (dirPath)=>{
