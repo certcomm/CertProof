@@ -1,3 +1,5 @@
+import 'babel-polyfill';
+
 const electron = require('electron');
 const {shell, app, dialog, BrowserWindow} = electron;
 const url = require('url');
