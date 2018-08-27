@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.25",
+	"version": "1.0.26",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
@@ -48,7 +48,7 @@
 		"dev": "electron . --debug",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"pack": "build --dir",
-		"dist": "build",
+		"dist": "npm run packages && build",
 		"prove": "node ./app/prove/index.js",
 		"packages": "npm-run-all package:*",
 		"package:reactify": "browserify -r react -r react-dom -r es6-promise -r | uglifyjs -c > ./app/reactifyBundle.js",
