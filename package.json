@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.27",
+	"version": "1.0.28",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
