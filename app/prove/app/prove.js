@@ -122,12 +122,12 @@ module.exports = {
                     var sacManifestJson = cpJsonUtils.parseJson(sacManifestData.toString('utf-8'));
                     outer.validateSacManifest(cnum, sacManifestJson);
 
-                    await outer.proveCThinBlockInfo(reject, cnum, incManifestJson, sacManifestJson, zip);
                     outer.proveChangeset(cnum, sacManifestJson, zip)
                     outer.proveSsac(cnum, sacManifestJson.ssacHash, zip);
                     if (cnum==1) {
                         outer.proveForwards(sacManifestJson, zip);
                     }    
+                    await outer.proveCThinBlockInfo(reject, cnum, incManifestJson, sacManifestJson, zip);
                     this.logEmitter.log("proved", incEvidenceFileName);
                     if (cnum != highestcnum) {
                         this.logEmitter.log("");
@@ -232,13 +232,7 @@ module.exports = {
                         opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.sacHash);
                         opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.ssacHash);
                     }
-                    if((typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
-                        cpJsonUtils.ensureJsonHas("1020", incManifestJson.blockchainAnchorsOn[0], "type", "networks");
-                        //for now prove on first type and first network in the type
-                        var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
-                        await blockchainUtils.proveOnBlockChain(this.logEmitter, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
-                    }
-                    this.logEmitter.log("Proved " + cThinBlockFilePath);                            
+                    this.logEmitter.log("Proved " + cThinBlockFilePath);
                 }
                 if(!cThinBlockMerkleRootHashes.has(incManifestJson.cThinBlockMerkleRoot)) {
                     errorMessages.throwError("2010", "cThinBlockMerkleRoot in incremental evidence missing in included cthinBlocks");                
@@ -260,6 +254,20 @@ module.exports = {
                 evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, incManifestJson.sacHash, incManifestJson.sacMerklePath);
                 this.logEmitter.log("Proving ssacMerklePath");
                 evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
+
+                if((typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
+                    for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
+                        var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
+                        var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
+                        var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
+                        cThinBlockMerkleRootHashes.add(cThinBlockJson.cThinBlockMerkleRootHash);
+                        cpJsonUtils.ensureJsonHas("1020", incManifestJson.blockchainAnchorsOn[0], "type", "networks");
+                        //for now prove on first type and first network in the type
+                        var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
+                        await blockchainUtils.proveOnBlockChain(this.logEmitter, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
+                    }
+                }
+
             } finally {
                 this.logEmitter.deindent();
             }                

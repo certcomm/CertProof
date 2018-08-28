@@ -7,9 +7,9 @@ var cThinBlockAnchorOpsAbi = require("../contract-abi/CThinBlockAnchorOps.json")
 var Web3 = require('web3');
 module.exports = {
     proveOnBlockChain: async function(logEmitter, networkType, governorDomainName, shard, cblockNum, cThinBlockHash, cThinBlockMerkleRootHash) {
+        logEmitter.log("Proving cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
         try {
             logEmitter.indent();
-            logEmitter.log("Proving cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
             var web3 = getWeb3(networkType);
             var cThinBlockAnchor = await getCThinBlockAnchor(web3, networkType, governorDomainName, shard, cblockNum);
             logEmitter.log("Found cThinBlockAnchor=[" + cThinBlockAnchor +"] on blockchain networkType= " + networkType);
@@ -24,10 +24,10 @@ module.exports = {
             if (cThinBlockMerkleRootHash != cThinBlockMerkleRootHashOnBlockChain) {
                 errorMessages.throwError("3003", ", cThinBlockMerkleRootHash="+cThinBlockMerkleRootHash+",cThinBlockMerkleRootHashOnBlockChain="+cThinBlockMerkleRootHashOnBlockChain);
             }
-            logEmitter.log("Proved cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
         } finally {
             logEmitter.deindent();
         }
+        logEmitter.log("Proved cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
     }
 }
 
@@ -48,7 +48,6 @@ async function getCThinBlockAnchor(web3, networkType, governorDomainName, shard,
 async function getCThinBlockAnchorOps(web3, networkType) {
     var registry = getRegistry(web3, networkType);
     var cThinBlockAnchorOpsAddress = await registry.getContractAddr("CThinBlockAnchorOps");
-    console.log(cThinBlockAnchorOpsAddress);
     return web3.eth.contract(cThinBlockAnchorOpsAbi).at(cThinBlockAnchorOpsAddress);
 }
 
