@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.28",
+	"version": "1.0.29",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
@@ -96,6 +96,7 @@
 		"web3": "^0.20.6"
 	},
 	"devDependencies": {
+		"lodash": "^4.17.5",
 		"babel-core": "^6.26.0",
 		"babel-polyfill": "^6.26.0",
 		"babel-plugin-transform-class-properties": "^6.24.1",
@@ -105,7 +106,7 @@
 		"babel-preset-stage-1": "^6.24.1",
 		"babelify": "^8.0.0",
 		"browserify": "^16.1.0",
-		"electron": "~1.8.3",
+		"electron": "~1.8.8",
 		"electron-builder": "^20.8.1",
 		"electron-packager": "11.1.0",
 		"envify": "^4.1.0",
