@@ -29,9 +29,9 @@ module.exports = {
     getIncEvidenceFileName: function(evidenceJson, entries, ttn, cnum) {
         var filename;
         if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo) {
-            filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
-        } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
             filename = "L1_INC_EV_"+ttn+"_"+cnum+".zip"
+        } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
+            filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
         } else {
             filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
         } 
