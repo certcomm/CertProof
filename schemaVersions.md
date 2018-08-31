@@ -27,6 +27,7 @@
 | 1 |Initial|
 | 2 |Added governorLogoExtension|
 | 3 |added TtnUrl|
+| 4 |Swapped Level1 and Level2 for Layer1 and Layer2 blockchain|
 
 ### IncEvidence Manifest
 
@@ -37,4 +38,5 @@
 | 3 |added TtnUrl|
 | 4 |added writerImageMappings|
 | 5 |added sacHash and renamed manifest.json to sacManifest.json|
+| 6 |Swapped Level1 and Level2 for Layer1 and Layer2 blockchain|
 
