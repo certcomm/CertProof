@@ -77,7 +77,6 @@ export default class Dashboard extends React.Component {
     }
     
     blockchainModalAction(isVisible) {
-
         this.setState({blockchainModalIsOpen: isVisible});
     }
     
@@ -573,15 +572,15 @@ export default class Dashboard extends React.Component {
     getIncEvidenceFileName(evidenceJson, entries, ttn, cnum) {
         var filename;
         if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo) {
-            filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
-            this.evidenceType = 'Certified L2';
-        } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
             filename = "L1_INC_EV_"+ttn+"_"+cnum+".zip"
             this.evidenceType = 'Certified L1';
+        } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
+            filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
+            this.evidenceType = 'Certified L2';
         } else {
             filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
             this.evidenceType = 'Backup';
-        } 
+        }
         return filename;
     }
 
@@ -1129,7 +1128,7 @@ export default class Dashboard extends React.Component {
             evidenceData = this.store.getEvidenceManifestData(),
             blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
         
-        if(this.networkJson != "" && this.evidenceType == 'Certified L2'){
+        if(this.networkJson != "" && this.evidenceType == 'Certified L1'){
             if(!blockchainAnchorsOn && !this.state.emptyBlockchainAnchorsOn){
                 setTimeout(()=>{
                     this.setState({emptyBlockchainAnchorsOn: true});
@@ -1316,17 +1315,17 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.29</div>
+                                            <div className="info-value">1.0.30</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">{this.evidenceType}</div>
+                                            <div className="info-value">Inc-10</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Evidence Type</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">Inc-10</div>
+                                            <div className="info-value">{this.evidenceType}</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Live Thread</div>
@@ -1347,7 +1346,7 @@ export default class Dashboard extends React.Component {
 
                                             <div className="clear"></div>
                                             {
-                                                this.evidenceType == 'Certified L2' && !this.state.emptyBlockchainAnchorsOn ? (
+                                                this.evidenceType == 'Certified L1' && !this.state.emptyBlockchainAnchorsOn ? (
                                                     <div>
                                                         <div className="info-label">Show Blockchain Proof </div>
                                                         <div className="fl bold"> : </div>
@@ -1378,8 +1377,8 @@ export default class Dashboard extends React.Component {
                                         <div>
                                             <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
                                             {
-                                                this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L2') ? (
-                                                    <div onClick={() => {swal(this.state.blockchainAnchorDisable ? "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s)" : "Warning: This is an L2 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).")}} className="prove-warning-sign" />
+                                                this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ? (
+                                                    <div onClick={() => {swal(this.state.blockchainAnchorDisable ? "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s)" : "Warning: This is an L1 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).")}} className="prove-warning-sign" />
                                                 ) : <div className="prove-info-sign" />
                                             }
                                         </div>
