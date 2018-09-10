@@ -6,7 +6,7 @@ module.exports = {
 		"1003":"Failure due to Tampered attachment content",
 		"1004":"SSAC does not hash to SSAC hash",
 		"1005":"SAC manifest does not hash to SAC manifest hash",
-		"1006":"Failure due to Unsupported Schema Version",
+		"1006":"Failure due to Unsupported backward compatibility Schema Version",
 		"1007":"Invalid JSON Structure",
 		"1008":"Unknown Thread Type",
 		"1009":"Missing Subject",
@@ -26,6 +26,8 @@ module.exports = {
 		"1023":"Digital Signature if present is not valid",//TODO
 		"1024":"Missing incremental manifest file",
 		"1025":"Forwarded comment if present does not match its hash",
+		"1026":"Schema version should be in Major.Minor format",
+		"1027":"Failure due to Unsupported forward compatibility Schema Version",
 
 		 //Across Multiple Incremental Evidence 
 		"2001":"Missing or non-contiguous change num",
@@ -35,7 +37,6 @@ module.exports = {
 		"2005":"Deleted Section that did not exist or was deleted",
 		"2006":"Narrowed Writer SAC across changeset",
 		"2007":"Writer SAC (changeset N) != Writer SAC (Changeset N-1) + Added Writer (Changeset N)",
-		"2008":"Unsupported Evidence Schema Version",
 		"2009":"Inconsistent Digital Signature presence",
 		"2010":"Inconsistent CBlockInfo presence",
 		"2011":"Inconsistent governor",
