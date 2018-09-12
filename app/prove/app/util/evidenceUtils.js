@@ -53,13 +53,22 @@ module.exports = {
         }
     },
     ensureSacSchemaVersionSupported: function(logEmitter, schemaVersion) { 
-        schemaVersionSupported(logEmitter, "sac", schemaVersion);
+        schemaVersionSupported(logEmitter, "sac", schemaVersion, false);
     },
     ensureEvidenceSchemaVersionSupported: function(logEmitter, schemaVersion) { 
-        schemaVersionSupported(logEmitter, "evidence", schemaVersion);
+        schemaVersionSupported(logEmitter, "evidence", schemaVersion, false);
     },
     ensureIncEvidenceSchemaVersionSupported: function(logEmitter, schemaVersion) { 
-        schemaVersionSupported(logEmitter, "incEvidence", schemaVersion);
+        schemaVersionSupported(logEmitter, "incEvidence", schemaVersion, false);
+    },
+    ensureSacSchemaVersionSupportedUI: function(logEmitter, schemaVersion) {
+        schemaVersionSupported(logEmitter, "sac", schemaVersion, true);
+    },
+    ensureEvidenceSchemaVersionSupportedUI: function(logEmitter, schemaVersion) {
+        schemaVersionSupported(logEmitter, "evidence", schemaVersion, true);
+    },
+    ensureIncEvidenceSchemaVersionSupportedUI: function(logEmitter, schemaVersion) {
+        schemaVersionSupported(logEmitter, "incEvidence", schemaVersion, true);
     },
     ensureThreadTypeSupported: function(threadType) {
         if(!(threadTypes.has(threadType))) {
@@ -108,7 +117,7 @@ module.exports = {
     }
 }
 
-function schemaVersionSupported(logEmitter, schemaType, schemaVersion) {
+function schemaVersionSupported(logEmitter, schemaType, schemaVersion, warnOnMinorVersionForwardCompatiblity) {
     schemaVersion = ""+schemaVersion;
     if(schemaVersion.indexOf(".")==-1) {
         errorMessages.throwError("1026", ",found " + schemaType + " SchemaVersion:" + schemaVersion);
@@ -119,6 +128,14 @@ function schemaVersionSupported(logEmitter, schemaType, schemaVersion) {
     if(isNaN(majorSchemaVersion) || isNaN(minorSchemaVersion)) {
         errorMessages.throwError("1026", "found " + schemaType + " SchemaVersion:" + schemaVersion + " to be not proper numeric format");
     }
+    var minExpectedSchemaVersion = Constants.default.supportedSchemaVersions.min;
+    var minExpectedMajorSchemaVersion = parseInt(minExpectedSchemaVersion.split(".")[0]);
+    var minExpectedMinorSchemaVersion = parseInt(minExpectedSchemaVersion.split(".")[1]);
+
+    if(majorSchemaVersion<minExpectedMajorSchemaVersion||(majorSchemaVersion ==minExpectedMajorSchemaVersion && minorSchemaVersion < minExpectedMinorSchemaVersion)) {
+        errorMessages.throwError("1006", "found " + schemaType + " schemaVersion:" + schemaVersion + " but only versions greater than " + minExpectedSchemaVersion + " are supported");
+    }
+
     var expectedSchemaVersion = Constants.default.supportedSchemaVersions.current;
     var expectedMajorSchemaVersion = parseInt(expectedSchemaVersion.split(".")[0]);
     var expectedMinorSchemaVersion = parseInt(expectedSchemaVersion.split(".")[1]);
@@ -126,13 +143,10 @@ function schemaVersionSupported(logEmitter, schemaType, schemaVersion) {
     if(majorSchemaVersion>expectedMajorSchemaVersion) {
         errorMessages.throwError("1027", "found " + schemaType + " MajorSchemaVersion:" + majorSchemaVersion + " but only versions less than " + expectedMajorSchemaVersion + " are supported");
     } 
-    var minExpectedSchemaVersion = Constants.default.supportedSchemaVersions.min;
-    var minExpectedMajorSchemaVersion = parseInt(minExpectedSchemaVersion.split(".")[0]);
-    var minExpectedMinorSchemaVersion = parseInt(minExpectedSchemaVersion.split(".")[1]);
 
-    if(minExpectedMajorSchemaVersion<expectedMajorSchemaVersion||(minExpectedMajorSchemaVersion==expectedMajorSchemaVersion && minExpectedMinorSchemaVersion<minorSchemaVersion)) {
-        errorMessages.throwError("1006", "found " + schemaType + " schemaVersion:" + schemaVersion + " but only versions greater than " + minExpectedSchemaVersion + " are supported");
+    if(warnOnMinorVersionForwardCompatiblity && majorSchemaVersion==expectedMajorSchemaVersion && minorSchemaVersion>expectedMinorSchemaVersion) {
+        errorMessages.throwError("1028", "found " + schemaType + " schemaVersion:" + schemaVersion + " but only versions greater than " + minExpectedSchemaVersion + " are supported");
     }
-    
+
     logEmitter.log(schemaType + " version validated");
 }

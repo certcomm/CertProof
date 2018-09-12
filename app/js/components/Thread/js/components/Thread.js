@@ -241,7 +241,7 @@ export default class Thread extends React.Component {
                     console.log("logEmitter response", r);
                 }
             }
-            EvidenceUtils.ensureSacSchemaVersionSupported(logEmitter, headerData.sacSchemaVersion);
+            EvidenceUtils.ensureSacSchemaVersionSupportedUI(logEmitter, headerData.sacSchemaVersion);
         }catch(e){
             isSupported = false;
             console.log("e", e);
