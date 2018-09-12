@@ -9,6 +9,8 @@ import Writers from "./Writers";
 import Sections from "./Sections";
 import Comments from "./Comments";
 
+import EvidenceUtils from "./../../../../../prove/app/util/evidenceUtils.js";
+
 var Constants = require("./../../../../../config/constants.js");
 
 @observer
@@ -232,6 +234,19 @@ export default class Thread extends React.Component {
             </div>
         }
 
+        var isSupported = true;
+        try{
+            var logEmitter = {
+                log: function(r){
+                    console.log("logEmitter response", r);
+                }
+            }
+            EvidenceUtils.ensureSacSchemaVersionSupported(logEmitter, headerData.sacSchemaVersion);
+        }catch(e){
+            isSupported = false;
+            console.log("e", e);
+        }
+
         if(err != ""){
             return (
                 <div className="blank-container">
@@ -241,7 +256,7 @@ export default class Thread extends React.Component {
                     <div className="information-danger-message">{err}</div>
                 </div>
             );
-        }else if( (Constants.default.supportedSchema > headerData.sacSchemaVersion || Constants.default.supportedSchema > headerData.firstSacSchemaVersion) && !this.state.renderView){
+        }else if( !isSupported && !this.state.renderView){
             return (
                 <div className="blank-container">
                     <div className="information-message">

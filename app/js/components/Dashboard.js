@@ -1315,7 +1315,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.30</div>
+                                            <div className="info-value">1.0.31</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>

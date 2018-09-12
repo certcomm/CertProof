@@ -115,10 +115,8 @@ function schemaVersionSupported(logEmitter, schemaType, schemaVersion) {
     }
     var majorSchemaVersion = parseInt(schemaVersion.split(".")[0]);
     var minorSchemaVersion = parseInt(schemaVersion.split(".")[1]);
-    var minorSchemaVersion = parseInt(schemaVersion.split(".")[1]);
 
     if(isNaN(majorSchemaVersion) || isNaN(minorSchemaVersion)) {
-        errorMessages.throwError("1026", "found " + schemaType + " SchemaVersion:" + schemaVersion + " to be not proper numeric format");
         errorMessages.throwError("1026", "found " + schemaType + " SchemaVersion:" + schemaVersion + " to be not proper numeric format");
     }
     var expectedSchemaVersion = Constants.default.supportedSchemaVersions.current;
@@ -135,6 +133,6 @@ function schemaVersionSupported(logEmitter, schemaType, schemaVersion) {
     if(minExpectedMajorSchemaVersion<expectedMajorSchemaVersion||(minExpectedMajorSchemaVersion==expectedMajorSchemaVersion && minExpectedMinorSchemaVersion<minorSchemaVersion)) {
         errorMessages.throwError("1006", "found " + schemaType + " schemaVersion:" + schemaVersion + " but only versions greater than " + minExpectedSchemaVersion + " are supported");
     }
-
+    
     logEmitter.log(schemaType + " version validated");
 }
