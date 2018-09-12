@@ -145,7 +145,7 @@ function schemaVersionSupported(logEmitter, schemaType, schemaVersion, warnOnMin
     } 
 
     if(warnOnMinorVersionForwardCompatiblity && majorSchemaVersion==expectedMajorSchemaVersion && minorSchemaVersion>expectedMinorSchemaVersion) {
-        errorMessages.throwError("1028", "found " + schemaType + " schemaVersion:" + schemaVersion + " but only versions greater than " + minExpectedSchemaVersion + " are supported");
+        errorMessages.throwError("1028", "found " + schemaType + " schemaVersion:" + schemaVersion + " but only versions less than " + expectedMinorSchemaVersion + " are fully supported");
     }
 
     logEmitter.log(schemaType + " version validated");
