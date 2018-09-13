@@ -270,7 +270,7 @@ div.writers-count-wrapper .h-inner-wrapper {
 }
 .icon16x16{ width:16px;height:16px;display:inline-block;margin-bottom: -4px;position:relative}
 .t-add:before, .t-add-s:before {
-	color: #676A6C; content: "+"; font-size: 20px; font-weight: bold; left: 3px; position: absolute;
+	color: #676A6C; content: "+"; font-size: 20px; font-weight: bold; left: 3px; top: -5px; position: absolute;
 }
 .t-grid:before {
 	color: #555555; content: "3"; font-family: tmail; font-size: 14px; font-weight: normal; left: 2px; position: absolute;
@@ -685,5 +685,32 @@ ul li.writer-rounded.w-list-view div.w-info .w-name + .w-address {
 .reset-css.comment-text img, .reset-css.comment-text iframe, .reset-css.comment-text video {
     max-width: 100%;
 }
-
 /*  */
+
+a.not-in-same-domain {
+	color: #337ab7;
+	text-decoration: none;
+}
+.red-anchor, .in-other-thread{
+	color: #ED5565 !important;
+}
+.green-anchor, .in-same-thread{
+	color: #18A689 !important;
+}
+.blink_me_yellow {
+	-webkit-animation-name: blinker; -webkit-animation-duration: 1s; -webkit-animation-timing-function: linear; -webkit-animation-iteration-count: infinite; -moz-animation-name: blinker; -moz-animation-duration: 1s; -moz-animation-timing-function: linear; -moz-animation-iteration-count: infinite; animation-name: blinker; animation-duration: 1s; animation-timing-function: linear; animation-iteration-count: infinite; background-color: #FEFE9A;
+}
+.blink_me_yellow .in-same-thread, .blink_me_yellow .in-other-thread, .blink_me_yellow a.not-in-same-domain {
+	background-color: #FEFE9A !important;
+}
+@-moz-keyframes blinker {
+	0% { opacity: 1.0; } 50% { opacity: 0.0; } 100% { opacity: 1.0; }
+}
+
+@-webkit-keyframes blinker {
+	0% { opacity: 1.0; } 50% { opacity: 0.0; } 100% { opacity: 1.0; }
+}
+
+@keyframes blinker {
+	0% { opacity: 1.0; } 50% { opacity: 0.0; } 100% { opacity: 1.0; }
+}

@@ -13,9 +13,6 @@ body {
 .header {
   height: 80px;
 }
-.container {
-
-}
 .link {
   text-decoration: underline; color: #1c84c6; font-size: 13px; letter-spacing: 0.3px; cursor: pointer;
 }

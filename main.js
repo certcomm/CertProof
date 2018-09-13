@@ -96,6 +96,10 @@ function createWindow() {
             })
         })
     });
+
+    win.webContents.on('did-finish-load', () => {
+        win.setTitle("CertProof (Version "+process.env.npm_package_version+")");
+    });
     
     // to open console in packaged mode for debugging
     // win.webContents.openDevTools();

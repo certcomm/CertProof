@@ -529,9 +529,9 @@ export default class Sections extends React.Component {
                 
                 if(this.type == "list"){
                     return (
-                        <div key={"section-el-"+i+"-"+this.type} className={"section-el "+templateSectionColor}>
+                        <div data-section-title={section.title} key={"section-el-"+i+"-"+this.type} className={"section-el "+templateSectionColor}>
                             <span className={sectionTypeCls+" "+fileTypeIconCls+" icon16x16 fl"} title={sectionTypeTitle}></span>
-                            <a title={section.title}>
+                            <a data-section-title={section.title} data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} title={section.title}>
                                 <div onClick={actionFunc} className="fl section-title">{section.title}</div>
                             </a>
                         </div>
@@ -541,7 +541,7 @@ export default class Sections extends React.Component {
                         case 'unchanged':
                         case 'added':
                             return (
-                                <div className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
+                                <div data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
                                     <div className="-comment-section-action"> 
                                         <span className="t-add icon16x16" title="Created" style={{'marginLeft': '5px'}}></span>
                                     </div>
@@ -558,7 +558,7 @@ export default class Sections extends React.Component {
                             var titleCls = '';
                             var titleTooltip = '';
                             return (
-                                <div className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
+                                <div data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
                                     <div className="-comment-section-action">
                                         <span className="t-changed icon16x16" title="Updated" style={{'marginLeft': '5px'}}></span>
                                     </div>
@@ -573,7 +573,7 @@ export default class Sections extends React.Component {
                         break;
                         case 'deleted':
                             return (
-                                <div className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
+                                <div data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
                                     <div className="-comment-section-action">
                                         <span className="t-deleted icon16x16" style={{'marginLeft': '5px'}}></span>
                                     </div> 

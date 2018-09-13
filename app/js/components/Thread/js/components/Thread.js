@@ -11,6 +11,7 @@ import Comments from "./Comments";
 
 import EvidenceUtils from "./../../../../../prove/app/util/evidenceUtils.js";
 
+var CommonFunc = require("./../../../../../config/common.js");
 var Constants = require("./../../../../../config/constants.js");
 
 @observer
@@ -32,6 +33,20 @@ export default class Thread extends React.Component {
     
     componentWillMount() {
         this.store.setData(this.data);
+    }
+
+    componentDidMount(){
+        $("body").on("click", function(event, target) {
+            if (event.target.tagName == 'A') {
+                event.preventDefault();
+
+                if($(event.target).hasClass("in-same-thread")){
+                    var ttn = event.target.getAttribute('data-ttn');
+                    CommonFunc.comments.openInAppLinks(event.target.href, ttn);
+                }
+            }
+            event.preventDefault();
+        });
     }
 
     componentDidUpdate(){
@@ -234,7 +249,8 @@ export default class Thread extends React.Component {
             </div>
         }
 
-        var isSupported = true;
+        var supportErrorCode = '',
+            supportMessage = "";
         try{
             var logEmitter = {
                 log: function(r){
@@ -243,8 +259,21 @@ export default class Thread extends React.Component {
             }
             EvidenceUtils.ensureSacSchemaVersionSupportedUI(logEmitter, headerData.sacSchemaVersion);
         }catch(e){
-            isSupported = false;
-            console.log("e", e);
+            supportErrorCode = e.name;
+            switch(e.name){
+                case "1006":
+                    supportMessage = "Warning: The evidence file contains information older than incremental schema version v"+headerData.sacSchemaVersion+" which is not supported in this version of the app (app version v"+process.env.npm_package_version+").";
+                break;
+                case "1026":
+                    supportMessage = "Warning: The evidence file contains information in a pre-production format which is no longer supported.";
+                break;
+                case "1027":
+                    supportMessage = "Warning: The evidence file contains information that requires a newer version of CertProof. Please download the latest version of CertProof. Note that this version of CertProof is v"+process.env.npm_package_version+".";
+                break;
+                case "1028":
+                    supportMessage = "Warning: The evidence file contains information that is best rendered with the latest version of CertProof.";
+                break;
+            }
         }
 
         if(err != ""){
@@ -256,12 +285,16 @@ export default class Thread extends React.Component {
                     <div className="information-danger-message">{err}</div>
                 </div>
             );
-        }else if( !isSupported && !this.state.renderView){
+        }else if(supportErrorCode == "1006" || supportErrorCode == "1026" || supportErrorCode == "1027"){
             return (
                 <div className="blank-container">
-                    <div className="information-message">
-                        Warning: The evidence file contains information that is best rendered with the latest version of CertProof.
-                    </div>
+                    <div className="information-message">{supportMessage}</div>
+                </div>
+            );
+        }else if( supportErrorCode == "1028" && !this.state.renderView){
+            return (
+                <div className="blank-container">
+                    <div className="information-message">{supportMessage}</div>
                     <div className="information-message"> Do you want to go ahead anyway? </div>
                     <div className="information-message">
                         <input className="btn-primary btn btn-w-m" type="button" value="Yes" onClick={this.renderView.bind(this)} />

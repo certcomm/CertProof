@@ -7,7 +7,7 @@ import Writers from "./Writers";
 import Sections from "./Sections";
 import Attachments from "./Attachments";
 
-const {shell} = window.require('electron');
+var CommonFunc = require("./../../../../../config/common.js");
 
 @observer
 class Comment extends React.Component {
@@ -17,6 +17,10 @@ class Comment extends React.Component {
         this.store = props.store;
         this.comment = props.comment;
         this.data = props.data;
+        this.ttn = props.data.ttn;
+
+        CommonFunc.comments.data = props.data;
+        CommonFunc.comments.ttnURL = props.data.ttnURL;
     }
 
     componentDidMount(){
@@ -28,29 +32,34 @@ class Comment extends React.Component {
                 if(url.startsWith("file")){
                     url = url.replace("file", "http");
                 }
-
-                aTags[i].setAttribute("onclick","window.require('electron').shell.openExternal('" + url + "')");
-                aTags[i].href = "#";
+                if(!$(aTags[i]).hasClass("in-same-thread")){
+                    aTags[i].setAttribute("onclick","window.require('electron').shell.openExternal('" + url + "')");
+                    aTags[i].href = "#";
+                }
             }
         }
+    }
+
+    getComment(v){
+        return CommonFunc.comments.replaceURLContent(v, this.ttn);
     }
     
 	render() {
         var comment = this.comment;
         if(typeof comment == "string"){
             return (
-                <div className="item-wrapper" key={"item-wrapper-"+Math.random()}>
+                <div className={"item-wrapper tmail-comment-"+this.ttn+"-D"} key={"item-wrapper-"+Math.random()}>
                     <div className="forwarded-comment-deleted">{comment}</div>
                 </div>
             );
         }else if(comment.metadataDeleted){
             return (
-                <div className="item-wrapper" key={"item-wrapper-"+Math.random()}>
+                <div className={"item-wrapper tmail-comment-"+this.ttn+"-"+comment.changeNum} key={"item-wrapper-"+Math.random()}>
                     <div className="forwarded-header-deleted">#{comment.changeNum}: Comment Header Deleted</div>
                     {
                         comment.comment ? (
                             <div className="comment-container">
-                                <div className="comment-text" dangerouslySetInnerHTML={{__html: comment.comment}} />
+                                <div className="comment-text" dangerouslySetInnerHTML={{__html: this.getComment(comment.comment)}} />
                             </div>
                         ) : null
                     }
@@ -82,10 +91,10 @@ class Comment extends React.Component {
                     <div title="Explicit Receipt acknowledgement" className="ack-certified"></div>
                 </div>
             }else{
-                var commentHTML = <div className="comment-text" dangerouslySetInnerHTML={{__html: comment.comment}} />
+                var commentHTML = <div className="comment-text" dangerouslySetInnerHTML={{__html: this.getComment(comment.comment)}} />
             }
             return (
-                <div className="item-wrapper" key={"item-wrapper-"+comment.changeNum}>
+                <div className={"item-wrapper tmail-comment-"+this.ttn+"-"+comment.changeNum} key={"item-wrapper-"+comment.changeNum}>
                     <div className="detail-data">
                         <Writers key={Math.random()} data={[comment.creator]} />
                         <div className="contribute-data">

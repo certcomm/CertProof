@@ -163,7 +163,7 @@ export default class Attachments extends React.Component {
                 }
                 
                 return (
-                    <div className="-comment-attachment-container x-attachments" key={"atachment-container-"+i}>
+                    <div className={"-comment-attachment-container x-attachments anchor-attachment-"+file.attachmentNum} key={"atachment-container-"+i}>
                         <div className="comment-attachment">
                             <div className="add-attachment left"></div>
                         </div>

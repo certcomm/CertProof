@@ -1,6 +1,5 @@
 import React from 'react';
 import { observer } from "mobx-react";
-import moment from "moment";
 import PerfectScrollbar from 'perfect-scrollbar';
 
 const {shell} = window.require('electron');
@@ -8,8 +7,6 @@ const {shell} = window.require('electron');
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 const StreamZip = window.require('node-stream-zip');
-const remote = window.require('electron').remote;
-var dialog = remote.dialog;
 var FileSystem = window.require('fs');
 
 import Modal from 'react-modal';
@@ -1315,7 +1312,7 @@ export default class Dashboard extends React.Component {
                                         <div className="advanced-sub-container hide-me hidden">
                                             <div className="info-label">CertProof App Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">1.0.31</div>
+                                            <div className="info-value">{process.env.npm_package_version}</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
