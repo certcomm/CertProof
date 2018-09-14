@@ -40,6 +40,7 @@ export default class Sections extends React.Component {
         this.sections = props.sections;
         this.data = props.data;
         this.type = props.type;
+        this.changeNum = props.changeNum;
 
         this.state = {
             modalIsOpen: false,
@@ -125,6 +126,11 @@ export default class Sections extends React.Component {
                 secNum: secnum,
                 changeNum: cnum,
                 isChecklist: ( this.data.threadType == "Template" ? true : false)
+            }
+
+            if(section.tasknum){
+                obj.taskNum = section.tasknum;
+                obj.expandTask = true;
             }
 
             setTimeout(function(){ TaskList.loadSection(obj); }, 500);
@@ -397,8 +403,10 @@ export default class Sections extends React.Component {
         });
     }
 
-    viewSection(section){
-        var me = this;
+    viewSection(section, event){
+        var me = this,
+            te = $(event.target)
+
         // read incremental change num zip without extreact
         const zip = new StreamZip({
             file: Constants.default.extractedEvidenceFolder+section.zipEntryName,
@@ -444,6 +452,15 @@ export default class Sections extends React.Component {
                 }else{
                     var sectionContent = bufferData.toString('utf-8');
                     sectionContent = this.urlify(sectionContent);
+                }
+
+                if(section.type == "task_list"){
+                    if(te && te.parents(".section-el") && te.parents(".section-el").find("a")[0]){
+                        section.tasknum = te.parents(".section-el").find("a")[0].getAttribute("data-tasknum");
+                        
+                        // should remove attr after get value
+                        te.parents(".section-el").find("a")[0].removeAttribute("data-tasknum");
+                    }
                 }
 
                 section.sectionContent = sectionContent;
@@ -531,7 +548,7 @@ export default class Sections extends React.Component {
                     return (
                         <div data-section-title={section.title} key={"section-el-"+i+"-"+this.type} className={"section-el "+templateSectionColor}>
                             <span className={sectionTypeCls+" "+fileTypeIconCls+" icon16x16 fl"} title={sectionTypeTitle}></span>
-                            <a data-section-title={section.title} data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} title={section.title}>
+                            <a data-section-title={section.title} data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-changenum={this.changeNum} title={section.title}>
                                 <div onClick={actionFunc} className="fl section-title">{section.title}</div>
                             </a>
                         </div>
@@ -541,7 +558,7 @@ export default class Sections extends React.Component {
                         case 'unchanged':
                         case 'added':
                             return (
-                                <div data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
+                                <div data-changenum={this.changeNum} data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
                                     <div className="-comment-section-action"> 
                                         <span className="t-add icon16x16" title="Created" style={{'marginLeft': '5px'}}></span>
                                     </div>
@@ -558,7 +575,7 @@ export default class Sections extends React.Component {
                             var titleCls = '';
                             var titleTooltip = '';
                             return (
-                                <div data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
+                                <div data-changenum={this.changeNum} data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
                                     <div className="-comment-section-action">
                                         <span className="t-changed icon16x16" title="Updated" style={{'marginLeft': '5px'}}></span>
                                     </div>
@@ -573,7 +590,7 @@ export default class Sections extends React.Component {
                         break;
                         case 'deleted':
                             return (
-                                <div data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
+                                <div data-changenum={this.changeNum} data-section-type={section.type} data-sectionnum={section.sectionNum} data-version={section.version} data-section-title={section.title} className={"-comment-section-container "+templateSectionColor} key={"section-container-"+i}>
                                     <div className="-comment-section-action">
                                         <span className="t-deleted icon16x16" style={{'marginLeft': '5px'}}></span>
                                     </div> 

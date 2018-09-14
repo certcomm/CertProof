@@ -292,9 +292,9 @@ var ShowOpenTaskToggle = createReactClass({  // hide accepted and nla
 	render: function(){
 		var disabled = false;
 		var hasModifiedTasks = false;
-		//if(this.props.items.length < 2) {
-		//	disabled = true;
-		//}
+		// if(this.props.items.length < 2) {
+		// 	disabled = true;
+		// }
 		if(this.props.items.length <= 0) {
 			return null;
 		} else {
@@ -430,7 +430,7 @@ var TaskApp = createReactClass({
 		var writersCount = 0;
 		var me = this;
 		var currentUser = this.state.currentUser;
-		var taskNum = this.state.taskNum;
+		var taskNum = taskData.taskNum ? taskData.taskNum : this.state.taskNum;
 		var storeId = this.state.storeId;
 		var existCurrentUser = false;
 		/*for template mode checklist -- start*/
@@ -527,8 +527,11 @@ var TaskApp = createReactClass({
 			taskData.slideTask = true;
 		}
 		
-		if(this.state.expandTask){
+		if(this.state.expandTask || taskData.expandTask){
+			var tt = (taskData.expandTask) ? 1000 : 0;
+
 			this.state.expandTask = false;
+			taskData.expandTask = false;
 			var clonedTasks = JSON.parse(JSON.stringify(taskData));
 
 			var taskSelectedIndex = -1;
@@ -539,7 +542,9 @@ var TaskApp = createReactClass({
 				}
 			});
 			
-			if(taskSelectedIndex != -1) TaskActions.slideTaskToggle(taskSelectedIndex, storeId, true);
+			setTimeout(function(){
+				if(taskSelectedIndex != -1) TaskActions.slideTaskToggle(taskSelectedIndex, storeId, true);
+			}, tt);
 		}
 
 		return (

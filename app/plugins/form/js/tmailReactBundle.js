@@ -136,7 +136,7 @@ var ActionButton = createReactClass({
 
 module.exports = ActionButton;
 
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],2:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],2:[function(require,module,exports){
 var Popover = require('react-awesome-popover');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -248,7 +248,7 @@ var CheckBox = createReactClass({
 
 module.exports = CheckBox;
 
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],3:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],3:[function(require,module,exports){
 var React = require('react');
 var ReactDOM = require('react-dom');
 var createReactClass = require('create-react-class');
@@ -302,7 +302,7 @@ var ChoiceOption = createReactClass({
 				optionTitle = "This option is default selected";
 			}
 			
-			return React.createElement("div", {key: "c1"+index, className: "float-left margin-right"}, 
+			return React.createElement("div", {key: "c1"+index, className: "float-left margin-right "+(index == 1 ? me.props.elComponent.optionValClsName : "")}, 
 				React.createElement("div", {key: "c2"+index, className: clsName+" float-left form-field-label"}, 
 					React.createElement("label", {key: "c3"+index, name: me.props.elComponent.name[index]+"-label", className: "r-form-el-label " + ((me.props.clsName)?me.props.clsName:""), style: me.props.elComponent.labelStyle}, 
 						me.props.elComponent.label, React.createElement("b", null, ":"), 
@@ -330,7 +330,7 @@ var ChoiceOption = createReactClass({
 		});
 		
 		return(
-			React.createElement("div", {className: "form-element-box float-left "+this.props.elComponent.ctClsName, "data-json": JSON.stringify(this.props.elComponent)}, 
+			React.createElement("div", {className: "form-element-box choice-wrapper float-left clear "+this.props.elComponent.ctClsName, "data-json": JSON.stringify(this.props.elComponent)}, 
 				optionChoiceItems, 
 				
 				React.createElement("div", {name: me.props.elComponent.name[0]+"_errorMsg", className: me.props.elComponent.name[0]+"_errorMsg error-message"}), 
@@ -374,6 +374,16 @@ var CommonMixin = {
 		any: function() {
 			return (this.Android() || this.BlackBerry() || this.iOS() || this.Opera() || this.Windows());
 		}
+	},
+	isInViewport: function(element){
+		var rect = element.getBoundingClientRect();
+		var html = document.documentElement;
+		return (
+			rect.top >= 0 &&
+			rect.left >= 0 &&
+			rect.bottom <= (window.innerHeight || html.clientHeight) &&
+			rect.right <= (window.innerWidth || html.clientWidth)
+		);
 	},
 	confirmBox: function(title, message, cb, config){
 		var me = this;
@@ -1294,7 +1304,7 @@ var CommonMixin = {
 									$(ccD).find("[name='"+dataJson.name+"']").parents(".handle-sortable").find(".form-element-box").attr("data-json", JSON.stringify(dataJson));
 									
 									// should unmount first before re-render
-									ReactDOM.unmountComponentAtNode(document.getElementById("tabs-content-panel-1"));
+									//ReactDOM.unmountComponentAtNode(document.getElementById("tabs-content-panel-1"));
 									
 									ReactDOM.render(
 										React.createElement(FieldAttributesElements, {fieldProp: true, cmpId: cmpId, dataJson: JSON.stringify(dataJson), formMode: "edit", formInfo: formInfo}), document.getElementById("tabs-content-panel-1")
@@ -1449,7 +1459,7 @@ var DatePicker = createReactClass({
 
 module.exports = DatePicker;
 
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],6:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],6:[function(require,module,exports){
 var React = require('react');
 var ReactDOM = require('react-dom');
 var createReactClass = require('create-react-class');
@@ -1599,7 +1609,7 @@ var DropDown = createReactClass({
 
 module.exports = DropDown;
 
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],8:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],8:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 
@@ -1623,6 +1633,8 @@ module.exports = FieldSet;
 var React = require('react');
 var ReactDOM = require('react-dom');
 var createReactClass = require('create-react-class');
+
+var PerfectScrollbar = require('perfect-scrollbar');
 
 var Global = require('./Global');
 var CommonMixin = require('./CommonMixin');
@@ -1683,12 +1695,18 @@ var FormPanel = createReactClass({
 		if($("head style")[0].childNodes[0].textContent.indexOf("main-react-form-container") < 0){
 			$("<style>")
 			.prop("type", "text/css")
-			.html('body{font-family:arial}.form-element-box a{text-decoration:none}.main-react-form-container textarea{resize:none}.float-left{float:left!important}.fr{float:right!important}.clear{clear:both}.hidden{display:none}.err-import-choice,.error-message{clear:both;color:red;margin-bottom:3px;float:left}.err-import-choice{font-size:12px;font-weight:700;margin-left:12px;margin-top:5px}.common_errorMsg{float:left}.no-error-message{color:#538135}.required-sign{color:red}.preview-error-field-link{float:left!important;margin-left:3px}.preview-error-field-link,.preview-mode-link{float:right;color:#488CC8;cursor:pointer;font-weight:700}.preview-error-field-link:hover,.preview-mode-link:hover{color:#000}.preview-note{color:red;font-size:12px;padding:5px 12px;float:left}.ui-widget-overlay{opacity:.5!important;filter:Alpha(Opacity=50)!important;background:#323232!important}.choice-header-preview{float:left;clear:both;margin:0 0 5px 12px;font-size:13px;font-weight:700}.ui-dialog #import-dialog-popup{padding:0;display:inline-block;width:700px!important}.main-react-form-container{padding:10px;color:#000;background:#F3F3F3;font-family:arial,tahoma,helvetica,sans-serif;font-size:12px;font-weight:400;display:inline-block;width:95%;height:auto;min-height:200px}.main-react-form-container .formInfomation h2{padding-bottom:0;font-size:18px}.main-react-form-container .formInfomation p{font-size:12px}.main-react-form-container .el-container{float:left;padding:10px;margin-right:10px;display:inline-block;margin-bottom:10px;position:relative;width:96%}.handle-sortable{padding:10px;margin-right:10px;border:1px solid transparent;display:inline-block;margin-bottom:10px;width:96%;position:relative}.handle-sortable-hover{border:1px dashed #488CC8}.handle-sortable-selected{border:1px solid #488CC8;background-color:#EEE}.handle-area{background-image:url(/tm/common/react-tmail/form/img/arrow.png);background-repeat:no-repeat;cursor:move;width:5%;height:16px;float:left;margin:3px 10px 0 0}.remove-element{background-image:url(/tm/common/react-tmail/form/img/delete.png);background-repeat:no-repeat;cursor:pointer;width:16px;height:16px;float:left;position:absolute;right:15px;top:-7px;display:none}.main-react-form-container .r-information-label{color:#000;font-family:arial,tahoma,helvetica,sans-serif;font-size:12px;font-weight:400;display:inline-block;width:100%;white-space:pre-line;word-wrap:break-word;}.main-react-form-container .r-form-el-label{display:inline-block;float:left;padding:3px 3px 3px 0;position:relative;width:100px;word-wrap:break-word}.main-react-form-container .form-field-label{width:auto}.main-react-form-container .form-field{width:75%;position:relative}.main-react-form-container input.r-form-text{height:24px;width:100%;padding-left:5px}.main-react-form-container textarea.r-form-text-area{width:100%;padding-left:5px}.main-react-form-container select.r-form-drop-down{height:24px;width:100%}.main-react-form-container input.r-form-radio{margin-right:3px}.main-react-form-container .r-form-radio-label-box{margin-right:10px;display:inline-block}.main-react-form-container input.r-form-action-button{display:none;margin:10px}.main-react-form-container .r-form-action-button-label-box{display:block}.main-react-form-container input.r-form-action-button+.r-form-action-button-span{cursor:pointer;float:left;margin:-2px -2px 5px 2px;padding:4px 12px;border:1px solid #999;-webkit-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;-moz-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;box-shadow:1px 1px 1px 0 #000,0 2px 0 #000}.main-react-form-container input.r-form-action-button+.action-button-span-default-clr{background-color:#ADD8E6}.main-react-form-container input.r-form-action-button:checked+.r-form-action-button-span{cursor:auto;border:none;background-image:none;background-color:silver;color:#000;-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none}.main-react-form-container input.r-form-action-button:checked+.r-form-action-button-span-edit-mode{border:1px solid #999;-webkit-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;-moz-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;box-shadow:1px 1px 1px 0 #000,0 2px 0 #000}.main-react-form-container .undo-action-icon{background-image:url(/tm/common/react-tmail/form/img/arrow-undo.png);background-repeat:no-repeat;cursor:pointer;height:32px;width:32px;margin:-6px 0 0 10px;float:left}.main-react-form-container input.r-form-check-box{margin-right:3px;margin-top:5px}.main-react-form-container .r-form-check-box-label-box{margin-right:10px;display:inline-block}.main-react-form-container .r-fieldset{display: table-row;border:1px solid #CCC;padding:10px;margin-bottom:10px;width:95%;position:relative}.main-react-form-container .r-fieldset legend{color:#111;font:700 11px tahoma,arial,helvetica,sans-serif}.main-react-form-container .r-form-divider{color:#EEE}#import-choice,#reset-choice,#show-more-choice{color:#488CC8;cursor:pointer;padding-bottom:10px}#import-choice:hover,#reset-choice:hover,#show-more-choice:hover{color:#000}#form-section-container-edit-toolbox{padding:0!important}#form-toolbox-container{padding:10px}.tab-content-area{width:100%;display:inline-block}.margin-bottom{margin-bottom:10px}.margin-right{margin-right:10px}.main-react-form-container .formInfomation .form-element-box{float:left;width:90%}.choice-fieldset .form-element-box,.main-react-form-container .choice-fieldset .form-field{width:auto}.main-react-form-container .choice-fieldset .form-element-box{margin:0}.main-react-form-container .choice-fieldset{height:200px;overflow:scroll}.form-element-box{float:left;width:100%}.edit-form-container{width:57%;float:left}.form-toolbox-container{width:42%;float:right;border:1px solid #CCC;min-height:350px;height:auto}.form-toolbox-container .form-field{width:72%}.form-toolbox-label{text-align:center;margin-bottom:8px;font-size:13px;font-weight:700}#element-buttons-form-section ul{padding:0 0 0 15px;margin:0}#element-buttons-form-section ul li{width:90%;float:left;margin:0 0 15px 0;padding:0 0 0 30px;background-repeat:no-repeat;cursor:pointer;font-size:13px;font-weight:700;list-style-type:none}#element-buttons-form-section ul li.labelarea{background-image:url(/tm/common/react-tmail/form/img/label-area.png)}#element-buttons-form-section ul li.textbox{background-image:url(/tm/common/react-tmail/form/img/single-line-text-bg.png)}#element-buttons-form-section ul li.textarea{background-image:url(/tm/common/react-tmail/form/img/paragraph-text-bg.png)}#element-buttons-form-section ul li.radio{background-image:url(/tm/common/react-tmail/form/img/multiplechoice-bg.png)}#element-buttons-form-section ul li.checkbox,#element-buttons-form-section ul li.scheckbox{background-image:url(/tm/common/react-tmail/form/img/checkbox-bg.png)}#element-buttons-form-section ul li.dropdown{background-image:url(/tm/common/react-tmail/form/img/dropdown-bg.png)}#element-buttons-form-section ul li.actionbutton{background-image:url(/tm/common/react-tmail/form/img/actionbutton.png)}#element-buttons-form-section ul li.datepicker{background-image:url(/tm/common/react-tmail/form/img/calendar.png)}#element-buttons-form-section ul li.divider{background-image:url(/tm/common/react-tmail/form/img/divider.png);background-position:left center}.main-react-form-container .form-field-divider{width:98%}.choice-default-value{background-image:url(/tm/common/react-tmail/form/img/tick-off.png);background-repeat:no-repeat;cursor:pointer;float:right;height:16px;margin-left:3px;padding:0 2px;width:16px}.choice-default-value:hover{background-image:url(/tm/common/react-tmail/form/img/tick-on.png)}.choice-default-value-selected{background-image:url(/tm/common/react-tmail/form/img/tick-on.png)}.add-new-choice-icon{background-image:url(/tm/common/react-tmail/form/img/add.png);background-repeat:no-repeat;cursor:pointer;float:right;height:16px;padding:0 2px;width:16px}.delete-new-choice-icon{background-image:url(/tm/common/react-tmail/form/img/delete.png);background-repeat:no-repeat;cursor:pointer;float:right;height:16px;margin-left:3px;padding:0 2px;width:16px}.tabs-content-panel{display:none}.tabs-content-panel-selected{padding-top:20px;display:block}.tab{cursor:pointer;margin-right:5px;margin-bottom:5px;padding:5px 7px;display:inline-block;text-decoration:none;background:#CCC;color:#000}.tab-selected{padding:5px 7px;display:inline-block;background:#488CC8;color:#FFF;text-decoration:none}#tabs-content-panel-1 h2{font-size:18px;margin:0}.divider-css{padding:0!important;cursor:auto!important}.modified-data-ui{background-color:#FFC;position:relative;padding:10px 10px 8px}.set-data-ui{background-color:#CFC;position:relative;padding:10px}.unset-data-ui{background-color:#FCC;position:relative;padding:10px}.modified-data-icon{margin-left:3px;position:absolute;right:12px;top:2px}.modified-data-ui .modified-data-icon:before{content:"*";color:#BABA05;font-size:50px}.set-data-ui .modified-data-icon:before{content:"+";color:green;font-size:35px}.unset-data-ui .modified-data-icon:before{content:"x";color:red;position:absolute;right:0;top:4px;font-size:25px}.disabled-span{position:absolute;top:0;left:0;height:100%;width:100%;opacity:.01;filter:Alpha(Opacity=0);background:#EEE}div.colorPicker-picker{float:left;margin-right:10px;height:16px;width:16px;padding:0!important;border:1px solid #ccc;background:url(https://laktek.github.io/really-simple-color-picker/arrow.gif) top right no-repeat;cursor:pointer;line-height:16px;font-size:.75em;font-weight:700;text-align:center}div.colorPicker-palette{width:110px;position:absolute;border:1px solid #598FEF;background-color:#EFEFEF;padding:2px;z-index:9999}div.colorPicker_hexWrap{width:100%;float:left}div.colorPicker_hexWrap label{font-size:95%;color:#2F2F2F;margin:5px 2px;width:25%}div.colorPicker_hexWrap input{margin:5px 2px;padding:0;font-size:95%;border:1px solid #000;width:65%}div.colorPicker-swatch{height:12px;width:12px;border:1px solid #000;margin:2px;float:left;cursor:pointer;line-height:12px}.ui-datepicker-trigger{margin-left:5px}#ui-datepicker-div{font-size:.9em!important;z-index:9999!important}.ui-datepicker-header{cursor:move}.ui-datepicker-next,.ui-datepicker-prev{cursor:pointer}.ui-datepicker-close{display:none}.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current{float:right}.mobile-modified-data-icon {width:100%;height:100%;left:0;top:0;position:absolute}.set-data-ui .mobile-modified-data-icon{color:green}.unset-data-ui .mobile-modified-data-icon{color:red}.modified-data-ui .mobile-modified-data-icon{color:#baba05}.custom-popover-content{background: none repeat scroll 0 0 #FFFFFF;border-radius: 5px;box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.1), 0 2px 4px rgba(16, 22, 26, 0.2), 0 8px 24px rgba(16, 22, 26, 0.2);width: 150px !important;height: auto;min-height: 15px;padding: 10px;z-index: 9;}').prependTo("head");
+			.html('body{font-family:arial}.zeroPadding{padding:0!important}.form-element-box a{text-decoration:none}.main-react-form-container textarea{resize:none}#preview-mode-dialog{padding-right: 0!important}#preview-mode-dialog .perfect-scrollbar{}.float-left{float:left!important}.fr{float:right!important}.clear{clear:both}.hidden{display:none}.err-import-choice,.error-message{clear:both;color:red;margin-bottom:3px;float:left}.err-import-choice{font-size:12px;font-weight:700;margin-left:12px;margin-top:5px}.common_errorMsg{float:left}.no-error-message{color:#538135}.required-sign{color:red}.preview-error-field-link{float:left!important;margin-left:3px}.preview-error-field-link,.preview-mode-link{float:right;color:#488CC8;cursor:pointer;font-weight:700}.preview-error-field-link:hover,.preview-mode-link:hover{color:#000}.preview-note{color:red;font-size:12px;padding:5px 12px;float:left}.ui-widget-overlay{opacity:.5!important;filter:Alpha(Opacity=50)!important;background:#323232!important}.choice-header-preview{float:left;clear:both;margin:0 0 5px 12px;font-size:13px;font-weight:700}.ui-dialog #import-dialog-popup{padding:0;display:inline-block;width:700px!important}.main-react-form-container{color:#000;background:#F3F3F3;font-family:arial,tahoma,helvetica,sans-serif;font-size:12px;font-weight:400;display:inline-block;width:95%;height:auto;min-height:200px;}.main-react-form-container .formInfomation h2{padding-bottom:0;font-size:18px}.main-react-form-container .formInfomation p{font-size:12px}.main-react-form-container .el-container{float:left;padding:10px;margin-right:10px;display:inline-block;margin-bottom:10px;position:relative;width:96%}.handle-sortable{padding:10px;margin-right:10px;border:1px solid transparent;display:inline-block;margin-bottom:10px;width:96%;position:relative}.handle-sortable-hover{border:1px dashed #488CC8}.handle-sortable-selected{border:1px solid #488CC8;background-color:#EEE}.handle-area{background-image:url(/tm/common/react-tmail/form/img/arrow.png);background-repeat:no-repeat;cursor:move;width:5%;height:16px;float:left;margin:3px 10px 0 0}.remove-element{background-image:url(/tm/common/react-tmail/form/img/delete.png);background-repeat:no-repeat;cursor:pointer;width:16px;height:16px;float:left;position:absolute;right:15px;top:-7px;display:none}.main-react-form-container .r-information-label{color:#000;font-family:arial,tahoma,helvetica,sans-serif;font-size:12px;font-weight:400;display:inline-block;width:100%;white-space:pre-line;word-wrap:break-word;}.main-react-form-container .r-form-el-label{display:inline-block;float:left;padding:3px 3px 3px 0;position:relative;width:120px;word-wrap:break-word}.main-react-form-container .form-field-label{width:auto}.main-react-form-container .form-field{width:75%;position:relative}.main-react-form-container input.r-form-text{height:24px;width:100%;padding-left:5px}.main-react-form-container textarea.r-form-text-area{width:100%;padding-left:5px}.main-react-form-container select.r-form-drop-down{height:24px;width:100%}.main-react-form-container input.r-form-radio{margin-right:3px}.main-react-form-container .r-form-radio-label-box{margin-right:10px;display:inline-block}.main-react-form-container input.r-form-action-button{display:none;margin:10px}.main-react-form-container .r-form-action-button-label-box{display:block}.main-react-form-container input.r-form-action-button+.r-form-action-button-span{cursor:pointer;float:left;margin:-2px -2px 5px 2px;padding:4px 12px;border:1px solid #999;-webkit-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;-moz-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;box-shadow:1px 1px 1px 0 #000,0 2px 0 #000}.main-react-form-container input.r-form-action-button+.action-button-span-default-clr{background-color:#ADD8E6}.main-react-form-container input.r-form-action-button:checked+.r-form-action-button-span{cursor:auto;border:none;background-image:none;background-color:silver;color:#000;-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none}.main-react-form-container input.r-form-action-button:checked+.r-form-action-button-span-edit-mode{border:1px solid #999;-webkit-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;-moz-box-shadow:1px 1px 1px 0 #000,0 2px 0 #000;box-shadow:1px 1px 1px 0 #000,0 2px 0 #000}.main-react-form-container .undo-action-icon{background-image:url(/tm/common/react-tmail/form/img/arrow-undo.png);background-repeat:no-repeat;cursor:pointer;height:32px;width:32px;margin:-6px 0 0 10px;float:left}.main-react-form-container input.r-form-check-box{margin-right:3px;margin-top:5px}.main-react-form-container .r-form-check-box-label-box{margin-right:10px;display:inline-block}.main-react-form-container .r-fieldset{display: table-row;border:1px solid #CCC;padding:10px;margin-bottom:10px;width:95%;position:relative}.main-react-form-container .r-fieldset legend{color:#111;font:700 11px tahoma,arial,helvetica,sans-serif}.main-react-form-container .r-form-divider{color:#EEE}#import-choice,#reset-choice,#show-more-choice{color:#488CC8;cursor:pointer;padding-bottom:10px}#import-choice:hover,#reset-choice:hover,#show-more-choice:hover{color:#000}#form-section-container-edit-toolbox{}#form-toolbox-container{}.tab-content-area{width:100%;display:inline-block}.margin-bottom{margin-bottom:10px}.margin-right{margin-right:10px}.main-react-form-container .formInfomation .form-element-box{float:left;width:90%}.choice-fieldset .form-element-box.choice-wrapper{width: 100%}.choice-fieldset .form-element-box,.main-react-form-container .choice-fieldset .form-field{width:auto}.main-react-form-container .choice-fieldset .form-element-box{margin:0}.main-react-form-container .choice-fieldset{height:200px;overflow:scroll}.form-element-box{float:left;width:100%}.edit-form-container{border-right: 1px solid #CCCCCC;width:55%;float:left;padding:10px;box-sizing: border-box;}.form-toolbox-container{width:42%;float:right;height:auto;padding:10px 0 0;box-sizing:border-box;}.form-toolbox-container .form-field{width:65%}.form-toolbox-label{text-align:center;margin-bottom:8px;font-size:13px;font-weight:700}#element-buttons-form-section ul{padding:0 0 0 15px;margin:0}#element-buttons-form-section ul li{width:90%;float:left;margin:0 0 15px 0;padding:0 0 0 30px;background-repeat:no-repeat;cursor:pointer;font-size:13px;font-weight:700;list-style-type:none}#element-buttons-form-section ul li.labelarea{background-image:url(/tm/common/react-tmail/form/img/label-area.png)}#element-buttons-form-section ul li.textbox{background-image:url(/tm/common/react-tmail/form/img/single-line-text-bg.png)}#element-buttons-form-section ul li.textarea{background-image:url(/tm/common/react-tmail/form/img/paragraph-text-bg.png)}#element-buttons-form-section ul li.radio{background-image:url(/tm/common/react-tmail/form/img/multiplechoice-bg.png)}#element-buttons-form-section ul li.checkbox,#element-buttons-form-section ul li.scheckbox{background-image:url(/tm/common/react-tmail/form/img/checkbox-bg.png)}#element-buttons-form-section ul li.dropdown{background-image:url(/tm/common/react-tmail/form/img/dropdown-bg.png)}#element-buttons-form-section ul li.actionbutton{background-image:url(/tm/common/react-tmail/form/img/actionbutton.png)}#element-buttons-form-section ul li.datepicker{background-image:url(/tm/common/react-tmail/form/img/calendar.png)}#element-buttons-form-section ul li.divider{background-image:url(/tm/common/react-tmail/form/img/divider.png);background-position:left center}.main-react-form-container .form-field-divider{width:98%}.choice-default-value{background-image:url(/tm/common/react-tmail/form/img/tick-off.png);background-repeat:no-repeat;cursor:pointer;float:right;height:16px;margin-left:3px;padding:0 2px;width:16px}.choice-default-value:hover{background-image:url(/tm/common/react-tmail/form/img/tick-on.png)}.choice-default-value-selected{background-image:url(/tm/common/react-tmail/form/img/tick-on.png)}.add-new-choice-icon{background-image:url(/tm/common/react-tmail/form/img/add.png);background-repeat:no-repeat;cursor:pointer;float:right;height:16px;padding:0 2px;width:16px}.delete-new-choice-icon{background-image:url(/tm/common/react-tmail/form/img/delete.png);background-repeat:no-repeat;cursor:pointer;float:right;height:16px;margin-left:3px;padding:0 2px;width:16px}.tabs-content-panel{display:none}.tabs-content-panel-selected{padding: 20px 15px 0 0;display:block}.tab{cursor:pointer;margin-right:5px;margin-bottom:5px;padding:5px 7px;display:inline-block;text-decoration:none;background:#CCC;color:#000}.tab-selected{padding:5px 7px;display:inline-block;background:#488CC8;color:#FFF;text-decoration:none}#tabs-content-panel-1 h2{font-size:18px;margin:0}.divider-css{padding:0!important;cursor:auto!important}.modified-data-ui{background-color:#FFC;position:relative;padding:10px 10px 8px}.set-data-ui{background-color:#CFC;position:relative;padding:10px}.unset-data-ui{background-color:#FCC;position:relative;padding:10px}.modified-data-icon{margin-left:3px;position:absolute;right:12px;top:2px}.modified-data-ui .modified-data-icon:before{content:"*";color:#BABA05;font-size:50px}.set-data-ui .modified-data-icon:before{content:"+";color:green;font-size:35px}.unset-data-ui .modified-data-icon:before{content:"x";color:red;position:absolute;right:0;top:4px;font-size:25px}.disabled-span{position:absolute;top:0;left:0;height:100%;width:100%;opacity:.01;filter:Alpha(Opacity=0);background:#EEE}div.colorPicker-picker{float:left;margin-right:10px;height:16px;width:16px;padding:0!important;border:1px solid #ccc;background:url(https://laktek.github.io/really-simple-color-picker/arrow.gif) top right no-repeat;cursor:pointer;line-height:16px;font-size:.75em;font-weight:700;text-align:center}div.colorPicker-palette{width:110px;position:absolute;border:1px solid #598FEF;background-color:#EFEFEF;padding:2px;z-index:9999}div.colorPicker_hexWrap{width:100%;float:left}div.colorPicker_hexWrap label{font-size:95%;color:#2F2F2F;margin:5px 2px;width:25%}div.colorPicker_hexWrap input{margin:5px 2px;padding:0;font-size:95%;border:1px solid #000;width:65%}div.colorPicker-swatch{height:12px;width:12px;border:1px solid #000;margin:2px;float:left;cursor:pointer;line-height:12px}.ui-datepicker-trigger{margin-left:5px}#ui-datepicker-div{font-size:.9em!important;z-index:9999!important}.ui-datepicker-header{cursor:move}.ui-datepicker-next,.ui-datepicker-prev{cursor:pointer}.ui-datepicker-close{display:none}.ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current{float:right}.mobile-modified-data-icon {width:100%;height:100%;left:0;top:0;position:absolute}.set-data-ui .mobile-modified-data-icon{color:green}.unset-data-ui .mobile-modified-data-icon{color:red}.modified-data-ui .mobile-modified-data-icon{color:#baba05}.custom-popover-content{background: none repeat scroll 0 0 #FFFFFF;border-radius: 5px;box-shadow: 0 0 0 1px rgba(16, 22, 26, 0.1), 0 2px 4px rgba(16, 22, 26, 0.2), 0 8px 24px rgba(16, 22, 26, 0.2);width: 150px !important;height: auto;min-height: 15px;padding: 10px;z-index: 9;}.perfect-scrollbar{position: relative; height: calc(100vh - 135px); overflow: auto;}.perfect-scrollbar-edit{position: relative; height: calc(100vh - 155px); overflow: auto;}.ps__rail-x,.ps__rail-y{display:none;opacity:0;position:absolute}.ps{overflow:hidden!important;overflow-anchor:none;-ms-overflow-style:none;touch-action:auto;-ms-touch-action:auto}.ps__rail-x{transition:background-color .2s linear,opacity .2s linear;-webkit-transition:background-color .2s linear,opacity .2s linear;height:15px;bottom:0}.ps__rail-y{transition:background-color .2s linear,opacity .2s linear;-webkit-transition:background-color .2s linear,opacity .2s linear;width:15px;right:0}.ps--active-x>.ps__rail-x,.ps--active-y>.ps__rail-y{display:block;background-color:transparent}.ps--focus>.ps__rail-x,.ps--focus>.ps__rail-y,.ps--scrolling-x>.ps__rail-x,.ps--scrolling-y>.ps__rail-y,.ps:hover>.ps__rail-x,.ps:hover>.ps__rail-y{opacity:.6}.ps__rail-x:focus,.ps__rail-x:hover,.ps__rail-y:focus,.ps__rail-y:hover{background-color:#eee;opacity:.9}.ps__thumb-x,.ps__thumb-y{background-color:#aaa;border-radius:6px;position:absolute}.ps__thumb-x{transition:background-color .2s linear,height .2s ease-in-out;-webkit-transition:background-color .2s linear,height .2s ease-in-out;height:6px;bottom:2px}.ps__thumb-y{transition:background-color .2s linear,width .2s ease-in-out;-webkit-transition:background-color .2s linear,width .2s ease-in-out;width:6px;right:2px}.ps__rail-x:focus>.ps__thumb-x,.ps__rail-x:hover>.ps__thumb-x{background-color:#999;height:11px}.ps__rail-y:focus>.ps__thumb-y,.ps__rail-y:hover>.ps__thumb-y{background-color:#999;width:11px}@supports (-ms-overflow-style:none){.ps{overflow:auto!important}}@media screen and (-ms-high-contrast:active),(-ms-high-contrast:none){.ps{overflow:auto!important}}').prependTo("head");
 		}
 	},
 	componentDidMount: function(){
 		var me = this;
 		var mainIdEl = document.getElementById( Global.mainCmpId );
+		
+        var element =  document.getElementsByClassName('perfect-scrollbar');
+        if (typeof(element) != 'undefined' && element != null && element.length > 0) {
+            var ps = new PerfectScrollbar('.perfect-scrollbar');
+            ps.update();
+        }
 		
 		var d = new Date();
 		Global.renderedAt = Global.mainCmpId+'~'+d.getFullYear() + d.getMonth() + d.getDay()+d.getHours()+d.getMinutes()+(d.getSeconds()+3)+d.getMilliseconds();
@@ -1825,7 +1843,7 @@ var FormPanel = createReactClass({
 						)
 		}
 		
-		return React.createElement("div", {style: {backgroundColor: "F3F3F3"}, className: editFormCls}, 
+		return React.createElement("div", {style: {backgroundColor: "F3F3F3"}, className: editFormCls+" perfect-scrollbar"}, 
 			React.createElement("div", {className: "main-react-form-container"}, 
 				
 				React.createElement("div", {className: "fr"}, 
@@ -1844,7 +1862,7 @@ module.exports = FormPanel;
 var RenderAllComponentsRecursion = require('./RenderAllComponentsRecursion');
 var FieldSet = require('./FieldSet');
 
-},{"./CommonMixin":4,"./FieldSet":8,"./Global":10,"./RenderAllComponentsRecursion":13,"create-react-class":19,"react":"react","react-dom":"react-dom"}],10:[function(require,module,exports){
+},{"./CommonMixin":4,"./FieldSet":8,"./Global":10,"./RenderAllComponentsRecursion":13,"create-react-class":19,"perfect-scrollbar":25,"react":"react","react-dom":"react-dom"}],10:[function(require,module,exports){
 module.exports = {
 	allFormElObjects: [],
 	formErrFlds: [],
@@ -1967,7 +1985,7 @@ var RadioButton = createReactClass({
 
 module.exports = RadioButton;
 
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],13:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],13:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 
@@ -2112,7 +2130,7 @@ var ScheckBox = createReactClass({
 
 module.exports = ScheckBox;
 
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],15:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],15:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 
@@ -2292,7 +2310,7 @@ var TextArea = createReactClass({
 
 module.exports = TextArea;
 
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],17:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],17:[function(require,module,exports){
 var Popover = require('react-awesome-popover');
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -2418,7 +2436,7 @@ var TextBox = createReactClass({
 });
 
 module.exports = TextBox;
-},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],18:[function(require,module,exports){
+},{"./CommonMixin":4,"./Global":10,"create-react-class":19,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],18:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -3348,7 +3366,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 module.exports = factory;
 
 }).call(this,require('_process'))
-},{"_process":25,"fbjs/lib/emptyObject":21,"fbjs/lib/invariant":22,"fbjs/lib/warning":23,"object-assign":24}],19:[function(require,module,exports){
+},{"_process":26,"fbjs/lib/emptyObject":21,"fbjs/lib/invariant":22,"fbjs/lib/warning":23,"object-assign":24}],19:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -3435,7 +3453,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":25}],22:[function(require,module,exports){
+},{"_process":26}],22:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -3491,7 +3509,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":25}],23:[function(require,module,exports){
+},{"_process":26}],23:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -3556,7 +3574,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":20,"_process":25}],24:[function(require,module,exports){
+},{"./emptyFunction":20,"_process":26}],24:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -3649,6 +3667,1314 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 };
 
 },{}],25:[function(require,module,exports){
+/*!
+ * perfect-scrollbar v1.3.0
+ * (c) 2017 Hyunje Jun
+ * @license MIT
+ */
+'use strict';
+
+function get(element) {
+  return getComputedStyle(element);
+}
+
+function set(element, obj) {
+  for (var key in obj) {
+    var val = obj[key];
+    if (typeof val === 'number') {
+      val = val + "px";
+    }
+    element.style[key] = val;
+  }
+  return element;
+}
+
+function div(className) {
+  var div = document.createElement('div');
+  div.className = className;
+  return div;
+}
+
+var elMatches =
+  typeof Element !== 'undefined' &&
+  (Element.prototype.matches ||
+    Element.prototype.webkitMatchesSelector ||
+    Element.prototype.msMatchesSelector);
+
+function matches(element, query) {
+  if (!elMatches) {
+    throw new Error('No element matching method supported');
+  }
+
+  return elMatches.call(element, query);
+}
+
+function remove(element) {
+  if (element.remove) {
+    element.remove();
+  } else {
+    if (element.parentNode) {
+      element.parentNode.removeChild(element);
+    }
+  }
+}
+
+function queryChildren(element, selector) {
+  return Array.prototype.filter.call(element.children, function (child) { return matches(child, selector); }
+  );
+}
+
+var cls = {
+  main: 'ps',
+  element: {
+    thumb: function (x) { return ("ps__thumb-" + x); },
+    rail: function (x) { return ("ps__rail-" + x); },
+    consuming: 'ps__child--consume',
+  },
+  state: {
+    focus: 'ps--focus',
+    active: function (x) { return ("ps--active-" + x); },
+    scrolling: function (x) { return ("ps--scrolling-" + x); },
+  },
+};
+
+/*
+ * Helper methods
+ */
+var scrollingClassTimeout = { x: null, y: null };
+
+function addScrollingClass(i, x) {
+  var classList = i.element.classList;
+  var className = cls.state.scrolling(x);
+
+  if (classList.contains(className)) {
+    clearTimeout(scrollingClassTimeout[x]);
+  } else {
+    classList.add(className);
+  }
+}
+
+function removeScrollingClass(i, x) {
+  scrollingClassTimeout[x] = setTimeout(
+    function () { return i.isAlive && i.element.classList.remove(cls.state.scrolling(x)); },
+    i.settings.scrollingThreshold
+  );
+}
+
+function setScrollingClassInstantly(i, x) {
+  addScrollingClass(i, x);
+  removeScrollingClass(i, x);
+}
+
+var EventElement = function EventElement(element) {
+  this.element = element;
+  this.handlers = {};
+};
+
+var prototypeAccessors = { isEmpty: { configurable: true } };
+
+EventElement.prototype.bind = function bind (eventName, handler) {
+  if (typeof this.handlers[eventName] === 'undefined') {
+    this.handlers[eventName] = [];
+  }
+  this.handlers[eventName].push(handler);
+  this.element.addEventListener(eventName, handler, false);
+};
+
+EventElement.prototype.unbind = function unbind (eventName, target) {
+    var this$1 = this;
+
+  this.handlers[eventName] = this.handlers[eventName].filter(function (handler) {
+    if (target && handler !== target) {
+      return true;
+    }
+    this$1.element.removeEventListener(eventName, handler, false);
+    return false;
+  });
+};
+
+EventElement.prototype.unbindAll = function unbindAll () {
+    var this$1 = this;
+
+  for (var name in this$1.handlers) {
+    this$1.unbind(name);
+  }
+};
+
+prototypeAccessors.isEmpty.get = function () {
+    var this$1 = this;
+
+  return Object.keys(this.handlers).every(
+    function (key) { return this$1.handlers[key].length === 0; }
+  );
+};
+
+Object.defineProperties( EventElement.prototype, prototypeAccessors );
+
+var EventManager = function EventManager() {
+  this.eventElements = [];
+};
+
+EventManager.prototype.eventElement = function eventElement (element) {
+  var ee = this.eventElements.filter(function (ee) { return ee.element === element; })[0];
+  if (!ee) {
+    ee = new EventElement(element);
+    this.eventElements.push(ee);
+  }
+  return ee;
+};
+
+EventManager.prototype.bind = function bind (element, eventName, handler) {
+  this.eventElement(element).bind(eventName, handler);
+};
+
+EventManager.prototype.unbind = function unbind (element, eventName, handler) {
+  var ee = this.eventElement(element);
+  ee.unbind(eventName, handler);
+
+  if (ee.isEmpty) {
+    // remove
+    this.eventElements.splice(this.eventElements.indexOf(ee), 1);
+  }
+};
+
+EventManager.prototype.unbindAll = function unbindAll () {
+  this.eventElements.forEach(function (e) { return e.unbindAll(); });
+  this.eventElements = [];
+};
+
+EventManager.prototype.once = function once (element, eventName, handler) {
+  var ee = this.eventElement(element);
+  var onceHandler = function (evt) {
+    ee.unbind(eventName, onceHandler);
+    handler(evt);
+  };
+  ee.bind(eventName, onceHandler);
+};
+
+function createEvent(name) {
+  if (typeof window.CustomEvent === 'function') {
+    return new CustomEvent(name);
+  } else {
+    var evt = document.createEvent('CustomEvent');
+    evt.initCustomEvent(name, false, false, undefined);
+    return evt;
+  }
+}
+
+var processScrollDiff = function(
+  i,
+  axis,
+  diff,
+  useScrollingClass,
+  forceFireReachEvent
+) {
+  if ( useScrollingClass === void 0 ) useScrollingClass = true;
+  if ( forceFireReachEvent === void 0 ) forceFireReachEvent = false;
+
+  var fields;
+  if (axis === 'top') {
+    fields = [
+      'contentHeight',
+      'containerHeight',
+      'scrollTop',
+      'y',
+      'up',
+      'down' ];
+  } else if (axis === 'left') {
+    fields = [
+      'contentWidth',
+      'containerWidth',
+      'scrollLeft',
+      'x',
+      'left',
+      'right' ];
+  } else {
+    throw new Error('A proper axis should be provided');
+  }
+
+  processScrollDiff$1(i, diff, fields, useScrollingClass, forceFireReachEvent);
+};
+
+function processScrollDiff$1(
+  i,
+  diff,
+  ref,
+  useScrollingClass,
+  forceFireReachEvent
+) {
+  var contentHeight = ref[0];
+  var containerHeight = ref[1];
+  var scrollTop = ref[2];
+  var y = ref[3];
+  var up = ref[4];
+  var down = ref[5];
+  if ( useScrollingClass === void 0 ) useScrollingClass = true;
+  if ( forceFireReachEvent === void 0 ) forceFireReachEvent = false;
+
+  var element = i.element;
+
+  // reset reach
+  i.reach[y] = null;
+
+  // 1 for subpixel rounding
+  if (element[scrollTop] < 1) {
+    i.reach[y] = 'start';
+  }
+
+  // 1 for subpixel rounding
+  if (element[scrollTop] > i[contentHeight] - i[containerHeight] - 1) {
+    i.reach[y] = 'end';
+  }
+
+  if (diff) {
+    element.dispatchEvent(createEvent(("ps-scroll-" + y)));
+
+    if (diff < 0) {
+      element.dispatchEvent(createEvent(("ps-scroll-" + up)));
+    } else if (diff > 0) {
+      element.dispatchEvent(createEvent(("ps-scroll-" + down)));
+    }
+
+    if (useScrollingClass) {
+      setScrollingClassInstantly(i, y);
+    }
+  }
+
+  if (i.reach[y] && (diff || forceFireReachEvent)) {
+    element.dispatchEvent(createEvent(("ps-" + y + "-reach-" + (i.reach[y]))));
+  }
+}
+
+function toInt(x) {
+  return parseInt(x, 10) || 0;
+}
+
+function isEditable(el) {
+  return (
+    matches(el, 'input,[contenteditable]') ||
+    matches(el, 'select,[contenteditable]') ||
+    matches(el, 'textarea,[contenteditable]') ||
+    matches(el, 'button,[contenteditable]')
+  );
+}
+
+function outerWidth(element) {
+  var styles = get(element);
+  return (
+    toInt(styles.width) +
+    toInt(styles.paddingLeft) +
+    toInt(styles.paddingRight) +
+    toInt(styles.borderLeftWidth) +
+    toInt(styles.borderRightWidth)
+  );
+}
+
+var env = {
+  isWebKit:
+    typeof document !== 'undefined' &&
+    'WebkitAppearance' in document.documentElement.style,
+  supportsTouch:
+    typeof window !== 'undefined' &&
+    ('ontouchstart' in window ||
+      (window.DocumentTouch && document instanceof window.DocumentTouch)),
+  supportsIePointer:
+    typeof navigator !== 'undefined' && navigator.msMaxTouchPoints,
+  isChrome:
+    typeof navigator !== 'undefined' &&
+    /Chrome/i.test(navigator && navigator.userAgent),
+};
+
+var updateGeometry = function(i) {
+  var element = i.element;
+
+  i.containerWidth = element.clientWidth;
+  i.containerHeight = element.clientHeight;
+  i.contentWidth = element.scrollWidth;
+  i.contentHeight = element.scrollHeight;
+
+  if (!element.contains(i.scrollbarXRail)) {
+    // clean up and append
+    queryChildren(element, cls.element.rail('x')).forEach(function (el) { return remove(el); }
+    );
+    element.appendChild(i.scrollbarXRail);
+  }
+  if (!element.contains(i.scrollbarYRail)) {
+    // clean up and append
+    queryChildren(element, cls.element.rail('y')).forEach(function (el) { return remove(el); }
+    );
+    element.appendChild(i.scrollbarYRail);
+  }
+
+  if (
+    !i.settings.suppressScrollX &&
+    i.containerWidth + i.settings.scrollXMarginOffset < i.contentWidth
+  ) {
+    i.scrollbarXActive = true;
+    i.railXWidth = i.containerWidth - i.railXMarginWidth;
+    i.railXRatio = i.containerWidth / i.railXWidth;
+    i.scrollbarXWidth = getThumbSize(
+      i,
+      toInt(i.railXWidth * i.containerWidth / i.contentWidth)
+    );
+    i.scrollbarXLeft = toInt(
+      (i.negativeScrollAdjustment + element.scrollLeft) *
+        (i.railXWidth - i.scrollbarXWidth) /
+        (i.contentWidth - i.containerWidth)
+    );
+  } else {
+    i.scrollbarXActive = false;
+  }
+
+  if (
+    !i.settings.suppressScrollY &&
+    i.containerHeight + i.settings.scrollYMarginOffset < i.contentHeight
+  ) {
+    i.scrollbarYActive = true;
+    i.railYHeight = i.containerHeight - i.railYMarginHeight;
+    i.railYRatio = i.containerHeight / i.railYHeight;
+    i.scrollbarYHeight = getThumbSize(
+      i,
+      toInt(i.railYHeight * i.containerHeight / i.contentHeight)
+    );
+    i.scrollbarYTop = toInt(
+      element.scrollTop *
+        (i.railYHeight - i.scrollbarYHeight) /
+        (i.contentHeight - i.containerHeight)
+    );
+  } else {
+    i.scrollbarYActive = false;
+  }
+
+  if (i.scrollbarXLeft >= i.railXWidth - i.scrollbarXWidth) {
+    i.scrollbarXLeft = i.railXWidth - i.scrollbarXWidth;
+  }
+  if (i.scrollbarYTop >= i.railYHeight - i.scrollbarYHeight) {
+    i.scrollbarYTop = i.railYHeight - i.scrollbarYHeight;
+  }
+
+  updateCss(element, i);
+
+  if (i.scrollbarXActive) {
+    element.classList.add(cls.state.active('x'));
+  } else {
+    element.classList.remove(cls.state.active('x'));
+    i.scrollbarXWidth = 0;
+    i.scrollbarXLeft = 0;
+    element.scrollLeft = 0;
+  }
+  if (i.scrollbarYActive) {
+    element.classList.add(cls.state.active('y'));
+  } else {
+    element.classList.remove(cls.state.active('y'));
+    i.scrollbarYHeight = 0;
+    i.scrollbarYTop = 0;
+    element.scrollTop = 0;
+  }
+};
+
+function getThumbSize(i, thumbSize) {
+  if (i.settings.minScrollbarLength) {
+    thumbSize = Math.max(thumbSize, i.settings.minScrollbarLength);
+  }
+  if (i.settings.maxScrollbarLength) {
+    thumbSize = Math.min(thumbSize, i.settings.maxScrollbarLength);
+  }
+  return thumbSize;
+}
+
+function updateCss(element, i) {
+  var xRailOffset = { width: i.railXWidth };
+  if (i.isRtl) {
+    xRailOffset.left =
+      i.negativeScrollAdjustment +
+      element.scrollLeft +
+      i.containerWidth -
+      i.contentWidth;
+  } else {
+    xRailOffset.left = element.scrollLeft;
+  }
+  if (i.isScrollbarXUsingBottom) {
+    xRailOffset.bottom = i.scrollbarXBottom - element.scrollTop;
+  } else {
+    xRailOffset.top = i.scrollbarXTop + element.scrollTop;
+  }
+  set(i.scrollbarXRail, xRailOffset);
+
+  var yRailOffset = { top: element.scrollTop, height: i.railYHeight };
+  if (i.isScrollbarYUsingRight) {
+    if (i.isRtl) {
+      yRailOffset.right =
+        i.contentWidth -
+        (i.negativeScrollAdjustment + element.scrollLeft) -
+        i.scrollbarYRight -
+        i.scrollbarYOuterWidth;
+    } else {
+      yRailOffset.right = i.scrollbarYRight - element.scrollLeft;
+    }
+  } else {
+    if (i.isRtl) {
+      yRailOffset.left =
+        i.negativeScrollAdjustment +
+        element.scrollLeft +
+        i.containerWidth * 2 -
+        i.contentWidth -
+        i.scrollbarYLeft -
+        i.scrollbarYOuterWidth;
+    } else {
+      yRailOffset.left = i.scrollbarYLeft + element.scrollLeft;
+    }
+  }
+  set(i.scrollbarYRail, yRailOffset);
+
+  set(i.scrollbarX, {
+    left: i.scrollbarXLeft,
+    width: i.scrollbarXWidth - i.railBorderXWidth,
+  });
+  set(i.scrollbarY, {
+    top: i.scrollbarYTop,
+    height: i.scrollbarYHeight - i.railBorderYWidth,
+  });
+}
+
+var clickRail = function(i) {
+  i.event.bind(i.scrollbarY, 'mousedown', function (e) { return e.stopPropagation(); });
+  i.event.bind(i.scrollbarYRail, 'mousedown', function (e) {
+    var positionTop =
+      e.pageY -
+      window.pageYOffset -
+      i.scrollbarYRail.getBoundingClientRect().top;
+    var direction = positionTop > i.scrollbarYTop ? 1 : -1;
+
+    i.element.scrollTop += direction * i.containerHeight;
+    updateGeometry(i);
+
+    e.stopPropagation();
+  });
+
+  i.event.bind(i.scrollbarX, 'mousedown', function (e) { return e.stopPropagation(); });
+  i.event.bind(i.scrollbarXRail, 'mousedown', function (e) {
+    var positionLeft =
+      e.pageX -
+      window.pageXOffset -
+      i.scrollbarXRail.getBoundingClientRect().left;
+    var direction = positionLeft > i.scrollbarXLeft ? 1 : -1;
+
+    i.element.scrollLeft += direction * i.containerWidth;
+    updateGeometry(i);
+
+    e.stopPropagation();
+  });
+};
+
+var dragThumb = function(i) {
+  bindMouseScrollHandler(i, [
+    'containerWidth',
+    'contentWidth',
+    'pageX',
+    'railXWidth',
+    'scrollbarX',
+    'scrollbarXWidth',
+    'scrollLeft',
+    'x' ]);
+  bindMouseScrollHandler(i, [
+    'containerHeight',
+    'contentHeight',
+    'pageY',
+    'railYHeight',
+    'scrollbarY',
+    'scrollbarYHeight',
+    'scrollTop',
+    'y' ]);
+};
+
+function bindMouseScrollHandler(
+  i,
+  ref
+) {
+  var containerHeight = ref[0];
+  var contentHeight = ref[1];
+  var pageY = ref[2];
+  var railYHeight = ref[3];
+  var scrollbarY = ref[4];
+  var scrollbarYHeight = ref[5];
+  var scrollTop = ref[6];
+  var y = ref[7];
+
+  var element = i.element;
+
+  var startingScrollTop = null;
+  var startingMousePageY = null;
+  var scrollBy = null;
+
+  function mouseMoveHandler(e) {
+    element[scrollTop] =
+      startingScrollTop + scrollBy * (e[pageY] - startingMousePageY);
+    addScrollingClass(i, y);
+    updateGeometry(i);
+
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  function mouseUpHandler() {
+    removeScrollingClass(i, y);
+    i.event.unbind(i.ownerDocument, 'mousemove', mouseMoveHandler);
+  }
+
+  i.event.bind(i[scrollbarY], 'mousedown', function (e) {
+    startingScrollTop = element[scrollTop];
+    startingMousePageY = e[pageY];
+    scrollBy =
+      (i[contentHeight] - i[containerHeight]) /
+      (i[railYHeight] - i[scrollbarYHeight]);
+
+    i.event.bind(i.ownerDocument, 'mousemove', mouseMoveHandler);
+    i.event.once(i.ownerDocument, 'mouseup', mouseUpHandler);
+
+    e.stopPropagation();
+    e.preventDefault();
+  });
+}
+
+var keyboard = function(i) {
+  var element = i.element;
+
+  var elementHovered = function () { return matches(element, ':hover'); };
+  var scrollbarFocused = function () { return matches(i.scrollbarX, ':focus') || matches(i.scrollbarY, ':focus'); };
+
+  function shouldPreventDefault(deltaX, deltaY) {
+    var scrollTop = element.scrollTop;
+    if (deltaX === 0) {
+      if (!i.scrollbarYActive) {
+        return false;
+      }
+      if (
+        (scrollTop === 0 && deltaY > 0) ||
+        (scrollTop >= i.contentHeight - i.containerHeight && deltaY < 0)
+      ) {
+        return !i.settings.wheelPropagation;
+      }
+    }
+
+    var scrollLeft = element.scrollLeft;
+    if (deltaY === 0) {
+      if (!i.scrollbarXActive) {
+        return false;
+      }
+      if (
+        (scrollLeft === 0 && deltaX < 0) ||
+        (scrollLeft >= i.contentWidth - i.containerWidth && deltaX > 0)
+      ) {
+        return !i.settings.wheelPropagation;
+      }
+    }
+    return true;
+  }
+
+  i.event.bind(i.ownerDocument, 'keydown', function (e) {
+    if (
+      (e.isDefaultPrevented && e.isDefaultPrevented()) ||
+      e.defaultPrevented
+    ) {
+      return;
+    }
+
+    if (!elementHovered() && !scrollbarFocused()) {
+      return;
+    }
+
+    var activeElement = document.activeElement
+      ? document.activeElement
+      : i.ownerDocument.activeElement;
+    if (activeElement) {
+      if (activeElement.tagName === 'IFRAME') {
+        activeElement = activeElement.contentDocument.activeElement;
+      } else {
+        // go deeper if element is a webcomponent
+        while (activeElement.shadowRoot) {
+          activeElement = activeElement.shadowRoot.activeElement;
+        }
+      }
+      if (isEditable(activeElement)) {
+        return;
+      }
+    }
+
+    var deltaX = 0;
+    var deltaY = 0;
+
+    switch (e.which) {
+      case 37: // left
+        if (e.metaKey) {
+          deltaX = -i.contentWidth;
+        } else if (e.altKey) {
+          deltaX = -i.containerWidth;
+        } else {
+          deltaX = -30;
+        }
+        break;
+      case 38: // up
+        if (e.metaKey) {
+          deltaY = i.contentHeight;
+        } else if (e.altKey) {
+          deltaY = i.containerHeight;
+        } else {
+          deltaY = 30;
+        }
+        break;
+      case 39: // right
+        if (e.metaKey) {
+          deltaX = i.contentWidth;
+        } else if (e.altKey) {
+          deltaX = i.containerWidth;
+        } else {
+          deltaX = 30;
+        }
+        break;
+      case 40: // down
+        if (e.metaKey) {
+          deltaY = -i.contentHeight;
+        } else if (e.altKey) {
+          deltaY = -i.containerHeight;
+        } else {
+          deltaY = -30;
+        }
+        break;
+      case 32: // space bar
+        if (e.shiftKey) {
+          deltaY = i.containerHeight;
+        } else {
+          deltaY = -i.containerHeight;
+        }
+        break;
+      case 33: // page up
+        deltaY = i.containerHeight;
+        break;
+      case 34: // page down
+        deltaY = -i.containerHeight;
+        break;
+      case 36: // home
+        deltaY = i.contentHeight;
+        break;
+      case 35: // end
+        deltaY = -i.contentHeight;
+        break;
+      default:
+        return;
+    }
+
+    if (i.settings.suppressScrollX && deltaX !== 0) {
+      return;
+    }
+    if (i.settings.suppressScrollY && deltaY !== 0) {
+      return;
+    }
+
+    element.scrollTop -= deltaY;
+    element.scrollLeft += deltaX;
+    updateGeometry(i);
+
+    if (shouldPreventDefault(deltaX, deltaY)) {
+      e.preventDefault();
+    }
+  });
+};
+
+var wheel = function(i) {
+  var element = i.element;
+
+  function shouldPreventDefault(deltaX, deltaY) {
+    var isTop = element.scrollTop === 0;
+    var isBottom =
+      element.scrollTop + element.offsetHeight === element.scrollHeight;
+    var isLeft = element.scrollLeft === 0;
+    var isRight =
+      element.scrollLeft + element.offsetWidth === element.offsetWidth;
+
+    var hitsBound;
+
+    // pick axis with primary direction
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      hitsBound = isTop || isBottom;
+    } else {
+      hitsBound = isLeft || isRight;
+    }
+
+    return hitsBound ? !i.settings.wheelPropagation : true;
+  }
+
+  function getDeltaFromEvent(e) {
+    var deltaX = e.deltaX;
+    var deltaY = -1 * e.deltaY;
+
+    if (typeof deltaX === 'undefined' || typeof deltaY === 'undefined') {
+      // OS X Safari
+      deltaX = -1 * e.wheelDeltaX / 6;
+      deltaY = e.wheelDeltaY / 6;
+    }
+
+    if (e.deltaMode && e.deltaMode === 1) {
+      // Firefox in deltaMode 1: Line scrolling
+      deltaX *= 10;
+      deltaY *= 10;
+    }
+
+    if (deltaX !== deltaX && deltaY !== deltaY /* NaN checks */) {
+      // IE in some mouse drivers
+      deltaX = 0;
+      deltaY = e.wheelDelta;
+    }
+
+    if (e.shiftKey) {
+      // reverse axis with shift key
+      return [-deltaY, -deltaX];
+    }
+    return [deltaX, deltaY];
+  }
+
+  function shouldBeConsumedByChild(target, deltaX, deltaY) {
+    // FIXME: this is a workaround for <select> issue in FF and IE #571
+    if (!env.isWebKit && element.querySelector('select:focus')) {
+      return true;
+    }
+
+    if (!element.contains(target)) {
+      return false;
+    }
+
+    var cursor = target;
+
+    while (cursor && cursor !== element) {
+      if (cursor.classList.contains(cls.element.consuming)) {
+        return true;
+      }
+
+      var style = get(cursor);
+      var overflow = [style.overflow, style.overflowX, style.overflowY].join(
+        ''
+      );
+
+      // if scrollable
+      if (overflow.match(/(scroll|auto)/)) {
+        var maxScrollTop = cursor.scrollHeight - cursor.clientHeight;
+        if (maxScrollTop > 0) {
+          if (
+            !(cursor.scrollTop === 0 && deltaY > 0) &&
+            !(cursor.scrollTop === maxScrollTop && deltaY < 0)
+          ) {
+            return true;
+          }
+        }
+        var maxScrollLeft = cursor.scrollLeft - cursor.clientWidth;
+        if (maxScrollLeft > 0) {
+          if (
+            !(cursor.scrollLeft === 0 && deltaX < 0) &&
+            !(cursor.scrollLeft === maxScrollLeft && deltaX > 0)
+          ) {
+            return true;
+          }
+        }
+      }
+
+      cursor = cursor.parentNode;
+    }
+
+    return false;
+  }
+
+  function mousewheelHandler(e) {
+    var ref = getDeltaFromEvent(e);
+    var deltaX = ref[0];
+    var deltaY = ref[1];
+
+    if (shouldBeConsumedByChild(e.target, deltaX, deltaY)) {
+      return;
+    }
+
+    var shouldPrevent = false;
+    if (!i.settings.useBothWheelAxes) {
+      // deltaX will only be used for horizontal scrolling and deltaY will
+      // only be used for vertical scrolling - this is the default
+      element.scrollTop -= deltaY * i.settings.wheelSpeed;
+      element.scrollLeft += deltaX * i.settings.wheelSpeed;
+    } else if (i.scrollbarYActive && !i.scrollbarXActive) {
+      // only vertical scrollbar is active and useBothWheelAxes option is
+      // active, so let's scroll vertical bar using both mouse wheel axes
+      if (deltaY) {
+        element.scrollTop -= deltaY * i.settings.wheelSpeed;
+      } else {
+        element.scrollTop += deltaX * i.settings.wheelSpeed;
+      }
+      shouldPrevent = true;
+    } else if (i.scrollbarXActive && !i.scrollbarYActive) {
+      // useBothWheelAxes and only horizontal bar is active, so use both
+      // wheel axes for horizontal bar
+      if (deltaX) {
+        element.scrollLeft += deltaX * i.settings.wheelSpeed;
+      } else {
+        element.scrollLeft -= deltaY * i.settings.wheelSpeed;
+      }
+      shouldPrevent = true;
+    }
+
+    updateGeometry(i);
+
+    shouldPrevent = shouldPrevent || shouldPreventDefault(deltaX, deltaY);
+    if (shouldPrevent && !e.ctrlKey) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+  }
+
+  if (typeof window.onwheel !== 'undefined') {
+    i.event.bind(element, 'wheel', mousewheelHandler);
+  } else if (typeof window.onmousewheel !== 'undefined') {
+    i.event.bind(element, 'mousewheel', mousewheelHandler);
+  }
+};
+
+var touch = function(i) {
+  if (!env.supportsTouch && !env.supportsIePointer) {
+    return;
+  }
+
+  var element = i.element;
+
+  function shouldPrevent(deltaX, deltaY) {
+    var scrollTop = element.scrollTop;
+    var scrollLeft = element.scrollLeft;
+    var magnitudeX = Math.abs(deltaX);
+    var magnitudeY = Math.abs(deltaY);
+
+    if (magnitudeY > magnitudeX) {
+      // user is perhaps trying to swipe up/down the page
+
+      if (
+        (deltaY < 0 && scrollTop === i.contentHeight - i.containerHeight) ||
+        (deltaY > 0 && scrollTop === 0)
+      ) {
+        // set prevent for mobile Chrome refresh
+        return window.scrollY === 0 && deltaY > 0 && env.isChrome;
+      }
+    } else if (magnitudeX > magnitudeY) {
+      // user is perhaps trying to swipe left/right across the page
+
+      if (
+        (deltaX < 0 && scrollLeft === i.contentWidth - i.containerWidth) ||
+        (deltaX > 0 && scrollLeft === 0)
+      ) {
+        return true;
+      }
+    }
+
+    return true;
+  }
+
+  function applyTouchMove(differenceX, differenceY) {
+    element.scrollTop -= differenceY;
+    element.scrollLeft -= differenceX;
+
+    updateGeometry(i);
+  }
+
+  var startOffset = {};
+  var startTime = 0;
+  var speed = {};
+  var easingLoop = null;
+
+  function getTouch(e) {
+    if (e.targetTouches) {
+      return e.targetTouches[0];
+    } else {
+      // Maybe IE pointer
+      return e;
+    }
+  }
+
+  function shouldHandle(e) {
+    if (e.pointerType && e.pointerType === 'pen' && e.buttons === 0) {
+      return false;
+    }
+    if (e.targetTouches && e.targetTouches.length === 1) {
+      return true;
+    }
+    if (
+      e.pointerType &&
+      e.pointerType !== 'mouse' &&
+      e.pointerType !== e.MSPOINTER_TYPE_MOUSE
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  function touchStart(e) {
+    if (!shouldHandle(e)) {
+      return;
+    }
+
+    var touch = getTouch(e);
+
+    startOffset.pageX = touch.pageX;
+    startOffset.pageY = touch.pageY;
+
+    startTime = new Date().getTime();
+
+    if (easingLoop !== null) {
+      clearInterval(easingLoop);
+    }
+  }
+
+  function shouldBeConsumedByChild(target, deltaX, deltaY) {
+    if (!element.contains(target)) {
+      return false;
+    }
+
+    var cursor = target;
+
+    while (cursor && cursor !== element) {
+      if (cursor.classList.contains(cls.element.consuming)) {
+        return true;
+      }
+
+      var style = get(cursor);
+      var overflow = [style.overflow, style.overflowX, style.overflowY].join(
+        ''
+      );
+
+      // if scrollable
+      if (overflow.match(/(scroll|auto)/)) {
+        var maxScrollTop = cursor.scrollHeight - cursor.clientHeight;
+        if (maxScrollTop > 0) {
+          if (
+            !(cursor.scrollTop === 0 && deltaY > 0) &&
+            !(cursor.scrollTop === maxScrollTop && deltaY < 0)
+          ) {
+            return true;
+          }
+        }
+        var maxScrollLeft = cursor.scrollLeft - cursor.clientWidth;
+        if (maxScrollLeft > 0) {
+          if (
+            !(cursor.scrollLeft === 0 && deltaX < 0) &&
+            !(cursor.scrollLeft === maxScrollLeft && deltaX > 0)
+          ) {
+            return true;
+          }
+        }
+      }
+
+      cursor = cursor.parentNode;
+    }
+
+    return false;
+  }
+
+  function touchMove(e) {
+    if (shouldHandle(e)) {
+      var touch = getTouch(e);
+
+      var currentOffset = { pageX: touch.pageX, pageY: touch.pageY };
+
+      var differenceX = currentOffset.pageX - startOffset.pageX;
+      var differenceY = currentOffset.pageY - startOffset.pageY;
+
+      if (shouldBeConsumedByChild(e.target, differenceX, differenceY)) {
+        return;
+      }
+
+      applyTouchMove(differenceX, differenceY);
+      startOffset = currentOffset;
+
+      var currentTime = new Date().getTime();
+
+      var timeGap = currentTime - startTime;
+      if (timeGap > 0) {
+        speed.x = differenceX / timeGap;
+        speed.y = differenceY / timeGap;
+        startTime = currentTime;
+      }
+
+      if (shouldPrevent(differenceX, differenceY)) {
+        e.preventDefault();
+      }
+    }
+  }
+  function touchEnd() {
+    if (i.settings.swipeEasing) {
+      clearInterval(easingLoop);
+      easingLoop = setInterval(function() {
+        if (i.isInitialized) {
+          clearInterval(easingLoop);
+          return;
+        }
+
+        if (!speed.x && !speed.y) {
+          clearInterval(easingLoop);
+          return;
+        }
+
+        if (Math.abs(speed.x) < 0.01 && Math.abs(speed.y) < 0.01) {
+          clearInterval(easingLoop);
+          return;
+        }
+
+        applyTouchMove(speed.x * 30, speed.y * 30);
+
+        speed.x *= 0.8;
+        speed.y *= 0.8;
+      }, 10);
+    }
+  }
+
+  if (env.supportsTouch) {
+    i.event.bind(element, 'touchstart', touchStart);
+    i.event.bind(element, 'touchmove', touchMove);
+    i.event.bind(element, 'touchend', touchEnd);
+  } else if (env.supportsIePointer) {
+    if (window.PointerEvent) {
+      i.event.bind(element, 'pointerdown', touchStart);
+      i.event.bind(element, 'pointermove', touchMove);
+      i.event.bind(element, 'pointerup', touchEnd);
+    } else if (window.MSPointerEvent) {
+      i.event.bind(element, 'MSPointerDown', touchStart);
+      i.event.bind(element, 'MSPointerMove', touchMove);
+      i.event.bind(element, 'MSPointerUp', touchEnd);
+    }
+  }
+};
+
+var defaultSettings = function () { return ({
+  handlers: ['click-rail', 'drag-thumb', 'keyboard', 'wheel', 'touch'],
+  maxScrollbarLength: null,
+  minScrollbarLength: null,
+  scrollingThreshold: 1000,
+  scrollXMarginOffset: 0,
+  scrollYMarginOffset: 0,
+  suppressScrollX: false,
+  suppressScrollY: false,
+  swipeEasing: true,
+  useBothWheelAxes: false,
+  wheelPropagation: false,
+  wheelSpeed: 1,
+}); };
+
+var handlers = {
+  'click-rail': clickRail,
+  'drag-thumb': dragThumb,
+  keyboard: keyboard,
+  wheel: wheel,
+  touch: touch,
+};
+
+var PerfectScrollbar = function PerfectScrollbar(element, userSettings) {
+  var this$1 = this;
+  if ( userSettings === void 0 ) userSettings = {};
+
+  if (typeof element === 'string') {
+    element = document.querySelector(element);
+  }
+
+  if (!element || !element.nodeName) {
+    throw new Error('no element is specified to initialize PerfectScrollbar');
+  }
+
+  this.element = element;
+
+  element.classList.add(cls.main);
+
+  this.settings = defaultSettings();
+  for (var key in userSettings) {
+    this$1.settings[key] = userSettings[key];
+  }
+
+  this.containerWidth = null;
+  this.containerHeight = null;
+  this.contentWidth = null;
+  this.contentHeight = null;
+
+  var focus = function () { return element.classList.add(cls.state.focus); };
+  var blur = function () { return element.classList.remove(cls.state.focus); };
+
+  this.isRtl = get(element).direction === 'rtl';
+  this.isNegativeScroll = (function () {
+    var originalScrollLeft = element.scrollLeft;
+    var result = null;
+    element.scrollLeft = -1;
+    result = element.scrollLeft < 0;
+    element.scrollLeft = originalScrollLeft;
+    return result;
+  })();
+  this.negativeScrollAdjustment = this.isNegativeScroll
+    ? element.scrollWidth - element.clientWidth
+    : 0;
+  this.event = new EventManager();
+  this.ownerDocument = element.ownerDocument || document;
+
+  this.scrollbarXRail = div(cls.element.rail('x'));
+  element.appendChild(this.scrollbarXRail);
+  this.scrollbarX = div(cls.element.thumb('x'));
+  this.scrollbarXRail.appendChild(this.scrollbarX);
+  this.scrollbarX.setAttribute('tabindex', 0);
+  this.event.bind(this.scrollbarX, 'focus', focus);
+  this.event.bind(this.scrollbarX, 'blur', blur);
+  this.scrollbarXActive = null;
+  this.scrollbarXWidth = null;
+  this.scrollbarXLeft = null;
+  var railXStyle = get(this.scrollbarXRail);
+  this.scrollbarXBottom = parseInt(railXStyle.bottom, 10);
+  if (isNaN(this.scrollbarXBottom)) {
+    this.isScrollbarXUsingBottom = false;
+    this.scrollbarXTop = toInt(railXStyle.top);
+  } else {
+    this.isScrollbarXUsingBottom = true;
+  }
+  this.railBorderXWidth =
+    toInt(railXStyle.borderLeftWidth) + toInt(railXStyle.borderRightWidth);
+  // Set rail to display:block to calculate margins
+  set(this.scrollbarXRail, { display: 'block' });
+  this.railXMarginWidth =
+    toInt(railXStyle.marginLeft) + toInt(railXStyle.marginRight);
+  set(this.scrollbarXRail, { display: '' });
+  this.railXWidth = null;
+  this.railXRatio = null;
+
+  this.scrollbarYRail = div(cls.element.rail('y'));
+  element.appendChild(this.scrollbarYRail);
+  this.scrollbarY = div(cls.element.thumb('y'));
+  this.scrollbarYRail.appendChild(this.scrollbarY);
+  this.scrollbarY.setAttribute('tabindex', 0);
+  this.event.bind(this.scrollbarY, 'focus', focus);
+  this.event.bind(this.scrollbarY, 'blur', blur);
+  this.scrollbarYActive = null;
+  this.scrollbarYHeight = null;
+  this.scrollbarYTop = null;
+  var railYStyle = get(this.scrollbarYRail);
+  this.scrollbarYRight = parseInt(railYStyle.right, 10);
+  if (isNaN(this.scrollbarYRight)) {
+    this.isScrollbarYUsingRight = false;
+    this.scrollbarYLeft = toInt(railYStyle.left);
+  } else {
+    this.isScrollbarYUsingRight = true;
+  }
+  this.scrollbarYOuterWidth = this.isRtl ? outerWidth(this.scrollbarY) : null;
+  this.railBorderYWidth =
+    toInt(railYStyle.borderTopWidth) + toInt(railYStyle.borderBottomWidth);
+  set(this.scrollbarYRail, { display: 'block' });
+  this.railYMarginHeight =
+    toInt(railYStyle.marginTop) + toInt(railYStyle.marginBottom);
+  set(this.scrollbarYRail, { display: '' });
+  this.railYHeight = null;
+  this.railYRatio = null;
+
+  this.reach = {
+    x:
+      element.scrollLeft <= 0
+        ? 'start'
+        : element.scrollLeft >= this.contentWidth - this.containerWidth
+          ? 'end'
+          : null,
+    y:
+      element.scrollTop <= 0
+        ? 'start'
+        : element.scrollTop >= this.contentHeight - this.containerHeight
+          ? 'end'
+          : null,
+  };
+
+  this.isAlive = true;
+
+  this.settings.handlers.forEach(function (handlerName) { return handlers[handlerName](this$1); });
+
+  this.lastScrollTop = element.scrollTop; // for onScroll only
+  this.lastScrollLeft = element.scrollLeft; // for onScroll only
+  this.event.bind(this.element, 'scroll', function (e) { return this$1.onScroll(e); });
+  updateGeometry(this);
+};
+
+PerfectScrollbar.prototype.update = function update () {
+  if (!this.isAlive) {
+    return;
+  }
+
+  // Recalcuate negative scrollLeft adjustment
+  this.negativeScrollAdjustment = this.isNegativeScroll
+    ? this.element.scrollWidth - this.element.clientWidth
+    : 0;
+
+  // Recalculate rail margins
+  set(this.scrollbarXRail, { display: 'block' });
+  set(this.scrollbarYRail, { display: 'block' });
+  this.railXMarginWidth =
+    toInt(get(this.scrollbarXRail).marginLeft) +
+    toInt(get(this.scrollbarXRail).marginRight);
+  this.railYMarginHeight =
+    toInt(get(this.scrollbarYRail).marginTop) +
+    toInt(get(this.scrollbarYRail).marginBottom);
+
+  // Hide scrollbars not to affect scrollWidth and scrollHeight
+  set(this.scrollbarXRail, { display: 'none' });
+  set(this.scrollbarYRail, { display: 'none' });
+
+  updateGeometry(this);
+
+  processScrollDiff(this, 'top', 0, false, true);
+  processScrollDiff(this, 'left', 0, false, true);
+
+  set(this.scrollbarXRail, { display: '' });
+  set(this.scrollbarYRail, { display: '' });
+};
+
+PerfectScrollbar.prototype.onScroll = function onScroll (e) {
+  if (!this.isAlive) {
+    return;
+  }
+
+  updateGeometry(this);
+  processScrollDiff(this, 'top', this.element.scrollTop - this.lastScrollTop);
+  processScrollDiff(
+    this,
+    'left',
+    this.element.scrollLeft - this.lastScrollLeft
+  );
+
+  this.lastScrollTop = this.element.scrollTop;
+  this.lastScrollLeft = this.element.scrollLeft;
+};
+
+PerfectScrollbar.prototype.destroy = function destroy () {
+  if (!this.isAlive) {
+    return;
+  }
+
+  this.event.unbindAll();
+  remove(this.scrollbarX);
+  remove(this.scrollbarY);
+  remove(this.scrollbarXRail);
+  remove(this.scrollbarYRail);
+  this.removePsClasses();
+
+  // unset elements
+  this.element = null;
+  this.scrollbarX = null;
+  this.scrollbarY = null;
+  this.scrollbarXRail = null;
+  this.scrollbarYRail = null;
+
+  this.isAlive = false;
+};
+
+PerfectScrollbar.prototype.removePsClasses = function removePsClasses () {
+  this.element.className = this.element.className
+    .split(' ')
+    .filter(function (name) { return !name.match(/^ps([-_].+|)$/); })
+    .join(' ');
+};
+
+module.exports = PerfectScrollbar;
+
+},{}],26:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -3834,7 +5160,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (global){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react'), require('react-dom')) :

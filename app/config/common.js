@@ -366,48 +366,53 @@ export const comments = {
 		switch(splitHash[0]){
 			case "#comment":
 			case "#forwarded-comment":
-				var subType = "";
+				var subType = "", tt = 0;
 				if(splitHash[0] == "#forwarded-comment"){
+					tt = 1000;
 					subType = "forward-";
 					this.viewForwardedLinks();
 				}
-				this.viewComment(data, splitHashVal, subType);
+				setTimeout(() => { this.viewComment(data, splitHashVal, subType); }, tt);
 			break;
 			case "#section":
 			case "#forwarded-section":
-				var subType = "";
+				var subType = "", tt = 0;
 				if(splitHash[0] == "#forwarded-section"){
+					tt = 1000;
 					subType = "forward-";
 					this.viewForwardedLinks();
 				}
-				this.viewSection(data, splitHashVal, subType);
+				setTimeout(() => { this.viewSection(data, splitHashVal, subType); }, tt);
 			break;
 			case "#task":
 			case "#forwarded-task":
-				var subType = "";
+				var subType = "", tt = 0;
 				if(splitHash[0] == "#forwarded-task"){
+					tt = 1000;
 					subType = "forward-";
 					this.viewForwardedLinks();
 				}
-				this.viewTask(data, splitHashVal, subType);
+				setTimeout(() => { this.viewTask(data, splitHashVal, subType); }, tt);
 			break;
 			case "#attachment":
 			case "#forwarded-attachment":
-				var subType = "";
+				var subType = "", tt = 0;
 				if(splitHash[0] == "#forwarded-attachment"){
+					tt = 1000;
 					subType = "forward-";
 					this.viewForwardedLinks();
 				}
-				this.viewAttachment(data, splitHashVal, subType);
+				setTimeout(() => { this.viewAttachment(data, splitHashVal, subType); }, tt);
 			break;
 			case "#section-version":
 			case "#forwarded-section-version":
-				var subType = "";
+				var subType = "", tt = 0;
 				if(splitHash[0] == "#forwarded-section-version"){
+					tt = 1000;
 					subType = "forward-";
 					this.viewForwardedLinks();
 				}
-				this.viewSectionVersion(data, splitHashVal, subType);
+				setTimeout(() => { this.viewSectionVersion(data, splitHashVal, subType); }, tt);
 			break;
 			case "#r":
 				this.viewReleasedTemplate(data, splitHashVal);
@@ -423,8 +428,8 @@ export const comments = {
 	},
 	viewForwardedLinks: function(){
 		//  check if forwarded area expanded or collapsed
-		if($(".forwardedCommentsW a").hasClass("exp")){
-			$(".forwardedCommentsW a")[0].click()
+		if($(".forwarded-container div").hasClass("colt")){
+			$(".forwarded-container div.colt")[0].click()
 		}
 	},
 	viewComment: function(data, v, subType){
@@ -456,9 +461,6 @@ export const comments = {
 			v = valSplit[1];
 
 			pEl = ".forwarded-item-wrapper .section-container";
-			psEl = "li";
-			
-			$('.middle-container').animate({ scrollTop: $(pEl).offset().top+200 }, 500);
 		}
 
 		var el = $(pEl+" [data-sectionnum='"+v+"']");
@@ -466,17 +468,7 @@ export const comments = {
 		url = "<div class='t-url-dialog-icon'></div> <span title='"+url+"'>"+url+"</span>";
 		
 		if(el.parents(psEl).find("a")[0]){
-			var secTitle = el[0].getAttribute("data-section-title"),
-				sectiontype = el[0].getAttribute("data-section-type"),
-				fileext = secTitle+"."+el[0].getAttribute("data-file-ext");
-			
-			if(subType == "forward-"){
-				this.blinkElement(el.parents(psEl));
-			}else{
-				// $('.middle-container').animate({ scrollTop: 0 }, 500);
-				// this.blinkElement(el.parents(psEl));
-				this.scrollIntoViewIfNeeded(el.parents(psEl));
-			}
+			this.scrollIntoViewIfNeeded(el.parents(psEl));
 		}else if(el.length > 0){
 			var secTitle = el[0].getAttribute("data-section-title");
 			// Ext.Msg.alert(url, '<i>Section</i> "'+secTitle+'" is deleted.', false, {inlineTLT: true});
@@ -500,11 +492,9 @@ export const comments = {
 			taskNum = splitValArr[2],
 			fwdttn = splitValArr[0];
 
-			// pEl = "#tmail-comment-"+data.ttn+"-"+fwdttn+"-B ";
 			pEl = ".forwarded-item-wrapper .section-container";
-			psEl = "li";
-
-			$('.middle-container').animate({ scrollTop: $(pEl).offset().top+200 }, 500);
+			
+			this.scrollIntoViewIfNeeded($(pEl));
 		}
 
 		var el = $(pEl+" [data-sectionnum='"+secNum+"']");
@@ -514,15 +504,13 @@ export const comments = {
 
 		if(el.parents(psEl).find("a")[0]){
 			if(el[0].getAttribute("data-section-type") == "task_list"){
-				var secTitle = el[0].getAttribute("data-section-title");
-
 				if(subType == "forward-"){
 					vnum = el[0].getAttribute("data-version");
 				}
 				tmailtype = el[0].getAttribute("data-tmailType");
+
+				el[0].setAttribute("data-tasknum", taskNum);
 				el[0].firstElementChild.click();
-				
-				// viewSection(el[0], data.ttn, fwdttn ? fwdttn : "undefined", secNum, vnum, secTitle, tmailtype, "task_list", "undefined", taskNum, '', '', data.subject);
 			}else{
 				// Ext.Msg.alert(url, "<i>Section</i> "+secNum+" is not a Task List of Checklist type Section.", false, {inlineTLT: true});
 				alert("Section "+secNum+" is not a Task List of Checklist type Section.");
@@ -578,13 +566,13 @@ export const comments = {
 			v1 = valSplit[2];
 
 			if($(pEl+"[data-version='"+v1+"'][data-sectionnum='"+v+"']")[0] == undefined){
-				pEl = "#tmail-comment-"+data.ttn+"-"+fwdttn+"-B";
+				pEl = ".tmail-comment-"+data.ttn+"-"+"-B";
 				var cnum = $(pEl+" [data-sectionnum='"+v+"']")[0].getAttribute("data-changenum");
 
 				var el = $(pEl+" [data-sectionnum='"+v+"']");
 			}else{
 				var cnum = $(pEl+" [data-version='"+v1+"'][data-sectionnum='"+v+"']")[0].getAttribute("data-changenum");
-				pEl = "#tmail-comment-"+data.ttn+"-"+fwdttn+"-"+cnum+" .comment-container ";
+				pEl = ".tmail-comment-"+data.ttn+"-"+cnum+" .comment-container ";
 			}
 		}
 

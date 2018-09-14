@@ -2,6 +2,7 @@ var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactDOM = require('react-dom');
 var Popover = require('react-awesome-popover');
+var ClipboardJS = require('clipboard/dist/clipboard.min');
 
 var TaskListsCompHeader = require('./TaskListsCompHeader.react');
 var TaskStateReadViewHtml = require('./TaskStateReadViewHtml.react');
@@ -53,7 +54,7 @@ var TaskTitle = createReactClass({
 			return (
 				<div className="mb-10 titleBar-outter">
 					<div className="hiddenDivTextarea title" style={{padding: "10px 0px"}}>{state.title}</div>
-					<textarea defaultValue={state.title} className={state.items.newItem ? "autoAdjust readText titleBar hideIcon" : "autoAdjust readText titleBar"} readOnly></textarea>
+					<textarea name={'task-title-'+this.props.items.index} defaultValue={state.title} className={state.items.newItem ? "autoAdjust readText titleBar hideIcon" : "autoAdjust readText titleBar"} readOnly></textarea>
 					{diffHtml}
 				</div>
 			)
@@ -94,16 +95,23 @@ var TaskRequester = createReactClass({
 	},
 	componentDidMount: function(){
 		//
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile)
+					imgPath = './role_human.jpg'; 
+				else 
+					imgPath = '/main/images/role_human.jpg'; 
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile)
+						imgPath = './no_image.jpg';
+					else 
+						imgPath = '/main/images/no_image.jpg';
 				}
 			}
 			if(val.address == me.state.requester && val.initial) {
@@ -139,7 +147,7 @@ var TaskRequester = createReactClass({
 				})
 			}
 			return (
-				<div>
+				<div id={"requester-container-"+me.state.keyVal} name={"requester-container-"+me.state.keyVal}>
 					{
 						name == "" ? null : <span className="requesters" data-title-colps-requester={requester} data-title={requester} key={"reqs"+key}><span>{name}</span></span>
 					}
@@ -188,16 +196,23 @@ var TaskAssignees = createReactClass({
 	},
 	componentDidMount: function(){
 		//
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile)
+					imgPath = './role_human.jpg'; 
+				else 
+					imgPath = '/main/images/role_human.jpg'; 
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile)
+						imgPath = './no_image.jpg';
+					else 
+						imgPath = '/main/images/no_image.jpg';
 				}
 			}
 			me.state.assignees.map(function(assigneeVal,assigneeKey) {
@@ -302,7 +317,7 @@ var TaskState = createReactClass({
 			}
 		
 		
-			return <div>{html}</div>;
+			return <div name={"state-container-"+state.items.index}>{html}</div>;
 		}
 });
 var TaskPriority = createReactClass({
@@ -328,20 +343,20 @@ var TaskPriority = createReactClass({
 		
 		switch(taskPriority){
 				case 'High':
-					html = <div title="High Priority" className="btn-info-high btn-info-selected"></div>;
+					html = <div data-value="High" title="High Priority" className="btn-info-high btn-info-selected"></div>;
 				break;
 				case 'Medium':
-					html = <div title="Medium Priority" className="btn-info-medium btn-info-selected"></div>;
+					html = <div data-value="Medium" title="Medium Priority" className="btn-info-medium btn-info-selected"></div>;
 				break;
 				case 'Low':
-					html = <div title="Low Priority" className="btn-info-low btn-info-selected"></div>;
+					html = <div data-value="Low" title="Low Priority" className="btn-info-low btn-info-selected"></div>;
 				break;
 				default:
 				case 'NoPrioritySet':
-					html = <div title="No Priority Set" className="btn-info-low-no btn-info-selected"></div>;
+					html = <div data-value="NoPrioritySet" title="No Priority Set" className="btn-info-low-no btn-info-selected"></div>;
 				break;
 			}
-			return <div className="pull-right">{html}</div>;
+			return <div className="pull-right" name={"priority-container-"+state.items.index}>{html}</div>;
 		
 		}
 });
@@ -406,7 +421,7 @@ var TaskDescription = createReactClass({
 			return (
 				<div className="description" id={"description"+this.state.items.taskNumber}>
 					<div className="hiddenDivTextarea desc" style={{padding: "10px 0px"}}>{description}</div>
-					<textarea className="readText autoAdjust" ref="description" defaultValue={description} readOnly></textarea>
+					<textarea name={'task-description-'+state.items.index} className="readText autoAdjust" ref="description" defaultValue={description} readOnly></textarea>
 					{diffHtml}
 				</div>
 			)
@@ -424,6 +439,23 @@ var TaskTypeRequest = createReactClass({
 		return ({writersObj: writersObj, allWriters: this.props.allWriters});
 	},
 	componentDidMount: function() {
+		this.bindClipBoard(".copy-task-ex-link-menu");
+		this.bindClipBoard(".copy-task-ex-mobile-link-menu");
+	},
+	bindClipBoard: function(el){
+		var clipboard = new ClipboardJS(el);
+		clipboard.on('success', function(e) {
+			$(e.trigger).parent("div").find("span.copied-span").show();
+			setTimeout(function(){
+				$(e.trigger).parent("div").find("span.copied-span").hide();
+			}, 2000);
+			e.clearSelection();
+		});
+		
+		clipboard.on('error', function(e) {
+			console.error('Action:', e.action);
+			console.error('Trigger:', e.trigger);
+		});
 	},
 	render: function(){
 		var me = this;
@@ -536,15 +568,40 @@ var TaskTypeRequest = createReactClass({
 			}
 
 		if(isEnabled) {
+			var jsonData = TaskStore.getData(this.props.storeId),
+				tnum = this.props.items.taskNumber,
+				ttitle = encodeURI(this.props.items.title);
+			
+			var url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+'#task='+jsonData.secNum+':'+tnum,
+				link = '[ TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '" in THREAD "' +jsonData.tmailSubject+ '", ' +url+ ' ]';
+			
+			if(jsonData.mailboxType == 'forward'){
+				url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+"#forwarded-task="+jsonData.fwdtmailNum+":"+jsonData.secNum+":"+tnum;
+				var isInComment = jsonData.cnum ? ' in FORWARDED COMMENT ' +jsonData.cnum : ' ';
+				link = '[ FORWARDED TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '"' +isInComment+ ' in ' +jsonData.tmailNum+ ' in THREAD "' +jsonData.tmailSubject+ '", ' +url+' ]';
+			}
+
 			return (
 				<div className={(this.props.items.newItem || (typeof this.props.toggleTaskIndex != "undefined" && this.props.items.index == this.props.toggleTaskIndex && this.props.slideTask)  ? 'impBackgroundFFF ' : ' ')+outterCls} key={this.props.propKey}>
 					<TaskListsCompHeader items={this.props.items} mode={this.props.mode} keyVal={this.props.keyVal} allWriters={this.props.allWriters} writers={this.props.writers} currentUser={this.props.currentUser} divId={this.props.divId} taskNum={this.props.taskNum} storeId={storeId} favWriters={this.props.favWriters} isChecklist={this.props.isChecklist} slideTask={this.props.slideTask} toggleTaskIndex={this.props.toggleTaskIndex} />
 					<div id={this.props.divId+'_collapse_' + this.props.mode + this.props.items.index} className={className} style={{display: style}}>
 						<div className="panel-body">
 							<TaskTitle items={this.props.items} mode={this.props.mode} keyVal={this.props.keyVal} storeId={storeId} />
-							<div className={"mb-6 taskNumber"+this.props.mode == 'read' || this.props.mode == 'readSort' ? 'hiddenDelBtn' : ''} style={{float: 'left', clear: 'both'}}>
+							<div className={"mb-6 taskNumber"+this.props.mode == 'read' || this.props.mode == 'readSort' ? 'hiddenDelBtn' : ''+(isMobile() && !newItem && jsonData.mailboxType != 'draft' ? "copy-task-ex-mobile-link-menu" : "")} style={{float: 'left', clear: 'both', position: 'relative', cursor: (isMobile() && !newItem && jsonData.mailboxType != 'draft' ? 'pointer' : 'auto')}} data-clipboard-text={link}>
 								<span className="content-id label-cls">Task Number</span>
 								<span name={"task-number-"+this.props.items.index} className={newItem ? "taskId content-id newTask taskNumber" : "taskId content-id taskNumber"}>#{newItem ? "New" : this.props.items.taskNumber}</span>
+								{
+									!newItem && jsonData.mailboxType != 'draft' ? (
+										<div style={{float: "left", position: "relative", width: "20px"}}>
+											<span className="copied-span copied-span-ex hidden">Task Link Copied</span>
+											{
+												!isMobile() ? (
+													<div name={"task-number-copy-"+this.props.items.index} className="copy-task-ex-link-menu" title="Copy Task Link" data-clipboard-text={link}></div>
+												) : null
+											}
+										</div>
+									) : null
+								}
 								{}
 							</div>
 							{}

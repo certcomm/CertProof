@@ -106,7 +106,7 @@ class Comment extends React.Component {
                         </div>
                     </div>
                     <div className="comment-container">
-                        <Sections key={Math.random()} sections={comment.sections} data={this.data} />
+                        <Sections key={Math.random()} sections={comment.sections} data={this.data} changeNum={comment.changeNum} />
                         <Attachments key={Math.random()} data={comment.attachments} />
                         <div className="added-writer-container">
                             <Writers key={Math.random()} data={comment.addedWriters} type="added" />

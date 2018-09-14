@@ -2,10 +2,13 @@ var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactDOM = require('react-dom');
 var Popover = require('react-awesome-popover');	
+var ClipboardJS = require('clipboard/dist/clipboard.min');
 
 var TaskStateReadViewHtml = require('./TaskStateReadViewHtml.react');
 var TaskCollapseArrow = require('./TaskCollapseArrow.react');
 var WritersStore = require('../stores/WritersStore');
+var TaskStore = require('../stores/TaskStore');
+
 function getWriters() {
 	return WritersStore.getData();
 }
@@ -29,16 +32,25 @@ var TaskRequester = createReactClass({
 		} 
 	},
 	componentDidUpdate: function(){
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile){
+					imgPath = './role_human.jpg'; 
+				}else {
+					imgPath = '/main/images/role_human.jpg'; 
+				}
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile) {
+						imgPath = './no_image.jpg';
+					} else {
+						imgPath = '/main/images/no_image.jpg';
+					}
 				}
 			}
 			if(val.address == me.props.requester && val.initial) {
@@ -96,16 +108,23 @@ var TaskAssignees = createReactClass({
 		}
 	},
 	componentDidUpdate: function(){
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile)
+					imgPath = './role_human.jpg'; 
+				else	
+					imgPath = '/main/images/role_human.jpg'; 
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile)
+						imgPath = './no_image.jpg';
+					else 
+						imgPath = '/main/images/no_image.jpg';
 				}
 			}
 			me.state.assignees.map(function(assigneeVal,assigneeKey) {
@@ -127,9 +146,13 @@ var TaskAssignees = createReactClass({
 		if(this.state.mode == "template") {
 			return false;
 		}
+		/*		Commented 02052018 (if user removed one writer and added newer then count should be same but it will not update)		*/
+		/*
 		if(ReactDOM.findDOMNode(this.refs["header-assignees"]).getAttribute('assigneesCount') == nextState.assignees.length) {
 			return false;
 		}
+		*/
+		/*		Commented 02052018		*/
 		return true;
 	},
 	render: function() {
@@ -198,17 +221,17 @@ var TaskPriorityHeader = createReactClass({
 		
 		switch(priority){
 			case 'High':
-				html = <div title="High Priority" className="btn-info-high btn-info-selected"></div>;
+				html = <div data-value="High" title="High Priority" className="btn-info-high btn-info-selected"></div>;
 			break;
 			case 'Medium':
-				html = <div title="Medium Priority" className="btn-info-medium btn-info-selected"></div>;
+				html = <div data-value="Medium" title="Medium Priority" className="btn-info-medium btn-info-selected"></div>;
 			break;
 			case 'Low':
-				html = <div title="Low Priority" className="btn-info-low btn-info-selected"></div>;
+				html = <div data-value="Low" title="Low Priority" className="btn-info-low btn-info-selected"></div>;
 			break;
 			default:
 			/*case 'NoPrioritySet':
-				html = <div title="No Priority Set" className="btn-info-low-no btn-info-selected"></div>;*/
+				html = <div data-value="NoPrioritySet" title="No Priority Set" className="btn-info-low-no btn-info-selected"></div>;*/
 			break;
 		}
 		
@@ -231,6 +254,25 @@ var TaskPriorityHeader = createReactClass({
 var TaskListsCompHeader = createReactClass({
 	getInitialState: function() {
 		return ({open: false});
+	},
+	componentDidMount: function() {
+		this.bindClipBoard(".copy-task-link-menu");
+		this.bindClipBoard(".copy-task-link-mobile-menu");
+	},
+	bindClipBoard: function(el){
+		var clipboard = new ClipboardJS(el);
+		clipboard.on('success', function(e) {
+			$(e.trigger).parent("div").find("span.copied-span").show();
+			setTimeout(function(){
+				$(e.trigger).parent("div").find("span.copied-span").hide();
+			}, 2000);
+			e.clearSelection();
+		});
+		
+		clipboard.on('error', function(e) {
+			console.error('Action:', e.action);
+			console.error('Trigger:', e.trigger);
+		});
 	},
 	shouldComponentUpdate: function(nextProps, nextState, nextContext) {
 		var updateHeader = (this.props.items.shouldUpdateHeader || this.props.items.diffOpType) ? true : false;
@@ -411,6 +453,19 @@ var TaskListsCompHeader = createReactClass({
 			
 			}
 
+		var jsonData = TaskStore.getData(this.props.storeId),
+			tnum = this.props.items.taskNumber,
+			ttitle = encodeURI(this.props.items.title);
+
+		var url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+'#task='+jsonData.secNum+':'+tnum,
+			link = '[ TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '" in THREAD "' +jsonData.tmailSubject+ '", ' +url+ ' ]';
+		
+		if(jsonData.mailboxType == 'forward'){
+			url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+"#forwarded-task="+jsonData.fwdtmailNum+":"+jsonData.secNum+":"+tnum;
+			var isInComment = jsonData.cnum ? ' in FORWARDED COMMENT ' +jsonData.cnum : ' ';
+			link = '[ FORWARDED TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '"' +isInComment+ ' in ' +jsonData.tmailNum+ ' in THREAD "' +jsonData.tmailSubject+ '", ' +url+' ]';
+		}
+		
 		return (
 			<div className={headerCls}>
 				{this.props.items.newItem ? null : <TaskCollapseArrow items={this.props.items} keyVal={this.props.keyVal} mode={this.props.mode} divId={this.props.divId} taskNum={this.props.taskNum} storeId={storeId} slideTask={this.props.slideTask} toggleTaskIndex={this.props.toggleTaskIndex} />}
@@ -419,12 +474,25 @@ var TaskListsCompHeader = createReactClass({
 					<div className="taskId">
 						<span name={"task-number-"+this.props.items.index} className={newItem ? 'newTask content-id header-task-number' : 'content-id header-task-number'}>#{newItem ? "New" : this.props.items.taskNumber}</span>
 					</div>
+					{
+						!isMobile() && !newItem && jsonData.mailboxType != 'draft' ? (
+							<div style={{left: '-34px', position: 'absolute', top: '1px'}}>
+								<span className="copied-span hidden">Task Link Copied</span>
+								<div name={"task-number-header-copy-"+this.props.items.index} className="copy-task-link-menu" title="Copy Task Link" data-clipboard-text={link}></div>
+							</div>
+						) : null
+					}
 					{diffHtml}
 				</div>
 				<div className={"title-outter " + titleOutter} style={{display: style}}>
-					<h4 className="task-header-title panel-title"> 
-						{this.props.items.title}
-					</h4>
+					{
+						isMobile() && !newItem && jsonData.mailboxType != 'draft' ? (
+							<div style={{position: 'relative', cursor: 'pointer'}}>
+								<span className="copied-mobile-span copied-span hidden">Task Link Copied</span>
+								<h4 className="task-header-title panel-title copy-task-link-mobile-menu" data-clipboard-text={link}> {this.props.items.title} </h4>
+							</div>
+						) : <h4 className="task-header-title panel-title"> {this.props.items.title} </h4>
+					}
 				</div>
 				{(isDiffSection && typeof this.props.items.diffOpType != 'undefined' && this.props.items.diffOpType == 'DELETED') || (typeof this.props.items.isFromChecklist != 'undefined' && this.props.items.isFromChecklist == true && this.props.isChecklist == true) ? null : 
 					<TaskPriorityHeader priority={this.props.items.priority} mode={this.props.mode} keyVal={this.props.keyVal} items={this.props.items} taskNum={this.props.taskNum} storeId={storeId} slideTask={this.props.slideTask} toggleTaskIndex={this.props.toggleTaskIndex} />

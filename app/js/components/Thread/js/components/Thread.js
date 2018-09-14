@@ -85,7 +85,7 @@ export default class Thread extends React.Component {
                     <div className="header-rhs">
                         {
                             this.state.inCompatibleEvidence === true ? (
-                                <div title={"Warning: The schema version is "+headerData.firstSacSchemaVersion+" and this app only supports "+Constants.default.supportedSchema+". The thread may not render properly. You should use the latest version of this CertProof App."} className="incompatible-evidence">Unsupported Schema</div>
+                                <div title={"Warning: The schema version is "+headerData.firstSacSchemaVersion+" and this app only supports "+Constants.default.supportedSchemaVersions.current+". The thread may not render properly. You should use the latest version of this CertProof App."} className="incompatible-evidence">Unsupported Schema</div>
                             ) : null
                         }
                         {
@@ -144,13 +144,13 @@ export default class Thread extends React.Component {
         this.__toggle = !this.__toggle;
         var target = document.getElementsByClassName(el)[0];
         if( this.__toggle) {
-            document.getElementsByClassName("col")[0].className = "exp";
+            document.getElementsByClassName("colt")[0].className = "expt";
             target.style.height = target.scrollHeight+"px";
             setTimeout(function(){
-                document.getElementsByClassName("more")[0].scrollTop = 100;
+                document.getElementsByClassName("more")[1].scrollTop = 100;
             }, 500);
         } else {
-            document.getElementsByClassName("exp")[0].className = "col";
+            document.getElementsByClassName("expt")[0].className = "colt";
             target.style.height = 0;
         }
     }
@@ -232,7 +232,7 @@ export default class Thread extends React.Component {
             });
             forwardedCommentHtml = <div className="forwarded-container">
                 <div className="more">
-                    <div className="col" onClick={this.toggleSlider.bind(this, "hide-forwarded-container")}>
+                    <div className="colt" onClick={this.toggleSlider.bind(this, "hide-forwarded-container")}>
                         {
                             isCertifiedForward ? (
                                 <span>
@@ -262,7 +262,7 @@ export default class Thread extends React.Component {
             supportErrorCode = e.name;
             switch(e.name){
                 case "1006":
-                    supportMessage = "Warning: The evidence file contains information older than incremental schema version v"+headerData.sacSchemaVersion+" which is not supported in this version of the app (app version v"+process.env.npm_package_version+").";
+                    supportMessage = "Warning: The evidence file contains information older than incremental schema version v"+Constants.default.supportedSchemaVersions.current+" which is not supported in this version of the app (app version v"+process.env.npm_package_version+").";
                 break;
                 case "1026":
                     supportMessage = "Warning: The evidence file contains information in a pre-production format which is no longer supported.";

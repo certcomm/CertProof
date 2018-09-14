@@ -31,6 +31,16 @@ var CommonMixin = {
 			return (this.Android() || this.BlackBerry() || this.iOS() || this.Opera() || this.Windows());
 		}
 	},
+	isInViewport: function(element){
+		var rect = element.getBoundingClientRect();
+		var html = document.documentElement;
+		return (
+			rect.top >= 0 &&
+			rect.left >= 0 &&
+			rect.bottom <= (window.innerHeight || html.clientHeight) &&
+			rect.right <= (window.innerWidth || html.clientWidth)
+		);
+	},
 	confirmBox: function(title, message, cb, config){
 		var me = this;
 		Global.callMe("open");
@@ -950,7 +960,7 @@ var CommonMixin = {
 									$(ccD).find("[name='"+dataJson.name+"']").parents(".handle-sortable").find(".form-element-box").attr("data-json", JSON.stringify(dataJson));
 									
 									// should unmount first before re-render
-									ReactDOM.unmountComponentAtNode(document.getElementById("tabs-content-panel-1"));
+									//ReactDOM.unmountComponentAtNode(document.getElementById("tabs-content-panel-1"));
 									
 									ReactDOM.render(
 										<FieldAttributesElements fieldProp={true} cmpId={cmpId} dataJson={JSON.stringify(dataJson)} formMode="edit" formInfo={formInfo} />, document.getElementById("tabs-content-panel-1")

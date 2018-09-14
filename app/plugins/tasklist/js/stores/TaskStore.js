@@ -56,24 +56,29 @@ function updateData(key, indexName, indexValue, storeId) {
 	/*if(_taskData[storeId].taskables[key]["type"] == "DIVIDER"){
 		addedTask = false;
 	}*/
-	_taskData[storeId].taskables[key][indexName] = indexValue;
-	if(typeof _taskData[storeId].taskables[key].shouldUpdateHeader != "undefined") { // for header panel
-		delete _taskData[storeId].taskables[key].shouldUpdateHeader;
-	}
-	if(typeof _taskData[storeId].updateComponent != "undefined") { // for progress bar
-		delete _taskData[storeId].updateComponent;
-	}
-	if(indexName == "title") {
-		if(_taskData[storeId].taskables[key]["title"] == ""){
-			_taskData[storeId].taskables[key].isTitleEmpty = true;
-			_taskData[storeId].isValidationIssue = true;
-		} else {
-			delete _taskData[storeId].taskables[key].isTitleEmpty;
-			delete _taskData[storeId].isValidationIssue;
+	if(key == "Null" && indexName == "taskNum"){
+		_taskData[storeId].taskNum = indexValue;
+		_taskData[storeId].expandTask = true;
+	}else{
+		_taskData[storeId].taskables[key][indexName] = indexValue;
+		if(typeof _taskData[storeId].taskables[key].shouldUpdateHeader != "undefined") { // for header panel
+			delete _taskData[storeId].taskables[key].shouldUpdateHeader;
 		}
-	}
-	if(indexName == "title" || indexName == "assignees" || indexName == "state" || indexName == "requester") {
-		_taskData[storeId].taskables[key].shouldUpdateHeader = true;
+		if(typeof _taskData[storeId].updateComponent != "undefined") { // for progress bar
+			delete _taskData[storeId].updateComponent;
+		}
+		if(indexName == "title") {
+			if(_taskData[storeId].taskables[key]["title"] == ""){
+				_taskData[storeId].taskables[key].isTitleEmpty = true;
+				_taskData[storeId].isValidationIssue = true;
+			} else {
+				delete _taskData[storeId].taskables[key].isTitleEmpty;
+				delete _taskData[storeId].isValidationIssue;
+			}
+		}
+		if(indexName == "title" || indexName == "assignees" || indexName == "state" || indexName == "requester"  || indexName == "description" || indexName == "priority") {
+			_taskData[storeId].taskables[key].shouldUpdateHeader = true;
+		}
 	}
 	if(indexName == "state") {
 		_taskData[storeId].updateComponent = true;
@@ -174,13 +179,11 @@ function slideTaskAndCheckTitle(slideId, arrowId) {
 		$(arrowId).addClass('glyphicon-chevron-right');
 	}
 }
-
 function slideTaskToggle(key, storeId, view) {
-		_taskData[storeId].toggleTaskIndex = !view ? -1 : key;
-		_taskData[storeId].slideTask = view;
-		_taskData[storeId].taskables[key].shouldUpdateHeader = true;
+	_taskData[storeId].toggleTaskIndex = !view ? -1 : key;
+	_taskData[storeId].slideTask = view;
+	_taskData[storeId].taskables[key].shouldUpdateHeader = true;
 }
-
 function tasksSortBy(sortBy, storeId) {
 	if(typeof _taskData[storeId].sortData != "undefined" && (sortBy != "" || sortBy != "manual")) {
 		var newData = [];
@@ -200,6 +203,11 @@ var TaskStore = _.extend({}, EventEmitter.prototype, {
 	getData: function(storeId) {
 		// if filterBy not set then it should be openTasks by default
 		if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "openTasks";
+
+		if(_taskData[storeId].taskNum > 0 && _taskData[storeId].taskNum != undefined && _taskData[storeId].taskNum != null && _taskData[storeId].taskNum != "undefined" && _taskData[storeId].taskNum != "null" && _taskData[storeId].taskNum != ""){
+			_taskData[storeId].filterBy = "all";
+			// delete _taskData[storeId].taskNum;
+		}
 		
 		return _taskData[storeId];
 	},

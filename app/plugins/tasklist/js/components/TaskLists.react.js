@@ -30,6 +30,7 @@ var TaskLists = createReactClass({
 		var storeId = this.state.storeId;
 		var divId = this.state.divId;
 		var arr = [];
+		var isOpenInMobile = isMobile();
 		var slideDivs = function(me, viewMode) {
 			$(me).parent().parent().parent().parent().find('textarea.autoAdjust').each(function() {
 				if(viewMode)
@@ -55,12 +56,18 @@ var TaskLists = createReactClass({
 			uniqueVals.map(function(val, key){
 				var imgPath = '';
 				if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-					imgPath = '/main/images/role_human.jpg'; 
+					if(isOpenInMobile)
+						imgPath = './role_human.jpg'; 
+					else 
+						imgPath = '/main/images/role_human.jpg'; 
 				} else {
 					if(val.profileImageUri && val.profileImageUri != '') {
 						imgPath = val.profileImageUri;
 					} else {
-						imgPath = '/main/images/no_image.jpg';
+						if(isOpenInMobile)
+							imgPath = './no_image.jpg';
+						else 
+							imgPath = '/main/images/no_image.jpg';
 					}
 				}
 				var hoverHTML = '<img src="'+imgPath+'" class="hc-pic" />'

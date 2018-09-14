@@ -51,7 +51,7 @@ var ChoiceOption = createReactClass({
 				optionTitle = "This option is default selected";
 			}
 			
-			return <div key={"c1"+index} className="float-left margin-right">
+			return <div key={"c1"+index} className={"float-left margin-right "+(index == 1 ? me.props.elComponent.optionValClsName : "")}>
 				<div key={"c2"+index} className={clsName+" float-left form-field-label"}>
 					<label key={"c3"+index} name={me.props.elComponent.name[index]+"-label"} className={"r-form-el-label " + ((me.props.clsName)?me.props.clsName:"")} style={me.props.elComponent.labelStyle}>
 						{me.props.elComponent.label}<b>:</b>
@@ -79,7 +79,7 @@ var ChoiceOption = createReactClass({
 		});
 		
 		return(
-			<div className={"form-element-box float-left "+this.props.elComponent.ctClsName} data-json={JSON.stringify(this.props.elComponent)}>
+			<div className={"form-element-box choice-wrapper float-left clear "+this.props.elComponent.ctClsName} data-json={JSON.stringify(this.props.elComponent)}>
 				{optionChoiceItems}
 				{}
 				<div name={me.props.elComponent.name[0]+"_errorMsg"} className={me.props.elComponent.name[0]+"_errorMsg error-message"}></div>

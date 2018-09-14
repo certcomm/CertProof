@@ -176,7 +176,7 @@ var Chosen = createReactClass({
 });
 module.exports = Chosen;
 
-},{"create-react-class":17,"react":"react","react-dom":"react-dom"}],4:[function(require,module,exports){
+},{"create-react-class":18,"react":"react","react-dom":"react-dom"}],4:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactDOM = require('react-dom');
@@ -471,9 +471,9 @@ var ShowOpenTaskToggle = createReactClass({  // hide accepted and nla
 	render: function(){
 		var disabled = false;
 		var hasModifiedTasks = false;
-		//if(this.props.items.length < 2) {
-		//	disabled = true;
-		//}
+		// if(this.props.items.length < 2) {
+		// 	disabled = true;
+		// }
 		if(this.props.items.length <= 0) {
 			return null;
 		} else {
@@ -609,7 +609,7 @@ var TaskApp = createReactClass({
 		var writersCount = 0;
 		var me = this;
 		var currentUser = this.state.currentUser;
-		var taskNum = this.state.taskNum;
+		var taskNum = taskData.taskNum ? taskData.taskNum : this.state.taskNum;
 		var storeId = this.state.storeId;
 		var existCurrentUser = false;
 		/*for template mode checklist -- start*/
@@ -706,8 +706,11 @@ var TaskApp = createReactClass({
 			taskData.slideTask = true;
 		}
 		
-		if(this.state.expandTask){
+		if(this.state.expandTask || taskData.expandTask){
+			var tt = (taskData.expandTask) ? 1000 : 0;
+
 			this.state.expandTask = false;
+			taskData.expandTask = false;
 			var clonedTasks = JSON.parse(JSON.stringify(taskData));
 
 			var taskSelectedIndex = -1;
@@ -718,7 +721,9 @@ var TaskApp = createReactClass({
 				}
 			});
 			
-			if(taskSelectedIndex != -1) TaskActions.slideTaskToggle(taskSelectedIndex, storeId, true);
+			setTimeout(function(){
+				if(taskSelectedIndex != -1) TaskActions.slideTaskToggle(taskSelectedIndex, storeId, true);
+			}, tt);
 		}
 
 		return (
@@ -745,7 +750,7 @@ var TaskApp = createReactClass({
 });
 module.exports = TaskApp;
 
-},{"../actions/TaskActions":1,"../stores/TaskStore":12,"../stores/WritersStore":13,"../stores/favWritersStore":14,"../utils/TaskAPI":15,"./ReactChosen.react":3,"./TaskLists.react":6,"create-react-class":17,"react":"react","react-dom":"react-dom"}],5:[function(require,module,exports){
+},{"../actions/TaskActions":1,"../stores/TaskStore":12,"../stores/WritersStore":13,"../stores/favWritersStore":14,"../utils/TaskAPI":15,"./ReactChosen.react":3,"./TaskLists.react":6,"create-react-class":18,"react":"react","react-dom":"react-dom"}],5:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 var TaskActions = require('../actions/TaskActions');
@@ -790,7 +795,7 @@ var TaskCollapseArrow = createReactClass({
 });
 module.exports = TaskCollapseArrow;
 
-},{"../actions/TaskActions":1,"../stores/TaskStore":12,"create-react-class":17,"react":"react"}],6:[function(require,module,exports){
+},{"../actions/TaskActions":1,"../stores/TaskStore":12,"create-react-class":18,"react":"react"}],6:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 var TaskListsComp = require('./TaskListsComp.react');
@@ -823,6 +828,7 @@ var TaskLists = createReactClass({
 		var storeId = this.state.storeId;
 		var divId = this.state.divId;
 		var arr = [];
+		var isOpenInMobile = isMobile();
 		var slideDivs = function(me, viewMode) {
 			$(me).parent().parent().parent().parent().find('textarea.autoAdjust').each(function() {
 				if(viewMode)
@@ -848,12 +854,18 @@ var TaskLists = createReactClass({
 			uniqueVals.map(function(val, key){
 				var imgPath = '';
 				if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-					imgPath = '/main/images/role_human.jpg'; 
+					if(isOpenInMobile)
+						imgPath = './role_human.jpg'; 
+					else 
+						imgPath = '/main/images/role_human.jpg'; 
 				} else {
 					if(val.profileImageUri && val.profileImageUri != '') {
 						imgPath = val.profileImageUri;
 					} else {
-						imgPath = '/main/images/no_image.jpg';
+						if(isOpenInMobile)
+							imgPath = './no_image.jpg';
+						else 
+							imgPath = '/main/images/no_image.jpg';
 					}
 				}
 				var hoverHTML = '<img src="'+imgPath+'" class="hc-pic" />'
@@ -1147,11 +1159,12 @@ var TaskLists = createReactClass({
 });
 module.exports = TaskLists;
 
-},{"../actions/TaskActions":1,"../stores/TaskStore":12,"./TaskListsComp.react":7,"create-react-class":17,"react":"react"}],7:[function(require,module,exports){
+},{"../actions/TaskActions":1,"../stores/TaskStore":12,"./TaskListsComp.react":7,"create-react-class":18,"react":"react"}],7:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactDOM = require('react-dom');
 var Popover = require('react-awesome-popover');
+var ClipboardJS = require('clipboard/dist/clipboard.min');
 
 var TaskListsCompHeader = require('./TaskListsCompHeader.react');
 var TaskStateReadViewHtml = require('./TaskStateReadViewHtml.react');
@@ -1203,7 +1216,7 @@ var TaskTitle = createReactClass({
 			return (
 				React.createElement("div", {className: "mb-10 titleBar-outter"}, 
 					React.createElement("div", {className: "hiddenDivTextarea title", style: {padding: "10px 0px"}}, state.title), 
-					React.createElement("textarea", {defaultValue: state.title, className: state.items.newItem ? "autoAdjust readText titleBar hideIcon" : "autoAdjust readText titleBar", readOnly: true}), 
+					React.createElement("textarea", {name: 'task-title-'+this.props.items.index, defaultValue: state.title, className: state.items.newItem ? "autoAdjust readText titleBar hideIcon" : "autoAdjust readText titleBar", readOnly: true}), 
 					diffHtml
 				)
 			)
@@ -1244,16 +1257,23 @@ var TaskRequester = createReactClass({
 	},
 	componentDidMount: function(){
 		//
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile)
+					imgPath = './role_human.jpg'; 
+				else 
+					imgPath = '/main/images/role_human.jpg'; 
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile)
+						imgPath = './no_image.jpg';
+					else 
+						imgPath = '/main/images/no_image.jpg';
 				}
 			}
 			if(val.address == me.state.requester && val.initial) {
@@ -1289,7 +1309,7 @@ var TaskRequester = createReactClass({
 				})
 			}
 			return (
-				React.createElement("div", null, 
+				React.createElement("div", {id: "requester-container-"+me.state.keyVal, name: "requester-container-"+me.state.keyVal}, 
 					
 						name == "" ? null : React.createElement("span", {className: "requesters", "data-title-colps-requester": requester, "data-title": requester, key: "reqs"+key}, React.createElement("span", null, name))
 					
@@ -1338,16 +1358,23 @@ var TaskAssignees = createReactClass({
 	},
 	componentDidMount: function(){
 		//
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile)
+					imgPath = './role_human.jpg'; 
+				else 
+					imgPath = '/main/images/role_human.jpg'; 
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile)
+						imgPath = './no_image.jpg';
+					else 
+						imgPath = '/main/images/no_image.jpg';
 				}
 			}
 			me.state.assignees.map(function(assigneeVal,assigneeKey) {
@@ -1452,7 +1479,7 @@ var TaskState = createReactClass({
 			}
 		
 		
-			return React.createElement("div", null, html);
+			return React.createElement("div", {name: "state-container-"+state.items.index}, html);
 		}
 });
 var TaskPriority = createReactClass({
@@ -1478,20 +1505,20 @@ var TaskPriority = createReactClass({
 		
 		switch(taskPriority){
 				case 'High':
-					html = React.createElement("div", {title: "High Priority", className: "btn-info-high btn-info-selected"});
+					html = React.createElement("div", {"data-value": "High", title: "High Priority", className: "btn-info-high btn-info-selected"});
 				break;
 				case 'Medium':
-					html = React.createElement("div", {title: "Medium Priority", className: "btn-info-medium btn-info-selected"});
+					html = React.createElement("div", {"data-value": "Medium", title: "Medium Priority", className: "btn-info-medium btn-info-selected"});
 				break;
 				case 'Low':
-					html = React.createElement("div", {title: "Low Priority", className: "btn-info-low btn-info-selected"});
+					html = React.createElement("div", {"data-value": "Low", title: "Low Priority", className: "btn-info-low btn-info-selected"});
 				break;
 				default:
 				case 'NoPrioritySet':
-					html = React.createElement("div", {title: "No Priority Set", className: "btn-info-low-no btn-info-selected"});
+					html = React.createElement("div", {"data-value": "NoPrioritySet", title: "No Priority Set", className: "btn-info-low-no btn-info-selected"});
 				break;
 			}
-			return React.createElement("div", {className: "pull-right"}, html);
+			return React.createElement("div", {className: "pull-right", name: "priority-container-"+state.items.index}, html);
 		
 		}
 });
@@ -1556,7 +1583,7 @@ var TaskDescription = createReactClass({
 			return (
 				React.createElement("div", {className: "description", id: "description"+this.state.items.taskNumber}, 
 					React.createElement("div", {className: "hiddenDivTextarea desc", style: {padding: "10px 0px"}}, description), 
-					React.createElement("textarea", {className: "readText autoAdjust", ref: "description", defaultValue: description, readOnly: true}), 
+					React.createElement("textarea", {name: 'task-description-'+state.items.index, className: "readText autoAdjust", ref: "description", defaultValue: description, readOnly: true}), 
 					diffHtml
 				)
 			)
@@ -1574,6 +1601,23 @@ var TaskTypeRequest = createReactClass({
 		return ({writersObj: writersObj, allWriters: this.props.allWriters});
 	},
 	componentDidMount: function() {
+		this.bindClipBoard(".copy-task-ex-link-menu");
+		this.bindClipBoard(".copy-task-ex-mobile-link-menu");
+	},
+	bindClipBoard: function(el){
+		var clipboard = new ClipboardJS(el);
+		clipboard.on('success', function(e) {
+			$(e.trigger).parent("div").find("span.copied-span").show();
+			setTimeout(function(){
+				$(e.trigger).parent("div").find("span.copied-span").hide();
+			}, 2000);
+			e.clearSelection();
+		});
+		
+		clipboard.on('error', function(e) {
+			console.error('Action:', e.action);
+			console.error('Trigger:', e.trigger);
+		});
 	},
 	render: function(){
 		var me = this;
@@ -1686,15 +1730,40 @@ var TaskTypeRequest = createReactClass({
 			}
 
 		if(isEnabled) {
+			var jsonData = TaskStore.getData(this.props.storeId),
+				tnum = this.props.items.taskNumber,
+				ttitle = encodeURI(this.props.items.title);
+			
+			var url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+'#task='+jsonData.secNum+':'+tnum,
+				link = '[ TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '" in THREAD "' +jsonData.tmailSubject+ '", ' +url+ ' ]';
+			
+			if(jsonData.mailboxType == 'forward'){
+				url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+"#forwarded-task="+jsonData.fwdtmailNum+":"+jsonData.secNum+":"+tnum;
+				var isInComment = jsonData.cnum ? ' in FORWARDED COMMENT ' +jsonData.cnum : ' ';
+				link = '[ FORWARDED TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '"' +isInComment+ ' in ' +jsonData.tmailNum+ ' in THREAD "' +jsonData.tmailSubject+ '", ' +url+' ]';
+			}
+
 			return (
 				React.createElement("div", {className: (this.props.items.newItem || (typeof this.props.toggleTaskIndex != "undefined" && this.props.items.index == this.props.toggleTaskIndex && this.props.slideTask)  ? 'impBackgroundFFF ' : ' ')+outterCls, key: this.props.propKey}, 
 					React.createElement(TaskListsCompHeader, {items: this.props.items, mode: this.props.mode, keyVal: this.props.keyVal, allWriters: this.props.allWriters, writers: this.props.writers, currentUser: this.props.currentUser, divId: this.props.divId, taskNum: this.props.taskNum, storeId: storeId, favWriters: this.props.favWriters, isChecklist: this.props.isChecklist, slideTask: this.props.slideTask, toggleTaskIndex: this.props.toggleTaskIndex}), 
 					React.createElement("div", {id: this.props.divId+'_collapse_' + this.props.mode + this.props.items.index, className: className, style: {display: style}}, 
 						React.createElement("div", {className: "panel-body"}, 
 							React.createElement(TaskTitle, {items: this.props.items, mode: this.props.mode, keyVal: this.props.keyVal, storeId: storeId}), 
-							React.createElement("div", {className: "mb-6 taskNumber"+this.props.mode == 'read' || this.props.mode == 'readSort' ? 'hiddenDelBtn' : '', style: {float: 'left', clear: 'both'}}, 
+							React.createElement("div", {className: "mb-6 taskNumber"+this.props.mode == 'read' || this.props.mode == 'readSort' ? 'hiddenDelBtn' : ''+(isMobile() && !newItem && jsonData.mailboxType != 'draft' ? "copy-task-ex-mobile-link-menu" : ""), style: {float: 'left', clear: 'both', position: 'relative', cursor: (isMobile() && !newItem && jsonData.mailboxType != 'draft' ? 'pointer' : 'auto')}, "data-clipboard-text": link}, 
 								React.createElement("span", {className: "content-id label-cls"}, "Task Number"), 
-								React.createElement("span", {name: "task-number-"+this.props.items.index, className: newItem ? "taskId content-id newTask taskNumber" : "taskId content-id taskNumber"}, "#", newItem ? "New" : this.props.items.taskNumber)
+								React.createElement("span", {name: "task-number-"+this.props.items.index, className: newItem ? "taskId content-id newTask taskNumber" : "taskId content-id taskNumber"}, "#", newItem ? "New" : this.props.items.taskNumber), 
+								
+									!newItem && jsonData.mailboxType != 'draft' ? (
+										React.createElement("div", {style: {float: "left", position: "relative", width: "20px"}}, 
+											React.createElement("span", {className: "copied-span copied-span-ex hidden"}, "Task Link Copied"), 
+											
+												!isMobile() ? (
+													React.createElement("div", {name: "task-number-copy-"+this.props.items.index, className: "copy-task-ex-link-menu", title: "Copy Task Link", "data-clipboard-text": link})
+												) : null
+											
+										)
+									) : null
+								
 								
 							), 
 							
@@ -1885,15 +1954,18 @@ var TaskListsComp = createReactClass({
 });
 module.exports = TaskListsComp;
 
-},{"../actions/TaskActions":1,"../actions/WritersActions":2,"../stores/TaskStore":12,"./ReactChosen.react":3,"./TaskCollapseArrow.react":5,"./TaskListsCompHeader.react":8,"./TaskStateReadViewHtml.react":9,"create-react-class":17,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],8:[function(require,module,exports){
+},{"../actions/TaskActions":1,"../actions/WritersActions":2,"../stores/TaskStore":12,"./ReactChosen.react":3,"./TaskCollapseArrow.react":5,"./TaskListsCompHeader.react":8,"./TaskStateReadViewHtml.react":9,"clipboard/dist/clipboard.min":16,"create-react-class":18,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],8:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 var ReactDOM = require('react-dom');
 var Popover = require('react-awesome-popover');	
+var ClipboardJS = require('clipboard/dist/clipboard.min');
 
 var TaskStateReadViewHtml = require('./TaskStateReadViewHtml.react');
 var TaskCollapseArrow = require('./TaskCollapseArrow.react');
 var WritersStore = require('../stores/WritersStore');
+var TaskStore = require('../stores/TaskStore');
+
 function getWriters() {
 	return WritersStore.getData();
 }
@@ -1917,16 +1989,25 @@ var TaskRequester = createReactClass({
 		} 
 	},
 	componentDidUpdate: function(){
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile){
+					imgPath = './role_human.jpg'; 
+				}else {
+					imgPath = '/main/images/role_human.jpg'; 
+				}
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile) {
+						imgPath = './no_image.jpg';
+					} else {
+						imgPath = '/main/images/no_image.jpg';
+					}
 				}
 			}
 			if(val.address == me.props.requester && val.initial) {
@@ -1984,16 +2065,23 @@ var TaskAssignees = createReactClass({
 		}
 	},
 	componentDidUpdate: function(){
-		var me = this;
+		var me = this,
+			isOpenInMobile = isMobile();
 		this.state.allWriters.map(function(val, key){
 			var imgPath = '';
 			if(val.type == 'role' && typeof val.profileImageUri == "undefined") {
-				imgPath = '/main/images/role_human.jpg'; 
+				if(isOpenInMobile)
+					imgPath = './role_human.jpg'; 
+				else	
+					imgPath = '/main/images/role_human.jpg'; 
 			} else {
 				if(val.profileImageUri && val.profileImageUri != '') {
 					imgPath = val.profileImageUri;
 				} else {
-					imgPath = '/main/images/no_image.jpg';
+					if(isOpenInMobile)
+						imgPath = './no_image.jpg';
+					else 
+						imgPath = '/main/images/no_image.jpg';
 				}
 			}
 			me.state.assignees.map(function(assigneeVal,assigneeKey) {
@@ -2015,9 +2103,13 @@ var TaskAssignees = createReactClass({
 		if(this.state.mode == "template") {
 			return false;
 		}
+		/*		Commented 02052018 (if user removed one writer and added newer then count should be same but it will not update)		*/
+		/*
 		if(ReactDOM.findDOMNode(this.refs["header-assignees"]).getAttribute('assigneesCount') == nextState.assignees.length) {
 			return false;
 		}
+		*/
+		/*		Commented 02052018		*/
 		return true;
 	},
 	render: function() {
@@ -2086,17 +2178,17 @@ var TaskPriorityHeader = createReactClass({
 		
 		switch(priority){
 			case 'High':
-				html = React.createElement("div", {title: "High Priority", className: "btn-info-high btn-info-selected"});
+				html = React.createElement("div", {"data-value": "High", title: "High Priority", className: "btn-info-high btn-info-selected"});
 			break;
 			case 'Medium':
-				html = React.createElement("div", {title: "Medium Priority", className: "btn-info-medium btn-info-selected"});
+				html = React.createElement("div", {"data-value": "Medium", title: "Medium Priority", className: "btn-info-medium btn-info-selected"});
 			break;
 			case 'Low':
-				html = React.createElement("div", {title: "Low Priority", className: "btn-info-low btn-info-selected"});
+				html = React.createElement("div", {"data-value": "Low", title: "Low Priority", className: "btn-info-low btn-info-selected"});
 			break;
 			default:
 			/*case 'NoPrioritySet':
-				html = <div title="No Priority Set" className="btn-info-low-no btn-info-selected"></div>;*/
+				html = <div data-value="NoPrioritySet" title="No Priority Set" className="btn-info-low-no btn-info-selected"></div>;*/
 			break;
 		}
 		
@@ -2119,6 +2211,25 @@ var TaskPriorityHeader = createReactClass({
 var TaskListsCompHeader = createReactClass({
 	getInitialState: function() {
 		return ({open: false});
+	},
+	componentDidMount: function() {
+		this.bindClipBoard(".copy-task-link-menu");
+		this.bindClipBoard(".copy-task-link-mobile-menu");
+	},
+	bindClipBoard: function(el){
+		var clipboard = new ClipboardJS(el);
+		clipboard.on('success', function(e) {
+			$(e.trigger).parent("div").find("span.copied-span").show();
+			setTimeout(function(){
+				$(e.trigger).parent("div").find("span.copied-span").hide();
+			}, 2000);
+			e.clearSelection();
+		});
+		
+		clipboard.on('error', function(e) {
+			console.error('Action:', e.action);
+			console.error('Trigger:', e.trigger);
+		});
 	},
 	shouldComponentUpdate: function(nextProps, nextState, nextContext) {
 		var updateHeader = (this.props.items.shouldUpdateHeader || this.props.items.diffOpType) ? true : false;
@@ -2299,6 +2410,19 @@ var TaskListsCompHeader = createReactClass({
 			
 			}
 
+		var jsonData = TaskStore.getData(this.props.storeId),
+			tnum = this.props.items.taskNumber,
+			ttitle = encodeURI(this.props.items.title);
+
+		var url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+'#task='+jsonData.secNum+':'+tnum,
+			link = '[ TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '" in THREAD "' +jsonData.tmailSubject+ '", ' +url+ ' ]';
+		
+		if(jsonData.mailboxType == 'forward'){
+			url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+"#forwarded-task="+jsonData.fwdtmailNum+":"+jsonData.secNum+":"+tnum;
+			var isInComment = jsonData.cnum ? ' in FORWARDED COMMENT ' +jsonData.cnum : ' ';
+			link = '[ FORWARDED TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '"' +isInComment+ ' in ' +jsonData.tmailNum+ ' in THREAD "' +jsonData.tmailSubject+ '", ' +url+' ]';
+		}
+		
 		return (
 			React.createElement("div", {className: headerCls}, 
 				this.props.items.newItem ? null : React.createElement(TaskCollapseArrow, {items: this.props.items, keyVal: this.props.keyVal, mode: this.props.mode, divId: this.props.divId, taskNum: this.props.taskNum, storeId: storeId, slideTask: this.props.slideTask, toggleTaskIndex: this.props.toggleTaskIndex}), 
@@ -2307,12 +2431,25 @@ var TaskListsCompHeader = createReactClass({
 					React.createElement("div", {className: "taskId"}, 
 						React.createElement("span", {name: "task-number-"+this.props.items.index, className: newItem ? 'newTask content-id header-task-number' : 'content-id header-task-number'}, "#", newItem ? "New" : this.props.items.taskNumber)
 					), 
+					
+						!isMobile() && !newItem && jsonData.mailboxType != 'draft' ? (
+							React.createElement("div", {style: {left: '-34px', position: 'absolute', top: '1px'}}, 
+								React.createElement("span", {className: "copied-span hidden"}, "Task Link Copied"), 
+								React.createElement("div", {name: "task-number-header-copy-"+this.props.items.index, className: "copy-task-link-menu", title: "Copy Task Link", "data-clipboard-text": link})
+							)
+						) : null, 
+					
 					diffHtml
 				), 
 				React.createElement("div", {className: "title-outter " + titleOutter, style: {display: style}}, 
-					React.createElement("h4", {className: "task-header-title panel-title"}, 
-						this.props.items.title
-					)
+					
+						isMobile() && !newItem && jsonData.mailboxType != 'draft' ? (
+							React.createElement("div", {style: {position: 'relative', cursor: 'pointer'}}, 
+								React.createElement("span", {className: "copied-mobile-span copied-span hidden"}, "Task Link Copied"), 
+								React.createElement("h4", {className: "task-header-title panel-title copy-task-link-mobile-menu", "data-clipboard-text": link}, " ", this.props.items.title, " ")
+							)
+						) : React.createElement("h4", {className: "task-header-title panel-title"}, " ", this.props.items.title, " ")
+					
 				), 
 				(isDiffSection && typeof this.props.items.diffOpType != 'undefined' && this.props.items.diffOpType == 'DELETED') || (typeof this.props.items.isFromChecklist != 'undefined' && this.props.items.isFromChecklist == true && this.props.isChecklist == true) ? null : 
 					React.createElement(TaskPriorityHeader, {priority: this.props.items.priority, mode: this.props.mode, keyVal: this.props.keyVal, items: this.props.items, taskNum: this.props.taskNum, storeId: storeId, slideTask: this.props.slideTask, toggleTaskIndex: this.props.toggleTaskIndex}), 
@@ -2349,7 +2486,7 @@ var TaskListsCompHeader = createReactClass({
 });
 module.exports = TaskListsCompHeader;
 
-},{"../stores/WritersStore":13,"./TaskCollapseArrow.react":5,"./TaskStateReadViewHtml.react":9,"create-react-class":17,"react":"react","react-awesome-popover":26,"react-dom":"react-dom"}],9:[function(require,module,exports){
+},{"../stores/TaskStore":12,"../stores/WritersStore":13,"./TaskCollapseArrow.react":5,"./TaskStateReadViewHtml.react":9,"clipboard/dist/clipboard.min":16,"create-react-class":18,"react":"react","react-awesome-popover":27,"react-dom":"react-dom"}],9:[function(require,module,exports){
 var React = require('react');
 var createReactClass = require('create-react-class');
 var TaskStateReadViewHtml = createReactClass({
@@ -2391,7 +2528,7 @@ var TaskStateReadViewHtml = createReactClass({
 });
 module.exports = TaskStateReadViewHtml;
 
-},{"create-react-class":17,"react":"react"}],10:[function(require,module,exports){
+},{"create-react-class":18,"react":"react"}],10:[function(require,module,exports){
 var keyMirror = require('fbjs/lib/keyMirror');
 // Define action constants
 module.exports = keyMirror({
@@ -2414,7 +2551,8 @@ module.exports = keyMirror({
 	TASKS_FILTER_BY: null,
 	TASK_SLIDE_TOGGLE: null
 });
-},{"fbjs/lib/keyMirror":22}],11:[function(require,module,exports){
+
+},{"fbjs/lib/keyMirror":23}],11:[function(require,module,exports){
 var Dispatcher = require('flux').Dispatcher;
 
 // Create dispatcher instance
@@ -2429,6 +2567,7 @@ AppDispatcher.handleAction = function(action) {
 }
 
 module.exports = AppDispatcher;
+
 },{"flux":"flux"}],12:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
@@ -2488,24 +2627,29 @@ function updateData(key, indexName, indexValue, storeId) {
 	/*if(_taskData[storeId].taskables[key]["type"] == "DIVIDER"){
 		addedTask = false;
 	}*/
-	_taskData[storeId].taskables[key][indexName] = indexValue;
-	if(typeof _taskData[storeId].taskables[key].shouldUpdateHeader != "undefined") { // for header panel
-		delete _taskData[storeId].taskables[key].shouldUpdateHeader;
-	}
-	if(typeof _taskData[storeId].updateComponent != "undefined") { // for progress bar
-		delete _taskData[storeId].updateComponent;
-	}
-	if(indexName == "title") {
-		if(_taskData[storeId].taskables[key]["title"] == ""){
-			_taskData[storeId].taskables[key].isTitleEmpty = true;
-			_taskData[storeId].isValidationIssue = true;
-		} else {
-			delete _taskData[storeId].taskables[key].isTitleEmpty;
-			delete _taskData[storeId].isValidationIssue;
+	if(key == "Null" && indexName == "taskNum"){
+		_taskData[storeId].taskNum = indexValue;
+		_taskData[storeId].expandTask = true;
+	}else{
+		_taskData[storeId].taskables[key][indexName] = indexValue;
+		if(typeof _taskData[storeId].taskables[key].shouldUpdateHeader != "undefined") { // for header panel
+			delete _taskData[storeId].taskables[key].shouldUpdateHeader;
 		}
-	}
-	if(indexName == "title" || indexName == "assignees" || indexName == "state" || indexName == "requester") {
-		_taskData[storeId].taskables[key].shouldUpdateHeader = true;
+		if(typeof _taskData[storeId].updateComponent != "undefined") { // for progress bar
+			delete _taskData[storeId].updateComponent;
+		}
+		if(indexName == "title") {
+			if(_taskData[storeId].taskables[key]["title"] == ""){
+				_taskData[storeId].taskables[key].isTitleEmpty = true;
+				_taskData[storeId].isValidationIssue = true;
+			} else {
+				delete _taskData[storeId].taskables[key].isTitleEmpty;
+				delete _taskData[storeId].isValidationIssue;
+			}
+		}
+		if(indexName == "title" || indexName == "assignees" || indexName == "state" || indexName == "requester"  || indexName == "description" || indexName == "priority") {
+			_taskData[storeId].taskables[key].shouldUpdateHeader = true;
+		}
 	}
 	if(indexName == "state") {
 		_taskData[storeId].updateComponent = true;
@@ -2606,13 +2750,11 @@ function slideTaskAndCheckTitle(slideId, arrowId) {
 		$(arrowId).addClass('glyphicon-chevron-right');
 	}
 }
-
 function slideTaskToggle(key, storeId, view) {
-		_taskData[storeId].toggleTaskIndex = !view ? -1 : key;
-		_taskData[storeId].slideTask = view;
-		_taskData[storeId].taskables[key].shouldUpdateHeader = true;
+	_taskData[storeId].toggleTaskIndex = !view ? -1 : key;
+	_taskData[storeId].slideTask = view;
+	_taskData[storeId].taskables[key].shouldUpdateHeader = true;
 }
-
 function tasksSortBy(sortBy, storeId) {
 	if(typeof _taskData[storeId].sortData != "undefined" && (sortBy != "" || sortBy != "manual")) {
 		var newData = [];
@@ -2632,6 +2774,11 @@ var TaskStore = _.extend({}, EventEmitter.prototype, {
 	getData: function(storeId) {
 		// if filterBy not set then it should be openTasks by default
 		if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "openTasks";
+
+		if(_taskData[storeId].taskNum > 0 && _taskData[storeId].taskNum != undefined && _taskData[storeId].taskNum != null && _taskData[storeId].taskNum != "undefined" && _taskData[storeId].taskNum != "null" && _taskData[storeId].taskNum != ""){
+			_taskData[storeId].filterBy = "all";
+			// delete _taskData[storeId].taskNum;
+		}
 		
 		return _taskData[storeId];
 	},
@@ -2696,7 +2843,7 @@ AppDispatcher.register(function(payload) {
 });
 module.exports = TaskStore;
 
-},{"../constants/TaskConstants":10,"../dispatcher/AppDispatcher":11,"events":18,"underscore":"underscore"}],13:[function(require,module,exports){
+},{"../constants/TaskConstants":10,"../dispatcher/AppDispatcher":11,"events":19,"underscore":"underscore"}],13:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var TaskConstants = require('../constants/TaskConstants');
@@ -2756,7 +2903,7 @@ AppDispatcher.register(function(payload) {
 });
 module.exports = WritersStore;
 
-},{"../constants/TaskConstants":10,"../dispatcher/AppDispatcher":11,"events":18,"underscore":"underscore"}],14:[function(require,module,exports){
+},{"../constants/TaskConstants":10,"../dispatcher/AppDispatcher":11,"events":19,"underscore":"underscore"}],14:[function(require,module,exports){
 var AppDispatcher = require('../dispatcher/AppDispatcher');
 var EventEmitter = require('events').EventEmitter;
 var TaskConstants = require('../constants/TaskConstants');
@@ -2837,7 +2984,7 @@ AppDispatcher.register(function(payload) {
 });
 module.exports = FavWritersStore;
 
-},{"../constants/TaskConstants":10,"../dispatcher/AppDispatcher":11,"events":18,"underscore":"underscore"}],15:[function(require,module,exports){
+},{"../constants/TaskConstants":10,"../dispatcher/AppDispatcher":11,"events":19,"underscore":"underscore"}],15:[function(require,module,exports){
 var TaskActions = require('../actions/TaskActions');
 var writersActions = require('../actions/WritersActions');
 module.exports = {
@@ -2853,6 +3000,16 @@ module.exports = {
 };
 
 },{"../actions/TaskActions":1,"../actions/WritersActions":2}],16:[function(require,module,exports){
+(function (global){
+/*!
+ * clipboard.js v1.7.1
+ * https://zenorocha.github.io/clipboard.js
+ *
+ * Licensed MIT © Zeno Rocha
+ */
+!function(t){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=t();else if("function"==typeof define&&define.amd)define([],t);else{var e;e="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:this,e.Clipboard=t()}}(function(){var t,e,n;return function t(e,n,o){function i(a,c){if(!n[a]){if(!e[a]){var l="function"==typeof require&&require;if(!c&&l)return l(a,!0);if(r)return r(a,!0);var s=new Error("Cannot find module '"+a+"'");throw s.code="MODULE_NOT_FOUND",s}var u=n[a]={exports:{}};e[a][0].call(u.exports,function(t){var n=e[a][1][t];return i(n||t)},u,u.exports,t,e,n,o)}return n[a].exports}for(var r="function"==typeof require&&require,a=0;a<o.length;a++)i(o[a]);return i}({1:[function(t,e,n){function o(t,e){for(;t&&t.nodeType!==i;){if("function"==typeof t.matches&&t.matches(e))return t;t=t.parentNode}}var i=9;if("undefined"!=typeof Element&&!Element.prototype.matches){var r=Element.prototype;r.matches=r.matchesSelector||r.mozMatchesSelector||r.msMatchesSelector||r.oMatchesSelector||r.webkitMatchesSelector}e.exports=o},{}],2:[function(t,e,n){function o(t,e,n,o,r){var a=i.apply(this,arguments);return t.addEventListener(n,a,r),{destroy:function(){t.removeEventListener(n,a,r)}}}function i(t,e,n,o){return function(n){n.delegateTarget=r(n.target,e),n.delegateTarget&&o.call(t,n)}}var r=t("./closest");e.exports=o},{"./closest":1}],3:[function(t,e,n){n.node=function(t){return void 0!==t&&t instanceof HTMLElement&&1===t.nodeType},n.nodeList=function(t){var e=Object.prototype.toString.call(t);return void 0!==t&&("[object NodeList]"===e||"[object HTMLCollection]"===e)&&"length"in t&&(0===t.length||n.node(t[0]))},n.string=function(t){return"string"==typeof t||t instanceof String},n.fn=function(t){return"[object Function]"===Object.prototype.toString.call(t)}},{}],4:[function(t,e,n){function o(t,e,n){if(!t&&!e&&!n)throw new Error("Missing required arguments");if(!c.string(e))throw new TypeError("Second argument must be a String");if(!c.fn(n))throw new TypeError("Third argument must be a Function");if(c.node(t))return i(t,e,n);if(c.nodeList(t))return r(t,e,n);if(c.string(t))return a(t,e,n);throw new TypeError("First argument must be a String, HTMLElement, HTMLCollection, or NodeList")}function i(t,e,n){return t.addEventListener(e,n),{destroy:function(){t.removeEventListener(e,n)}}}function r(t,e,n){return Array.prototype.forEach.call(t,function(t){t.addEventListener(e,n)}),{destroy:function(){Array.prototype.forEach.call(t,function(t){t.removeEventListener(e,n)})}}}function a(t,e,n){return l(document.body,t,e,n)}var c=t("./is"),l=t("delegate");e.exports=o},{"./is":3,delegate:2}],5:[function(t,e,n){function o(t){var e;if("SELECT"===t.nodeName)t.focus(),e=t.value;else if("INPUT"===t.nodeName||"TEXTAREA"===t.nodeName){var n=t.hasAttribute("readonly");n||t.setAttribute("readonly",""),t.select(),t.setSelectionRange(0,t.value.length),n||t.removeAttribute("readonly"),e=t.value}else{t.hasAttribute("contenteditable")&&t.focus();var o=window.getSelection(),i=document.createRange();i.selectNodeContents(t),o.removeAllRanges(),o.addRange(i),e=o.toString()}return e}e.exports=o},{}],6:[function(t,e,n){function o(){}o.prototype={on:function(t,e,n){var o=this.e||(this.e={});return(o[t]||(o[t]=[])).push({fn:e,ctx:n}),this},once:function(t,e,n){function o(){i.off(t,o),e.apply(n,arguments)}var i=this;return o._=e,this.on(t,o,n)},emit:function(t){var e=[].slice.call(arguments,1),n=((this.e||(this.e={}))[t]||[]).slice(),o=0,i=n.length;for(o;o<i;o++)n[o].fn.apply(n[o].ctx,e);return this},off:function(t,e){var n=this.e||(this.e={}),o=n[t],i=[];if(o&&e)for(var r=0,a=o.length;r<a;r++)o[r].fn!==e&&o[r].fn._!==e&&i.push(o[r]);return i.length?n[t]=i:delete n[t],this}},e.exports=o},{}],7:[function(e,n,o){!function(i,r){if("function"==typeof t&&t.amd)t(["module","select"],r);else if(void 0!==o)r(n,e("select"));else{var a={exports:{}};r(a,i.select),i.clipboardAction=a.exports}}(this,function(t,e){"use strict";function n(t){return t&&t.__esModule?t:{default:t}}function o(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}var i=n(e),r="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},a=function(){function t(t,e){for(var n=0;n<e.length;n++){var o=e[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(t,o.key,o)}}return function(e,n,o){return n&&t(e.prototype,n),o&&t(e,o),e}}(),c=function(){function t(e){o(this,t),this.resolveOptions(e),this.initSelection()}return a(t,[{key:"resolveOptions",value:function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.action=e.action,this.container=e.container,this.emitter=e.emitter,this.target=e.target,this.text=e.text,this.trigger=e.trigger,this.selectedText=""}},{key:"initSelection",value:function t(){this.text?this.selectFake():this.target&&this.selectTarget()}},{key:"selectFake",value:function t(){var e=this,n="rtl"==document.documentElement.getAttribute("dir");this.removeFake(),this.fakeHandlerCallback=function(){return e.removeFake()},this.fakeHandler=this.container.addEventListener("click",this.fakeHandlerCallback)||!0,this.fakeElem=document.createElement("textarea"),this.fakeElem.style.fontSize="12pt",this.fakeElem.style.border="0",this.fakeElem.style.padding="0",this.fakeElem.style.margin="0",this.fakeElem.style.position="absolute",this.fakeElem.style[n?"right":"left"]="-9999px";var o=window.pageYOffset||document.documentElement.scrollTop;this.fakeElem.style.top=o+"px",this.fakeElem.setAttribute("readonly",""),this.fakeElem.value=this.text,this.container.appendChild(this.fakeElem),this.selectedText=(0,i.default)(this.fakeElem),this.copyText()}},{key:"removeFake",value:function t(){this.fakeHandler&&(this.container.removeEventListener("click",this.fakeHandlerCallback),this.fakeHandler=null,this.fakeHandlerCallback=null),this.fakeElem&&(this.container.removeChild(this.fakeElem),this.fakeElem=null)}},{key:"selectTarget",value:function t(){this.selectedText=(0,i.default)(this.target),this.copyText()}},{key:"copyText",value:function t(){var e=void 0;try{e=document.execCommand(this.action)}catch(t){e=!1}this.handleResult(e)}},{key:"handleResult",value:function t(e){this.emitter.emit(e?"success":"error",{action:this.action,text:this.selectedText,trigger:this.trigger,clearSelection:this.clearSelection.bind(this)})}},{key:"clearSelection",value:function t(){this.trigger&&this.trigger.focus(),window.getSelection().removeAllRanges()}},{key:"destroy",value:function t(){this.removeFake()}},{key:"action",set:function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:"copy";if(this._action=e,"copy"!==this._action&&"cut"!==this._action)throw new Error('Invalid "action" value, use either "copy" or "cut"')},get:function t(){return this._action}},{key:"target",set:function t(e){if(void 0!==e){if(!e||"object"!==(void 0===e?"undefined":r(e))||1!==e.nodeType)throw new Error('Invalid "target" value, use a valid Element');if("copy"===this.action&&e.hasAttribute("disabled"))throw new Error('Invalid "target" attribute. Please use "readonly" instead of "disabled" attribute');if("cut"===this.action&&(e.hasAttribute("readonly")||e.hasAttribute("disabled")))throw new Error('Invalid "target" attribute. You can\'t cut text from elements with "readonly" or "disabled" attributes');this._target=e}},get:function t(){return this._target}}]),t}();t.exports=c})},{select:5}],8:[function(e,n,o){!function(i,r){if("function"==typeof t&&t.amd)t(["module","./clipboard-action","tiny-emitter","good-listener"],r);else if(void 0!==o)r(n,e("./clipboard-action"),e("tiny-emitter"),e("good-listener"));else{var a={exports:{}};r(a,i.clipboardAction,i.tinyEmitter,i.goodListener),i.clipboard=a.exports}}(this,function(t,e,n,o){"use strict";function i(t){return t&&t.__esModule?t:{default:t}}function r(t,e){if(!(t instanceof e))throw new TypeError("Cannot call a class as a function")}function a(t,e){if(!t)throw new ReferenceError("this hasn't been initialised - super() hasn't been called");return!e||"object"!=typeof e&&"function"!=typeof e?t:e}function c(t,e){if("function"!=typeof e&&null!==e)throw new TypeError("Super expression must either be null or a function, not "+typeof e);t.prototype=Object.create(e&&e.prototype,{constructor:{value:t,enumerable:!1,writable:!0,configurable:!0}}),e&&(Object.setPrototypeOf?Object.setPrototypeOf(t,e):t.__proto__=e)}function l(t,e){var n="data-clipboard-"+t;if(e.hasAttribute(n))return e.getAttribute(n)}var s=i(e),u=i(n),f=i(o),d="function"==typeof Symbol&&"symbol"==typeof Symbol.iterator?function(t){return typeof t}:function(t){return t&&"function"==typeof Symbol&&t.constructor===Symbol&&t!==Symbol.prototype?"symbol":typeof t},h=function(){function t(t,e){for(var n=0;n<e.length;n++){var o=e[n];o.enumerable=o.enumerable||!1,o.configurable=!0,"value"in o&&(o.writable=!0),Object.defineProperty(t,o.key,o)}}return function(e,n,o){return n&&t(e.prototype,n),o&&t(e,o),e}}(),p=function(t){function e(t,n){r(this,e);var o=a(this,(e.__proto__||Object.getPrototypeOf(e)).call(this));return o.resolveOptions(n),o.listenClick(t),o}return c(e,t),h(e,[{key:"resolveOptions",value:function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:{};this.action="function"==typeof e.action?e.action:this.defaultAction,this.target="function"==typeof e.target?e.target:this.defaultTarget,this.text="function"==typeof e.text?e.text:this.defaultText,this.container="object"===d(e.container)?e.container:document.body}},{key:"listenClick",value:function t(e){var n=this;this.listener=(0,f.default)(e,"click",function(t){return n.onClick(t)})}},{key:"onClick",value:function t(e){var n=e.delegateTarget||e.currentTarget;this.clipboardAction&&(this.clipboardAction=null),this.clipboardAction=new s.default({action:this.action(n),target:this.target(n),text:this.text(n),container:this.container,trigger:n,emitter:this})}},{key:"defaultAction",value:function t(e){return l("action",e)}},{key:"defaultTarget",value:function t(e){var n=l("target",e);if(n)return document.querySelector(n)}},{key:"defaultText",value:function t(e){return l("text",e)}},{key:"destroy",value:function t(){this.listener.destroy(),this.clipboardAction&&(this.clipboardAction.destroy(),this.clipboardAction=null)}}],[{key:"isSupported",value:function t(){var e=arguments.length>0&&void 0!==arguments[0]?arguments[0]:["copy","cut"],n="string"==typeof e?[e]:e,o=!!document.queryCommandSupported;return n.forEach(function(t){o=o&&!!document.queryCommandSupported(t)}),o}}]),e}(u.default);t.exports=p})},{"./clipboard-action":7,"good-listener":4,"tiny-emitter":6}]},{},[8])(8)});
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],17:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -3782,7 +3939,7 @@ function factory(ReactComponent, isValidElement, ReactNoopUpdateQueue) {
 module.exports = factory;
 
 }).call(this,require('_process'))
-},{"_process":25,"fbjs/lib/emptyObject":20,"fbjs/lib/invariant":21,"fbjs/lib/warning":23,"object-assign":24}],17:[function(require,module,exports){
+},{"_process":26,"fbjs/lib/emptyObject":21,"fbjs/lib/invariant":22,"fbjs/lib/warning":24,"object-assign":25}],18:[function(require,module,exports){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
  *
@@ -3812,7 +3969,7 @@ module.exports = factory(
   ReactNoopUpdateQueue
 );
 
-},{"./factory":16,"react":"react"}],18:[function(require,module,exports){
+},{"./factory":17,"react":"react"}],19:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -4333,7 +4490,7 @@ function functionBindPolyfill(context) {
   };
 }
 
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 "use strict";
 
 /**
@@ -4370,7 +4527,7 @@ emptyFunction.thatReturnsArgument = function (arg) {
 };
 
 module.exports = emptyFunction;
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -4390,7 +4547,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":25}],21:[function(require,module,exports){
+},{"_process":26}],22:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -4446,7 +4603,7 @@ function invariant(condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":25}],22:[function(require,module,exports){
+},{"_process":26}],23:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2013-present, Facebook, Inc.
@@ -4494,7 +4651,7 @@ var keyMirror = function keyMirror(obj) {
 
 module.exports = keyMirror;
 }).call(this,require('_process'))
-},{"./invariant":21,"_process":25}],23:[function(require,module,exports){
+},{"./invariant":22,"_process":26}],24:[function(require,module,exports){
 (function (process){
 /**
  * Copyright (c) 2014-present, Facebook, Inc.
@@ -4559,7 +4716,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":19,"_process":25}],24:[function(require,module,exports){
+},{"./emptyFunction":20,"_process":26}],25:[function(require,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -4651,7 +4808,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -4837,7 +4994,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 (function (global){
 (function (global, factory) {
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('react'), require('react-dom')) :
@@ -8723,7 +8880,7 @@ var App = {
 	data: {},
 	undeletedData: {},
 	storeId: '0-0-0',
-	getData: function(divId) {
+	getData: function(divId, undeleted) {
 		var json = {};
 		if(divId) {
 			json = TaskStore.getStoreJson(allStoreIds[divId]);
@@ -8731,6 +8888,9 @@ var App = {
 			json = JSON.parse(JSON.stringify(this.data));
 		}
 		this.undeletedData = JSON.parse(JSON.stringify(json));
+
+		// if undeleted then should return data without any modification
+		if(undeleted) return this.undeletedData;
 
 		var arr = [];
 		var emptyTasksKey = [];
@@ -8779,6 +8939,43 @@ var App = {
 		if(typeof json.toggleTaskIndex != "undefined") {
 			delete json.toggleTaskIndex;
 		}
+		if(typeof json.baseUrl != "undefined") {
+			delete json.baseUrl;
+		}
+		if(typeof json.tmailNum != "undefined") {
+			delete json.tmailNum;
+		}
+		if(typeof json.secNum != "undefined") {
+			delete json.secNum;
+		}
+		if(typeof json.sectionTitle != "undefined") {
+			delete json.sectionTitle;
+		}
+		if(typeof json.tmailSubject != "undefined") {
+			delete json.tmailSubject;
+		}
+		if(typeof json.fwdtmailSubject != "undefined") {
+			delete json.fwdtmailSubject;
+		}
+		if(typeof json.fwdtmailNum != "undefined") {
+			delete json.fwdtmailNum;
+		}
+		if(typeof json.mailboxType != "undefined") {
+			delete json.mailboxType;
+		}
+		if(typeof json.taskNum != "undefined") {
+			delete json.taskNum;
+		}
+		if(typeof json.fwdtaskNum != "undefined") {
+			delete json.fwdtaskNum;
+		}
+		if(typeof json.cnum != "undefined") {
+			delete json.cnum;
+		}
+		if(typeof json.expandTask != "undefined") {
+			delete json.expandTask;
+		}
+		
 		if(emptyTasksKey.length > 0) {
 			$.each(emptyTasksKey, function(i, k){
 				json.taskables.splice(k, 1)
@@ -8819,6 +9016,9 @@ var App = {
 		this.data = JSON.parse(JSON.stringify(data));
 		TaskAPI.setTaskData(this.data, this.storeId);
 	},
+	updateTaskNumData: function(taskNum) {
+		TaskActions.updateTaskData("Null", 'taskNum', taskNum, this.storeId);
+	},
 	loadSection: function(obj){
 		var data = obj.data;
 		var divId = obj.divId;
@@ -8831,10 +9031,21 @@ var App = {
 		var favWriters = obj.favWriters;
 		var taskNum = obj.taskNum;
 		var tmailNum = obj.tmailNum ? obj.tmailNum : '0';
+		var fwdtmailNum = obj.fwdtmailNum ? obj.fwdtmailNum : '0';
 		var secNum = obj.secNum ? obj.secNum : '0';
 		var changeNum = obj.changeNum ? obj.changeNum : '0';
 		var isDiffMode = obj.isDiffMode ? obj.isDiffMode : (data.wereTasksReordered ? true : false);
 		data.isChecklist = data.isChecklist && data.mode == "template" ? data.isChecklist : (obj.isChecklist ? obj.isChecklist : false);
+		data.baseUrl = obj.baseUrl;
+		data.tmailNum = obj.tmailNum;
+		data.fwdtmailNum = fwdtmailNum;
+		data.secNum = obj.secNum;
+		data.mailboxType = obj.mailboxType;
+		data.sectionTitle = obj.sectionTitle;
+		data.tmailSubject = obj.tmailSubject;
+		data.fwdtmailSubject = obj.fwdtmailSubject;
+		data.cnum = obj.cnum;
+		data.taskNum = obj.taskNum;
 		this.currentUser = JSON.parse(JSON.stringify(obj.currentUser));
 		this.storeId = tmailNum+'-'+secNum+'-'+changeNum;
 		var diffVersion1 = obj.diffVersion1;
@@ -8926,7 +9137,7 @@ var App = {
 		  React.createElement(TaskApp, {mode: this.data.mode, hideHeader: hideHeader, expandTask: expandTask, isDiffMode: isDiffMode, currentUser: this.currentUser ? this.currentUser : '', divId: divId, taskNum: taskNum, storeId: this.storeId, diffVersion1: diffVersion1, diffVersion2: diffVersion2, isChecklist: data.isChecklist}),
 		  document.getElementById(divId)
 		);
-	},
+		},
 	setWritersData: function(writers, favWriters, data) {
 		var duplicateValues = [];
 		var taskData = data;

@@ -155,16 +155,16 @@ div.writers-count-wrapper .h-inner-wrapper {
 .thread-container .forwarded-container .more {
     border-bottom: 2px solid #808080; cursor: pointer;
 }
-.thread-container .forwarded-container .more div.col:after {
+.thread-container .forwarded-container .more div.colt:after {
     content: "?"; font-family: "tmail";
 }
-.thread-container .forwarded-container .more div.exp:after {
+.thread-container .forwarded-container .more div.expt:after {
     content: "J"; font-family: "tmail";
 }
-.thread-container .forwarded-container .more div.exp {
+.thread-container .forwarded-container .more div.expt {
     position: relative;
 }
-.thread-container .forwarded-container .more div.col, .thread-container .forwarded-container .more div.exp {
+.thread-container .forwarded-container .more div.colt, .thread-container .forwarded-container .more div.expt {
     color: #A52A2A; padding: 1px 16px 0 3px; text-decoration: none;
 }
 .thread-container .forwarded-container .hide-forwarded-container div.forwarded-item-wrapper {

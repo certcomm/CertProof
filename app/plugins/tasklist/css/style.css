@@ -1,4 +1,4 @@
-.tasklist * {
+ .tasklist * {
     font-size: 12px;
 }
 .tasklist table {
@@ -11,12 +11,54 @@
     padding: 0 2% 2%;
 	width: 96%;
 }
+.copy-task-link-mobile-menu:before {
+    color: #555;
+    content: "\E004";
+    font-family: "tmail";
+    font-size: 11px;
+    font-weight: normal;
+}
+.copy-task-ex-mobile-link-menu:before {
+    color: #555;
+    content: "\E004";
+    font-family: "tmail";
+    font-size: 11px;
+    font-weight: normal;
+    right: 0;
+    position: absolute;
+    top: 4px;
+}
+.copy-task-link-menu:before, .copy-task-ex-link-menu:before {
+    color: #555;
+    content: "\E004";
+    font-family: "tmail";
+    font-size: 11px;
+    font-weight: normal;
+    left: 9px;
+    position: absolute;
+    top: 2px;
+}
+.copy-task-link-menu {
+    position: relative; margin: 17px 0 0 13px; cursor: pointer;
+}
+.copy-task-ex-link-menu {
+    position: relative; margin: 2px 0 0 -3px; cursor: pointer;
+}
+.copied-span-ex {
+    top: 0!important;
+}
+.copied-mobile-span {
+    top: 2px!important; left: 3px!important;
+}
+.copied-span {
+    background: none repeat scroll 0 0 #1AB394; color: #FFFFFF; padding: 4px 11px; position: absolute; top: 20px; left: 20px; white-space: pre; width: auto; z-index: 999;
+}
 .tasklist {
     color: #333333;
     /*font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;*/
     
     font-family: tahoma, Arial, sans-serif;
-    */ font-size: 12px;
+    font-size: 12px;
     line-height: 1.42857;
 }
 .tasklist .mb-10 {
@@ -1417,7 +1459,7 @@ div.ReactTags__tags { margin-bottom: 5px; }
 padding-top: 5px;width:17px;}
 .tasklist div.ReactTags__tagInput { border-radius: 3px; width: 175px; margin-top: 3px; }
 .tasklist div.ReactTags__tagInput input, .tasklist div.ReactTags__tagInput input:focus { border: 1px solid #ccc; font-size: 12px; padding: 5px 23px 5px 5px; width: 85.6%; }
-.tasklist div.ReactTags__suggestions { position: absolute; z-index: 9; text-align: left; }
+.tasklist div.ReactTags__suggestions { position: absolute; z-index: 9; text-align: left; top: 35px; }
 .tasklist div.ReactTags__suggestions ul { background: white none repeat scroll 0 0; box-shadow: 0.05em 0.01em 0.5em rgba(0, 0, 0, 0.2); list-style-type: none; width: 180px; max-height: 90px; overflow-y: auto; overflow-x: hidden;}
 .tasklist div.ReactTags__suggestions ul { list-style-type: none; padding: 0 !important;}
 .tasklist div.ReactTags__suggestions li { border-bottom: 1px solid #ddd; margin: 0; padding: 5px 10px; }

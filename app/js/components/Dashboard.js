@@ -1270,7 +1270,7 @@ export default class Dashboard extends React.Component {
         
         // set state
         this.state.stateData = data;
-
+        
 		return (
             <div className="panel-container">
                 <div className="xpanel">
@@ -1345,9 +1345,21 @@ export default class Dashboard extends React.Component {
                                             {
                                                 this.evidenceType == 'Certified L1' && !this.state.emptyBlockchainAnchorsOn ? (
                                                     <div>
-                                                        <div className="info-label">Show Blockchain Proof </div>
+                                                        <div className="info-label">Perform Blockchain Proof </div>
                                                         <div className="fl bold"> : </div>
-                                                        <div className="info-value"><a className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable)}>{this.state.blockchainAnchorDisable ? "Enable" : "Disable"}</a></div>
+                                                        <div className="info-value">
+                                                            <a className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable)}>
+                                                                <div className="switch">
+                                                                    <div className="onoffswitch">
+                                                                        <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} readOnly />
+                                                                        <label htmlFor="blockchainAnchorDisableCheck" className="onoffswitch-label">
+                                                                            <span className="onoffswitch-inner"></span>
+                                                                            <span className="onoffswitch-switch"></span>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </div>
 
                                                         <div className="clear"></div>
                                                         <div className="info-label">Blockchain URLs</div>

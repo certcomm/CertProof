@@ -4,7 +4,6 @@ const appPath = remote.app.getAppPath();
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
 
 export default {
-	supportedSchema: 10,
 	supportedSchemaVersions: {
 		current : "1.0",
 		min : "1.0",

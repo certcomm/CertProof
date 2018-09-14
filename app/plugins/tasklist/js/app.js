@@ -11,7 +11,7 @@ var App = {
 	data: {},
 	undeletedData: {},
 	storeId: '0-0-0',
-	getData: function(divId) {
+	getData: function(divId, undeleted) {
 		var json = {};
 		if(divId) {
 			json = TaskStore.getStoreJson(allStoreIds[divId]);
@@ -19,6 +19,9 @@ var App = {
 			json = JSON.parse(JSON.stringify(this.data));
 		}
 		this.undeletedData = JSON.parse(JSON.stringify(json));
+
+		// if undeleted then should return data without any modification
+		if(undeleted) return this.undeletedData;
 
 		var arr = [];
 		var emptyTasksKey = [];
@@ -67,6 +70,43 @@ var App = {
 		if(typeof json.toggleTaskIndex != "undefined") {
 			delete json.toggleTaskIndex;
 		}
+		if(typeof json.baseUrl != "undefined") {
+			delete json.baseUrl;
+		}
+		if(typeof json.tmailNum != "undefined") {
+			delete json.tmailNum;
+		}
+		if(typeof json.secNum != "undefined") {
+			delete json.secNum;
+		}
+		if(typeof json.sectionTitle != "undefined") {
+			delete json.sectionTitle;
+		}
+		if(typeof json.tmailSubject != "undefined") {
+			delete json.tmailSubject;
+		}
+		if(typeof json.fwdtmailSubject != "undefined") {
+			delete json.fwdtmailSubject;
+		}
+		if(typeof json.fwdtmailNum != "undefined") {
+			delete json.fwdtmailNum;
+		}
+		if(typeof json.mailboxType != "undefined") {
+			delete json.mailboxType;
+		}
+		if(typeof json.taskNum != "undefined") {
+			delete json.taskNum;
+		}
+		if(typeof json.fwdtaskNum != "undefined") {
+			delete json.fwdtaskNum;
+		}
+		if(typeof json.cnum != "undefined") {
+			delete json.cnum;
+		}
+		if(typeof json.expandTask != "undefined") {
+			delete json.expandTask;
+		}
+		
 		if(emptyTasksKey.length > 0) {
 			$.each(emptyTasksKey, function(i, k){
 				json.taskables.splice(k, 1)
@@ -107,6 +147,9 @@ var App = {
 		this.data = JSON.parse(JSON.stringify(data));
 		TaskAPI.setTaskData(this.data, this.storeId);
 	},
+	updateTaskNumData: function(taskNum) {
+		TaskActions.updateTaskData("Null", 'taskNum', taskNum, this.storeId);
+	},
 	loadSection: function(obj){
 		var data = obj.data;
 		var divId = obj.divId;
@@ -119,10 +162,21 @@ var App = {
 		var favWriters = obj.favWriters;
 		var taskNum = obj.taskNum;
 		var tmailNum = obj.tmailNum ? obj.tmailNum : '0';
+		var fwdtmailNum = obj.fwdtmailNum ? obj.fwdtmailNum : '0';
 		var secNum = obj.secNum ? obj.secNum : '0';
 		var changeNum = obj.changeNum ? obj.changeNum : '0';
 		var isDiffMode = obj.isDiffMode ? obj.isDiffMode : (data.wereTasksReordered ? true : false);
 		data.isChecklist = data.isChecklist && data.mode == "template" ? data.isChecklist : (obj.isChecklist ? obj.isChecklist : false);
+		data.baseUrl = obj.baseUrl;
+		data.tmailNum = obj.tmailNum;
+		data.fwdtmailNum = fwdtmailNum;
+		data.secNum = obj.secNum;
+		data.mailboxType = obj.mailboxType;
+		data.sectionTitle = obj.sectionTitle;
+		data.tmailSubject = obj.tmailSubject;
+		data.fwdtmailSubject = obj.fwdtmailSubject;
+		data.cnum = obj.cnum;
+		data.taskNum = obj.taskNum;
 		this.currentUser = JSON.parse(JSON.stringify(obj.currentUser));
 		this.storeId = tmailNum+'-'+secNum+'-'+changeNum;
 		var diffVersion1 = obj.diffVersion1;
@@ -211,10 +265,10 @@ var App = {
 		}
 		this.setData(data);
 		ReactDOM.render(
-		  <TaskApp mode={this.data.mode} hideHeader={hideHeader} expandTask={expandTask} isDiffMode={isDiffMode} currentUser={this.currentUser ? this.currentUser : ''} divId={divId} taskNum={taskNum} storeId={this.storeId} diffVersion1={diffVersion1} diffVersion2={diffVersion2} isChecklist={data.isChecklist}/>,
+		  <TaskApp mode={this.data.mode} hideHeader={hideHeader} expandTask={expandTask} isDiffMode={isDiffMode} currentUser={this.currentUser ? this.currentUser : ''} divId={divId} taskNum={taskNum} storeId={this.storeId} diffVersion1={diffVersion1} diffVersion2={diffVersion2} isChecklist={data.isChecklist} />,
 		  document.getElementById(divId)
 		);
-	},
+		},
 	setWritersData: function(writers, favWriters, data) {
 		var duplicateValues = [];
 		var taskData = data;
