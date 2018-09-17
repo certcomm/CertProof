@@ -1115,7 +1115,8 @@ export default class Dashboard extends React.Component {
         document.getElementsByClassName("network-nodes")[0].children[0].scrollIntoView()
     }
 
-    blockchainAnchorDisableFunc(isEnable){
+    blockchainAnchorDisableFunc(isEnable, e){
+        e.preventDefault();
         this.setState({blockchainAnchorDisable: isEnable});
     }
 
@@ -1317,7 +1318,7 @@ export default class Dashboard extends React.Component {
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">Inc-10</div>
+                                            <div className="info-value">Inc-{evidenceData.evidenceSchemaVersion}</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Evidence Type</div>
@@ -1348,7 +1349,7 @@ export default class Dashboard extends React.Component {
                                                         <div className="info-label">Perform Blockchain Proof </div>
                                                         <div className="fl bold"> : </div>
                                                         <div className="info-value">
-                                                            <a className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable)}>
+                                                            <div className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable)}>
                                                                 <div className="switch">
                                                                     <div className="onoffswitch">
                                                                         <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} readOnly />
@@ -1358,7 +1359,7 @@ export default class Dashboard extends React.Component {
                                                                         </label>
                                                                     </div>
                                                                 </div>
-                                                            </a>
+                                                            </div>
                                                         </div>
 
                                                         <div className="clear"></div>
@@ -1387,7 +1388,7 @@ export default class Dashboard extends React.Component {
                                             <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
                                             {
                                                 this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ? (
-                                                    <div onClick={() => {swal(this.state.blockchainAnchorDisable ? "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s)" : "Warning: This is an L1 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).")}} className="prove-warning-sign" />
+                                                    <div onClick={() => {swal(this.state.blockchainAnchorDisable ? 'Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s). Click on \'More Details\' to switch it on."' : 'Warning: This is an L1 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).')}} className="prove-warning-sign" />
                                                 ) : <div className="prove-info-sign" />
                                             }
                                         </div>
