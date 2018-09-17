@@ -139,10 +139,10 @@ export const comments = {
 		return t[0].innerHTML.toString();
 	},
 	htmlEncode: function(value){
-		return encodeURI(value);
+		return escape(value);
 	},
 	htmlDecode: function(value){
-		return decodeURI(value);
+		return unescape(value);
 	},
 	replaceURLContent: function(v, ttn){
 		var me = this;
@@ -229,33 +229,33 @@ export const comments = {
 			if(threadttn != ""){
 				//threadttn4 = " in "+threadttn.split('-')[2];
 				//fullThreadttn = ' ('+threadttn+')';
-				threadttn4 = " in "+threadttn;
+				threadttn4 = " in "+copiedLinkTTN;
 				fullThreadttn = '';
 			}
 
 			switch(type){
 				case "THREAD":
 					var showedText = 'THREAD "' +title+ '"',
-						showedTextinTooltip = me.htmlEncode('THREAD "' +title+ '" '+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('THREAD "' +title+ '" '+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "COMMENT":
 					var showedText = 'COMMENT ' +val+threadttn4,
-						showedTextinTooltip = me.htmlEncode('COMMENT ' +val+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('COMMENT ' +val+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "SECTION":
 					var showedText = 'SECTION "'+title+'"'+threadttn4,
-						showedTextinTooltip = me.htmlEncode('SECTION "'+title+'"'+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('SECTION "'+title+'"'+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "SVERSION":
 					var showedText = 'SECTION "'+title+'" at VERSION '+version+threadttn4,
-						showedTextinTooltip = me.htmlEncode('SECTION "'+title+'" at VERSION '+version+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('SECTION "'+title+'" at VERSION '+version+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "TASK":
@@ -270,8 +270,8 @@ export const comments = {
 					}
 					
 					var showedText = 'TASK '+val+titledText+' in SECTION '+tsectitle+threadttn4,
-						showedTextinTooltip = me.htmlEncode('TASK '+val+hoverTitle+' in SECTION '+tsectitle+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('TASK '+val+hoverTitle+' in SECTION '+tsectitle+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					
 					v = v.replace($0, link);
 				break;
@@ -279,28 +279,28 @@ export const comments = {
 					var cmtNum = (splitArr[0].match("COMMENT (.*) of") ? splitArr[0].match("COMMENT (.*) of") : splitArr[0].match("comment (.*) of"))[1].trim();
 
 					var showedText = 'ATTACHMENT "'+title+'" in COMMENT '+cmtNum+threadttn4,
-						showedTextinTooltip = me.htmlEncode('ATTACHMENT "'+title+'" in COMMENT '+cmtNum+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('ATTACHMENT "'+title+'" in COMMENT '+cmtNum+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "FORWARDED COMMENT":
 					var showedText = 'FORWARDED COMMENT ' +val2+threadttn4,
-						showedTextinTooltip = me.htmlEncode('FORWARDED COMMENT ' +val2+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('FORWARDED COMMENT ' +val2+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "FORWARDED SECTION":
 					var commentText = changenum > 0 ? " in COMMENT "+changenum : "";
 					var showedText = 'FORWARDED SECTION "'+title+'"'+commentText+threadttn4,
-						showedTextinTooltip = me.htmlEncode('FORWARDED SECTION "'+title+'"'+commentText+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('FORWARDED SECTION "'+title+'"'+commentText+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "FORWARDED SVERSION":
 					var commentText = changenum > 0 ? " in COMMENT "+changenum : "";
 					var showedText = 'FORWARDED SECTION "'+title+'" at VERSION '+version+commentText+threadttn4,
-						showedTextinTooltip = me.htmlEncode('FORWARDED SECTION "'+title+'" at VERSION '+version+commentText+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('FORWARDED SECTION "'+title+'" at VERSION '+version+commentText+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "FORWARDED TASK":
@@ -316,16 +316,16 @@ export const comments = {
 					var commentText = changenum > 0 ? " in COMMENT "+changenum : "";
 					
 					var showedText = 'FORWARDED TASK '+val2+titledText+' in SECTION '+tsectitle+commentText+threadttn4,
-						showedTextinTooltip = me.htmlEncode('FORWARDED TASK '+val2+hoverTitle+' in SECTION '+tsectitle+commentText+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('FORWARDED TASK '+val2+hoverTitle+' in SECTION '+tsectitle+commentText+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 				case "FORWARDED ATTACHMENT":
 					var cmtNum = (splitArr[0].match("COMMENT (.*) in") ? splitArr[0].match("COMMENT (.*) in") : splitArr[0].match("comment (.*) in"))[1].trim();
 
 					var showedText = 'FORWARDED ATTACHMENT "'+title+'" in COMMENT '+cmtNum+threadttn4,
-						showedTextinTooltip = me.htmlEncode('FORWARDED ATTACHMENT "'+title+'" in COMMENT '+cmtNum+inThreadSubject+fullThreadttn),
-						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" title="'+showedTextinTooltip+'">'+showedText+'</a>';
+						showedTextinTooltip = me.htmlDecode('FORWARDED ATTACHMENT "'+title+'" in COMMENT '+cmtNum+inThreadSubject+fullThreadttn),
+						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
 				break;
 			}

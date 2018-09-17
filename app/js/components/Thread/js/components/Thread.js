@@ -38,14 +38,12 @@ export default class Thread extends React.Component {
     componentDidMount(){
         $("body").on("click", function(event, target) {
             if (event.target.tagName == 'A') {
-                event.preventDefault();
-
                 if($(event.target).hasClass("in-same-thread")){
+                    event.preventDefault();
                     var ttn = event.target.getAttribute('data-ttn');
                     CommonFunc.comments.openInAppLinks(event.target.href, ttn);
                 }
             }
-            event.preventDefault();
         });
     }
 

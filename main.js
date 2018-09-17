@@ -98,7 +98,7 @@ function createWindow() {
     });
 
     win.webContents.on('did-finish-load', () => {
-        win.setTitle("CertProof (Version "+process.env.npm_package_version+")");
+        win.setTitle("CertProof (Version "+app.getVersion()+")");
     });
     
     // to open console in packaged mode for debugging
