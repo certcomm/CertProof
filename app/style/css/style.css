@@ -327,6 +327,9 @@ a.breadcrumb {
 .xpanel .gear:before {
   content: "\E014"; font-family: "tmail"; font-size: 26px;
 }
+.xpanel .prove-info-sign-null {
+  float: left; width: 33px;
+}
 .xpanel .prove-info-sign, .xpanel .prove-warning-sign {
   float: left; position: relative; margin: 8px 0px 0px 7px; cursor: pointer;
 }
@@ -552,4 +555,13 @@ a.breadcrumb {
 .onoffswitch-checkbox:disabled + .onoffswitch-label,
 .onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-switch {
   border-color: #919191;
+}
+div.tooltip {
+	position: relative; display: inline-block; width: 100%;
+}
+div.tooltip span {
+  font-size: 11px; position:absolute; z-index: 999; bottom:9999px; left: 50%; background:#000; color:#e0e0e0; padding: 5px 8px; line-height: 20px; opacity: 0;  transition:opacity 0.4s ease-out; border-radius: 5px;
+}
+div.tooltip:hover span {
+  opacity: 1; bottom:-80px; width: 100%;
 }

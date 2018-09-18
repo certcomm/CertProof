@@ -1389,7 +1389,7 @@ export default class Dashboard extends React.Component {
                                             {
                                                 this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ? (
                                                     <div onClick={() => {swal(this.state.blockchainAnchorDisable ? 'Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s). Click on \'More Details\' to switch it on."' : 'Warning: This is an L1 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).')}} className="prove-warning-sign" />
-                                                ) : <div className="prove-info-sign" />
+                                                ) : <div className="prove-info-sign-null">&nbsp;</div>
                                             }
                                         </div>
                                     </div>
@@ -1411,7 +1411,8 @@ export default class Dashboard extends React.Component {
                                         </div>
                                     </div>
                                     <div className="verification-failed-container hidden">
-                                        <div className="btn-primary prove-failed-btn">
+                                        <div className="btn-primary prove-failed-btn tooltip">
+                                            <span>{(this.state.errLog[0] ? this.state.errLog[0].name+" - "+this.state.errLog[0].message : "" )}</span>
                                             Proof Failed
                                             <div className="fr prove-failed-icon"></div>
                                         </div>
