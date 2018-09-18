@@ -50,8 +50,9 @@ module.exports = {
       });
     },
 
-    proveExtractedEvidenceZip :function(logEmitter, extractedEvidenceFolder, zip) {
+    proveExtractedEvidenceZip :function(logEmitter, proveConfig, zip) {
         this.logEmitter = logEmitter;
+        this.proveConfig = proveConfig;
         var outer = this;
         return new Promise((resolve, reject) => {
             this.logEmitter.log("Proof Started");
@@ -62,7 +63,7 @@ module.exports = {
             if(this.entries[Constants.default.routeEvidenceJsonFileName]) {
                this.evidenceData = zip.entryDataSync(Constants.default.routeEvidenceJsonFileName).toString('utf-8');
                resolve(outer.proveEvidence({
-                extractedEvidenceFolder:extractedEvidenceFolder,
+                extractedEvidenceFolder:proveConfig.extractedEvidenceFolder,
                 entries: this.entries,
                 evidenceJson:cpJsonUtils.parseJson(this.evidenceData)
                }));
@@ -105,6 +106,7 @@ module.exports = {
             zip.on('ready', async () => {
                 this.entries = zip.entries();
                 this.logEmitter = outer.logEmitter;
+                this.proveConfig = outer.proveConfig;
                 if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)){
                     zip.close();
                     return;
@@ -255,7 +257,7 @@ module.exports = {
                 this.logEmitter.log("Proving ssacMerklePath");
                 evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
 
-                if((typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
+                if(this.proveConfig.performBlockchainProof && (typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
                     for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
                         var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
                         var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);

@@ -19,9 +19,15 @@ LogEmitter.prototype = {
 var logEmitter = new LogEmitter();
 var extractedEvidenceFolder = "/tmp/uploads/extracted/";
 var zipFilePath = process.argv[2];
+var performBlockchainProof = true;
+if(process.argv.length==4) {
+    performBlockchainProof = process.argv[3]=="true";
+}
+console.log("performBlockchainProof is " + performBlockchainProof);
 prover.extractEvidence(logEmitter, extractedEvidenceFolder, zipFilePath)
 .then(function(zip) {
-        return prover.proveExtractedEvidenceZip(logEmitter, extractedEvidenceFolder, zip);
+        var proveConfig = {extractedEvidenceFolder:extractedEvidenceFolder, performBlockchainProof:performBlockchainProof};
+        return prover.proveExtractedEvidenceZip(logEmitter, proveConfig, zip);
     })
 .then(function(response) {
         logEmitter.log("Proof Success!"+ response);

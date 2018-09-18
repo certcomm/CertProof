@@ -792,8 +792,9 @@ export default class Dashboard extends React.Component {
 
             this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
             console.log(this.defaultNodeUrls);
-
-            prover.proveExtractedEvidenceZip(this.logEmitter, Constants.default.extractedEvidenceFolder, proveZip)
+            var proveConfig = {extractedEvidenceFolder:Constants.default.extractedEvidenceFolder,
+                               performBlockchainProof:true};
+            prover.proveExtractedEvidenceZip(this.logEmitter, proveConfig, proveZip)
             .then((response) => {
                 console.error("Success!"+ response);
                 proveZip.close();
