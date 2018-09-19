@@ -21,6 +21,7 @@ import prover from "./../../prove/app/prove";
 
 var ConfigImages = require("./../../config/images.js");
 var Constants = require("./../../config/constants.js");
+var proverConstants = require("../../prove/app/config/constants.js");
 
 function LogEmitter() {
     this.indentTimes = 0;    
@@ -812,7 +813,8 @@ export default class Dashboard extends React.Component {
             console.log(this.defaultNodeUrls);
             
             var proveConfig = {extractedEvidenceFolder:Constants.default.extractedEvidenceFolder,
-                               performBlockchainProof:!this.state.blockchainAnchorDisable};
+                               performBlockchainProof:!this.state.blockchainAnchorDisable,
+                               networkNodeUrlsMap:proverConstants.default.defaultNetworkNodeUrlsMap};
             prover.proveExtractedEvidenceZip(this.logEmitter, proveConfig, proveZip)
             .then((response) => {
                 proveZip.close();

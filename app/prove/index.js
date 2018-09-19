@@ -1,4 +1,5 @@
 var prover = require('./app/prove')
+var proverConstants = require("./app/config/constants.js");
 
 function LogEmitter() {
 	this.indentTimes = 0;
@@ -26,7 +27,9 @@ if(process.argv.length==4) {
 console.log("performBlockchainProof is " + performBlockchainProof);
 prover.extractEvidence(logEmitter, extractedEvidenceFolder, zipFilePath)
 .then(function(zip) {
-        var proveConfig = {extractedEvidenceFolder:extractedEvidenceFolder, performBlockchainProof:performBlockchainProof};
+        var proveConfig = {extractedEvidenceFolder:extractedEvidenceFolder,
+                            performBlockchainProof:performBlockchainProof,
+                            networkNodeUrlsMap:proverConstants.default.defaultNetworkNodeUrlsMap};
         return prover.proveExtractedEvidenceZip(logEmitter, proveConfig, zip);
     })
 .then(function(response) {

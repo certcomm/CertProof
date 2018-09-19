@@ -19,6 +19,7 @@ try{
 module.exports = {
     extractEvidence: function(logEmitter, extractedEvidenceFolder, evidenceFileName) {
       this.logEmitter = logEmitter;
+      var outer = this;
       return new Promise(function(resolve, reject) {
         if (fs.existsSync(extractedEvidenceFolder)){
             fs.removeSync(extractedEvidenceFolder);
@@ -40,7 +41,7 @@ module.exports = {
             })
             zip.extract(null, extractedEvidenceFolder, (err, count) => {
                 if(err) {
-                    this.logEmitter.error('Extract error');
+                    outer.logEmitter.error('Extract error');
                     reject(err);
                 } else {
                     resolve(zip);
@@ -268,7 +269,7 @@ module.exports = {
                         if(!this.cblocksProved.has(cblockProvedKey)) {
                             //for now prove on first type and first network in the type
                             var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
-                            await blockchainUtils.proveOnBlockChain(this.logEmitter, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
+                            await blockchainUtils.proveOnBlockChain(this.logEmitter, this.proveConfig.networkNodeUrlsMap, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
                             this.cblocksProved.add(cblockProvedKey);
                         }
                     }

@@ -6,11 +6,11 @@ var registryAbi = require("../contract-abi/Registry.json");
 var cThinBlockAnchorOpsAbi = require("../contract-abi/CThinBlockAnchorOps.json");
 var Web3 = require('web3');
 module.exports = {
-    proveOnBlockChain: async function(logEmitter, networkType, governorDomainName, shard, cblockNum, cThinBlockHash, cThinBlockMerkleRootHash) {
+    proveOnBlockChain: async function(logEmitter, networkNodeUrlsMap, networkType, governorDomainName, shard, cblockNum, cThinBlockHash, cThinBlockMerkleRootHash) {
         logEmitter.log("Proving shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
         try {
             logEmitter.indent();
-            var web3 = getWeb3(networkType);
+            var web3 = getWeb3(logEmitter, networkNodeUrlsMap, networkType);
             var cThinBlockAnchor = await getCThinBlockAnchor(web3, networkType, governorDomainName, shard, cblockNum);
             logEmitter.log("Found cThinBlockAnchor=[" + cThinBlockAnchor +"] on blockchain networkType= " + networkType);
             if(cThinBlockAnchor==null) {
@@ -31,9 +31,10 @@ module.exports = {
     }
 }
 
-function getWeb3(networkType) {
-    var networkUrl=getNetworkUrl(networkType);
-    return new Web3(new Web3.providers.HttpProvider(networkUrl));
+function getWeb3(logEmitter, networkNodeUrlsMap, networkType) {
+    var networkNodeUrl=getNetworkNodeUrl(networkNodeUrlsMap, networkType);
+    logEmitter.log("Proving on networkNodeUrl=" + networkNodeUrl);
+    return new Web3(new Web3.providers.HttpProvider(networkNodeUrl));
 }
 
 async function getCThinBlockAnchor(web3, networkType, governorDomainName, shard, cblockNum) {
@@ -56,21 +57,9 @@ function getRegistry(web3, networkType) {
     return web3.eth.contract(registryAbi).at(registryAddress);
 }
 
-function getNetworkUrl(networkType) {
-    var infuraToken = Constants.default.infuraApiToken;
-    switch (networkType) {
-        case "mainnet":
-            return "https://mainnet.infura.io/v3/" + infuraToken;
-        case "test_ropsten":
-            return "https://ropsten.infura.io/v3/" + infuraToken;
-        case "test_infuranet":
-            return "https://infuranet.infura.io/v3/" + infuraToken;
-        case "test_kovan":
-            return "https://kovan.infura.io/v3/" + infuraToken;
-        case "test_rinkeby":
-            return "https://rinkeby.infura.io/v3/" + infuraToken;
-        case "test_localhost":
-            return "http://localhost:8545";
+function getNetworkNodeUrl(networkNodeUrlsMap, networkType) {
+    if((typeof networkNodeUrlsMap[networkType])!="undefined") {
+        return networkNodeUrlsMap[networkType][0];
     }
     return null;
 }
