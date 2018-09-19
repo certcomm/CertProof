@@ -554,7 +554,7 @@ a.breadcrumb {
 }
 .onoffswitch-checkbox:disabled + .onoffswitch-label,
 .onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-switch {
-  border-color: #919191;
+  border-color: #919191; cursor: wait;
 }
 div.tooltip {
 	position: relative; display: inline-block; width: 100%;

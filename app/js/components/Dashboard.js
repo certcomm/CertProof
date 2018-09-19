@@ -46,7 +46,7 @@ export default class Dashboard extends React.Component {
             blockchainModalIsOpen: false,
             blockchainAnchorDisable: false,
             emptyBlockchainAnchorsOn: false,
-            progress: 0,
+            isProveRunning: false,
             stateData: '',
             rawJson: null,
             type: "evidencemenifest",
@@ -59,22 +59,29 @@ export default class Dashboard extends React.Component {
         this.openModal = this.openModal.bind(this);
         this.closeModal = this.closeModal.bind(this);
 
+        this.isMountedComponent = false;
+
         this.blockchainModalAction = this.blockchainModalAction.bind(this);
+    }
+
+    setStates(states){
+        if(this.isMountedComponent){
+            this.setState(states);
+        }
     }
     
     openModal() {
         var rawJson = this.store.getRawJson(),
             evidenceJson = rawJson.evidenceJson;
-        this.setState({modalIsOpen: true, rawJson: evidenceJson});
-
+        this.setStates({modalIsOpen: true, rawJson: evidenceJson});
     }
 
     closeModal() {
-        this.setState({modalIsOpen: false});
+        this.setStates({modalIsOpen: false});
     }
     
     blockchainModalAction(isVisible) {
-        this.setState({blockchainModalIsOpen: isVisible});
+        this.setStates({blockchainModalIsOpen: isVisible});
     }
     
     replacer(match, pIndent, pKey, pVal, pEnd) {
@@ -94,7 +101,7 @@ export default class Dashboard extends React.Component {
     }
     
     viewRawEvidene(json, type) {
-        this.setState({rawJson: json, type: type});
+        this.setStates({rawJson: json, type: type});
         document.getElementsByClassName("pretty-json")[0].children[0].scrollIntoView()
     }
 
@@ -212,11 +219,17 @@ export default class Dashboard extends React.Component {
     }
     
     componentWillMount(){
+        this.isMountedComponent = true;
+
         this.store.resetRawJson();
 
         // get network json from store
         this.networkJson = this.store.getNetworkJson();
-     }
+    }
+
+    componentWillUnmount() {
+        this.isMountedComponent = false;
+    }
 
     componentDidMount() {
 		var me = this;
@@ -225,9 +238,9 @@ export default class Dashboard extends React.Component {
         LogEmitter.prototype = {
             log: function(msg) {
                 if(me.state.log == "")
-                    me.setState({log: this.getPaddedMsg(msg)})
+                    me.setStates({log: this.getPaddedMsg(msg)})
                 else
-                    me.setState({log: me.state.log+"<br />"+ this.getPaddedMsg(msg)})
+                    me.setStates({log: me.state.log+"<br />"+ this.getPaddedMsg(msg)})
             },
             error: (err) => {
                 this.state.errLog.push(err);
@@ -755,11 +768,16 @@ export default class Dashboard extends React.Component {
     checkProveEvidence(isPassed){
         var verificationBtn = isPassed === false ? "verification-failed-container" : "verification-container";
 
-        document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
-        document.getElementsByClassName(verificationBtn)[0].style.display = "block";
+        if(document.getElementsByClassName("progress-bar-container")[0]){
+            document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
+            document.getElementsByClassName(verificationBtn)[0].style.display = "block";
+        }
+        this.setStates({isProveRunning: false});
     }
 
     proveEvidence(e){
+        // to disable back button
+        this.setStates({isProveRunning: true});
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
         document.getElementsByClassName("progress-bar-container")[0].style.display = "block";
         document.getElementsByClassName("log-container-ps")[0].classList.remove("hidden");
@@ -792,38 +810,23 @@ export default class Dashboard extends React.Component {
 
             this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
             console.log(this.defaultNodeUrls);
+            
             var proveConfig = {extractedEvidenceFolder:Constants.default.extractedEvidenceFolder,
-                               performBlockchainProof:true};
+                               performBlockchainProof:!this.state.blockchainAnchorDisable};
             prover.proveExtractedEvidenceZip(this.logEmitter, proveConfig, proveZip)
             .then((response) => {
-                console.error("Success!"+ response);
                 proveZip.close();
-                
                 this.logEmitter.log("Success!"+ response);
-
                 setTimeout(()=>{
-                    if(this.state.errLog.length > 0){
-                        this.checkProveEvidence(false);
-                        this.setState({progress: this.state.progress+1});
-                    }else{
-                        this.checkProveEvidence(true);
-                    }
+                    if(this.state.errLog.length > 0) this.checkProveEvidence(false);
+                    else this.checkProveEvidence(true);
                 }, 500);
-
-                // enable scroll after log loaded
-                implementScrollForProve();
+                implementScrollForProve();  // enable scroll after log loaded
             })
             .catch((err) => {
                 proveZip.close();
-
-                console.error("Failed!", err);
                 this.checkProveEvidence(false);
-
-                // set error log
-                this.setState({progress: this.state.progress+1});
-
-                // enable scroll after log loaded
-                implementScrollForProve();
+                implementScrollForProve();  // enable scroll after log loaded
             });
         });
     }
@@ -1112,13 +1115,15 @@ export default class Dashboard extends React.Component {
     }
     
     viewNetworkNode(network, networktype) {
-        this.setState({network: network, networktype: networktype});
+        this.setStates({network: network, networktype: networktype});
         document.getElementsByClassName("network-nodes")[0].children[0].scrollIntoView()
     }
 
-    blockchainAnchorDisableFunc(isEnable, e){
+    blockchainAnchorDisableFunc(isEnable, btnDisabled, e){
         e.preventDefault();
-        this.setState({blockchainAnchorDisable: isEnable});
+        if(!btnDisabled){
+            this.setStates({blockchainAnchorDisable: isEnable});
+        }
     }
 
     getNetworkHTMLDialog(){
@@ -1130,7 +1135,7 @@ export default class Dashboard extends React.Component {
         if(this.networkJson != "" && this.evidenceType == 'Certified L1'){
             if(!blockchainAnchorsOn && !this.state.emptyBlockchainAnchorsOn){
                 setTimeout(()=>{
-                    this.setState({emptyBlockchainAnchorsOn: true});
+                    this.setStates({emptyBlockchainAnchorsOn: true});
                 }, 100);
                 return false;
             }else if(this.state.emptyBlockchainAnchorsOn){
@@ -1281,7 +1286,11 @@ export default class Dashboard extends React.Component {
                             <img className="logo" src={ConfigImages.default.appIcon} alt="CertComm" title="CertComm" />
                         </div>
                         <div className="xpanel-header-back-btn">
-                            <button className="btn btn-breadcrumb" onClick={this.navigateToUploadEvidence.bind(this)}>&#x276e; Back</button>
+                            {
+                                this.state.isProveRunning ? (
+                                    <button className="btn btn-breadcrumb disabled">&#x276e; Back</button>
+                                ) : <button className="btn btn-breadcrumb" onClick={this.navigateToUploadEvidence.bind(this)}>&#x276e; Back</button>
+                            }
                         </div>
                     </div>
                     <div className="clear" />
@@ -1350,10 +1359,14 @@ export default class Dashboard extends React.Component {
                                                         <div className="info-label">Perform Blockchain Proof </div>
                                                         <div className="fl bold"> : </div>
                                                         <div className="info-value">
-                                                            <div className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable)}>
+                                                            <div className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable, this.state.isProveRunning)}>
                                                                 <div className="switch">
                                                                     <div className="onoffswitch">
-                                                                        <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} readOnly />
+                                                                        {
+                                                                            this.state.isProveRunning ? (
+                                                                                <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} disabled />
+                                                                            ) : <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} readOnly />
+                                                                        }
                                                                         <label htmlFor="blockchainAnchorDisableCheck" className="onoffswitch-label">
                                                                             <span className="onoffswitch-inner"></span>
                                                                             <span className="onoffswitch-switch"></span>
