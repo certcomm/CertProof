@@ -7,7 +7,7 @@ var cThinBlockAnchorOpsAbi = require("../contract-abi/CThinBlockAnchorOps.json")
 var Web3 = require('web3');
 module.exports = {
     proveOnBlockChain: async function(logEmitter, networkType, governorDomainName, shard, cblockNum, cThinBlockHash, cThinBlockMerkleRootHash) {
-        logEmitter.log("Proving cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
+        logEmitter.log("Proving shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
         try {
             logEmitter.indent();
             var web3 = getWeb3(networkType);
@@ -27,7 +27,7 @@ module.exports = {
         } finally {
             logEmitter.deindent();
         }
-        logEmitter.log("Proved cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
+        logEmitter.log("Proved shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
     }
 }
 
