@@ -9,6 +9,7 @@
 	"build": {
 		"appId": "com.tmail21.certproof",
 		"productName": "CertProof",
+        "artifactName": "${productName}-${os}-${arch}-${version}.${ext}",
 		"asar": true,
 		"mac": {
 			"identity": null,
@@ -39,7 +40,7 @@
 			"target": [
 				"AppImage"
 			],
-			"category": "Development"
+          "category": "Development"
 		}
 	},
 	"scripts": {
