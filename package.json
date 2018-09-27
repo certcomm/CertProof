@@ -3,13 +3,13 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.37",
+	"version": "1.0.38",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
 		"appId": "com.tmail21.certproof",
 		"productName": "CertProof",
-        "artifactName": "${productName}-${os}-${arch}-${version}.${ext}",
+		"artifactName": "${productName}-${os}-${arch}-${version}.${ext}",
 		"asar": true,
 		"mac": {
 			"identity": null,
@@ -40,7 +40,7 @@
 			"target": [
 				"AppImage"
 			],
-          "category": "Development"
+			"category": "Development"
 		}
 	},
 	"scripts": {
@@ -79,7 +79,7 @@
 		"create-react-class": "^15.6.3",
 		"electron-notifications": "^1.0.0",
 		"es6-promise": "^4.1.0",
-		"excel4node": "^1.3.6",
+		"excel4node": "^1.6.0",
 		"flux": "3.1.3",
 		"fs-extra": "^5.0.0",
 		"jquery": "^3.3.1",

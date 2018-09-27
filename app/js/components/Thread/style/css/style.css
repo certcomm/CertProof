@@ -197,6 +197,9 @@ div.writers-count-wrapper .h-inner-wrapper {
 .thread-container div.comment-container div.comment-text {
 	font-size: 13px; color:gray; margin-top: 10px;
 }
+.thread-container div.comment-container div.comment-text pre {
+	white-space: inherit;
+}
 .thread-container div.comment-container div.comment-text img, .thread-container div.comment-container div.comment-text iframe.thread-container div.comment-container div.comment-text video {
     max-width: 100%;
 }
