@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.39.2",
+	"version": "1.0.39.3",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
@@ -77,6 +77,7 @@
 	},
 	"dependencies": {
 		"create-react-class": "^15.6.3",
+		"dmg-builder": "^5.3.1",
 		"electron-notifications": "^1.0.0",
 		"es6-promise": "^4.1.0",
 		"excel4node": "^1.6.0",
