@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.38",
+	"version": "1.0.39",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
@@ -14,8 +14,7 @@
 		"mac": {
 			"identity": null,
 			"category": "public.app-category.business",
-			"icon": "./app/style/icons/mac/icon.icns",
-			"target": "dmg"
+			"icon": "./app/style/icons/mac/icon.icns"
 		},
 		"win": {
 			"target": [
