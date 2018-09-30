@@ -12,7 +12,6 @@
 		"artifactName": "${productName}-${os}-${arch}-${version}.${ext}",
 		"asar": true,
 		"mac": {
-			"identity": null,
 			"category": "public.app-category.business",
 			"icon": "./app/style/icons/mac/icon.icns",
 			"target": "dmg"
