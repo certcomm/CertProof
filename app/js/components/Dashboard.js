@@ -40,7 +40,7 @@ export default class Dashboard extends React.Component {
         this.allNetworks = '';
         this.addedNode = '';
         this.addedNodeProtocol = 'https://';
-        this.defaultNodeUrls = [];
+        this.defaultNodeUrls = {};
 
         this.state = {
             modalIsOpen: false,
@@ -809,12 +809,10 @@ export default class Dashboard extends React.Component {
                 }, 50);
             }
 
-            this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
-            console.log(this.defaultNodeUrls);
-            
+            // this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
             var proveConfig = {extractedEvidenceFolder:Constants.default.extractedEvidenceFolder,
                                performBlockchainProof:!this.state.blockchainAnchorDisable,
-                               networkNodeUrlsMap:proverConstants.default.defaultNetworkNodeUrlsMap};
+                               networkNodeUrlsMap:this.defaultNodeUrls};
             prover.proveExtractedEvidenceZip(this.logEmitter, proveConfig, proveZip)
             .then((response) => {
                 proveZip.close();
@@ -1164,6 +1162,10 @@ export default class Dashboard extends React.Component {
                 });
             });
             this.allNetworks = allNetworks;
+
+            if(this.state && this.state.network && this.state.network != ""){
+                this.defaultNodeUrls[this.state.network.name] = [];
+            }
             
             return <div id="modal-blockchain-content-container" className="modal-content">
                 <div className="panel-container">
@@ -1207,7 +1209,11 @@ export default class Dashboard extends React.Component {
                                     {
                                         this.state && this.state.network && this.state.network.value.map(node => {
                                             if(node.default){
-                                                this.defaultNodeUrls = [...this.defaultNodeUrls, node.url]
+                                                if(!this.defaultNodeUrls[this.state.network.name]){
+                                                    this.defaultNodeUrls[this.state.network.name] = [];
+                                                }
+                                                this.defaultNodeUrls[this.state.network.name].push(node.url);
+                                                // this.defaultNodeUrls = [...this.defaultNodeUrls, node.url]
                                             }
                                             return <div key={"node-row-sub-container-"+Math.random()} className="node-row-sub-container">
                                                 <div className="node-row-url fl">{node.url}</div>

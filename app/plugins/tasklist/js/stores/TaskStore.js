@@ -201,14 +201,13 @@ function tasksSortBy(sortBy, storeId) {
 var TaskStore = _.extend({}, EventEmitter.prototype, {
 	// Return Product data
 	getData: function(storeId) {
-		// if filterBy not set then it should be openTasks by default
-		if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "openTasks";
-
 		if(_taskData[storeId].taskNum > 0 && _taskData[storeId].taskNum != undefined && _taskData[storeId].taskNum != null && _taskData[storeId].taskNum != "undefined" && _taskData[storeId].taskNum != "null" && _taskData[storeId].taskNum != ""){
-			_taskData[storeId].filterBy = "all";
+			if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "all";
 			// delete _taskData[storeId].taskNum;
+		}else{
+			// if filterBy not set then it should be openTasks by default
+			if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "openTasks";
 		}
-		
 		return _taskData[storeId];
 	},
 	getStoreJson: function(storeId) {

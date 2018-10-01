@@ -451,7 +451,7 @@ export default class Sections extends React.Component {
                     return false;
                 }else{
                     var sectionContent = bufferData.toString('utf-8');
-                    sectionContent = this.urlify(sectionContent);
+                    sectionContent = (section.type == "task_list") ? sectionContent : this.urlify(sectionContent);
                 }
 
                 if(section.type == "task_list"){

@@ -27,13 +27,9 @@ export default {
 					name: "mainnet",
 					value: [
 						{
-							url: "https://mainnet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							url: "https://mainnet.infura.io/v3/96bd807ada6646b9b815e6bdac9db700",
 							appDefault: true,
 							default: true
-						},
-						{
-							url: "https://mainnet.certcomm.io/f7dca",
-							default: false
 						}
 					]
 				},
@@ -41,7 +37,7 @@ export default {
 					name: "test_ropsten",
 					value: [
 						{
-							url: "https://ropsten.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							url: "https://ropsten.infura.io/v3/96bd807ada6646b9b815e6bdac9db700",
 							appDefault: true,
 							default: true
 						}
@@ -51,7 +47,7 @@ export default {
 					name: "test_infuranet",
 					value: [
 						{
-							url: "https://infuranet.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							url: "https://infuranet.infura.io/v3/96bd807ada6646b9b815e6bdac9db700",
 							appDefault: true,
 							default: true
 						}
@@ -61,7 +57,7 @@ export default {
 					name: "test_kovan",
 					value: [
 						{
-							url: "https://kovan.infura.io/Rfiz1l4YFxXO9GRgpOaB",
+							url: "https://kovan.infura.io/v3/96bd807ada6646b9b815e6bdac9db700",
 							appDefault: true,
 							default: true
 						}
@@ -71,7 +67,17 @@ export default {
 					name: "test_rinkeby",
 					value: [
 						{
-							url: "https://rinkeby.io/Rfiz1l4YFxXO9GRgpOaB",
+							url: "https://rinkeby.infura.io/v3/96bd807ada6646b9b815e6bdac9db700",
+							appDefault: true,
+							default: true
+						}
+					]
+				},
+				{
+					name: "test_localhost",
+					value: [
+						{
+							url: "http://localhost:8545",
 							appDefault: true,
 							default: true
 						}

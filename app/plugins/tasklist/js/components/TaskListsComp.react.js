@@ -570,7 +570,7 @@ var TaskTypeRequest = createReactClass({
 		if(isEnabled) {
 			var jsonData = TaskStore.getData(this.props.storeId),
 				tnum = this.props.items.taskNumber,
-				ttitle = encodeURI(this.props.items.title);
+				ttitle = this.props.items.title.replace(/"/g, "'").replace(/[\[\]']+/g,'');
 			
 			var url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+'#task='+jsonData.secNum+':'+tnum,
 				link = '[ TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '" in THREAD "' +jsonData.tmailSubject+ '", ' +url+ ' ]';

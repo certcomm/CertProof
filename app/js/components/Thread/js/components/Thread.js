@@ -43,6 +43,8 @@ export default class Thread extends React.Component {
                     var ttn = event.target.getAttribute('data-ttn');
                     CommonFunc.comments.openInAppLinks(event.target.href, ttn);
                 }
+            }else if(event.target.tagName == 'SPAN' && $(event.target).parent("a.tooltip").length > 0){
+                event.preventDefault();
             }
         });
     }

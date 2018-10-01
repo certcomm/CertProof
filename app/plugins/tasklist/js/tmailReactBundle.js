@@ -1732,7 +1732,7 @@ var TaskTypeRequest = createReactClass({
 		if(isEnabled) {
 			var jsonData = TaskStore.getData(this.props.storeId),
 				tnum = this.props.items.taskNumber,
-				ttitle = encodeURI(this.props.items.title);
+				ttitle = this.props.items.title.replace(/"/g, "'").replace(/[\[\]']+/g,'');
 			
 			var url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+'#task='+jsonData.secNum+':'+tnum,
 				link = '[ TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '" in THREAD "' +jsonData.tmailSubject+ '", ' +url+ ' ]';
@@ -2412,7 +2412,7 @@ var TaskListsCompHeader = createReactClass({
 
 		var jsonData = TaskStore.getData(this.props.storeId),
 			tnum = this.props.items.taskNumber,
-			ttitle = encodeURI(this.props.items.title);
+			ttitle = this.props.items.title.replace(/"/g, "'").replace(/[\[\]']+/g,'');
 
 		var url = jsonData.baseUrl+'ttn/'+jsonData.tmailNum+'#task='+jsonData.secNum+':'+tnum,
 			link = '[ TASK ' +tnum+ ' titled "'+ttitle+'" in "' +jsonData.sectionTitle+ '" in THREAD "' +jsonData.tmailSubject+ '", ' +url+ ' ]';
@@ -2772,14 +2772,13 @@ function tasksSortBy(sortBy, storeId) {
 var TaskStore = _.extend({}, EventEmitter.prototype, {
 	// Return Product data
 	getData: function(storeId) {
-		// if filterBy not set then it should be openTasks by default
-		if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "openTasks";
-
 		if(_taskData[storeId].taskNum > 0 && _taskData[storeId].taskNum != undefined && _taskData[storeId].taskNum != null && _taskData[storeId].taskNum != "undefined" && _taskData[storeId].taskNum != "null" && _taskData[storeId].taskNum != ""){
-			_taskData[storeId].filterBy = "all";
+			if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "all";
 			// delete _taskData[storeId].taskNum;
+		}else{
+			// if filterBy not set then it should be openTasks by default
+			if(!_taskData[storeId].filterBy) _taskData[storeId].filterBy = "openTasks";
 		}
-		
 		return _taskData[storeId];
 	},
 	getStoreJson: function(storeId) {
