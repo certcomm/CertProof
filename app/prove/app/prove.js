@@ -259,19 +259,23 @@ module.exports = {
                 this.logEmitter.log("Proving ssacMerklePath");
                 evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
 
-                if(this.proveConfig.performBlockchainProof && (typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
-                    for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
-                        var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
-                        var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
-                        var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
-                        cpJsonUtils.ensureJsonHas("1020", incManifestJson.blockchainAnchorsOn[0], "type", "networks");
-                        var cblockProvedKey = cThinBlockJson.shardKey + ":" + cThinBlockJson.blockNum;
-                        if(!this.cblocksProved.has(cblockProvedKey)) {
-                            //for now prove on first type and first network in the type
-                            var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
-                            await blockchainUtils.proveOnBlockChain(this.logEmitter, this.proveConfig.networkNodeUrlsMap, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
-                            this.cblocksProved.add(cblockProvedKey);
+                if(this.proveConfig.performBlockchainProof){
+                    if ((typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
+                        for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
+                            var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
+                            var cThinBlockData = zip.entryDataSync(cThinBlockFilePath);
+                            var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
+                            cpJsonUtils.ensureJsonHas("1020", incManifestJson.blockchainAnchorsOn[0], "type", "networks");
+                            var cblockProvedKey = cThinBlockJson.shardKey + ":" + cThinBlockJson.blockNum;
+                            if(!this.cblocksProved.has(cblockProvedKey)) {
+                                //for now prove on first type and first network in the type
+                                var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
+                                await blockchainUtils.proveOnBlockChain(this.logEmitter, this.proveConfig.networkNodeUrlsMap, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
+                                this.cblocksProved.add(cblockProvedKey);
+                            }
                         }
+                    } else {
+                        errorMessages.throwError("3005", ", cnum=" + cnum);
                     }
                 }
 

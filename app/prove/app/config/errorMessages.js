@@ -47,6 +47,7 @@ module.exports = {
 		"3002":"CThinBlockHash in incremental evidence does not match CThinBlockHash on Blockchain",
 		"3003":"MerkleRootHash in incremental evidence does not match MerkleRootHash on Blockchain",
 		"3004":"Could not connect to Blockchain network using Node URL",
+		"3005":"Blockchain anchors missing for one or more incremental evidences",
 	},
 	throwError: function(errorCode, msgSuffix) {
 	    var errorMessage = this.errors[errorCode] + ", " + msgSuffix;
