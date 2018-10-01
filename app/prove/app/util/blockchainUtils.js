@@ -32,9 +32,14 @@ module.exports = {
 }
 
 function getWeb3(logEmitter, networkNodeUrlsMap, networkType) {
+    logEmitter.log("getting network url from networkNodeUrlsMap=" + JSON.stringify(networkNodeUrlsMap));
     var networkNodeUrl=getNetworkNodeUrl(networkNodeUrlsMap, networkType);
     logEmitter.log("Proving on networkNodeUrl=" + networkNodeUrl);
-    return new Web3(new Web3.providers.HttpProvider(networkNodeUrl));
+    var web3 = new Web3(new Web3.providers.HttpProvider(networkNodeUrl));
+    if(!web3.isConnected()) {
+        errorMessages.throwError("3004", ", networkNodeUrl=" + networkNodeUrl  + ", networkType=" + networkType);
+    }
+    return web3;
 }
 
 async function getCThinBlockAnchor(web3, networkType, governorDomainName, shard, cblockNum) {

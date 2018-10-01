@@ -46,6 +46,7 @@ module.exports = {
 		"3001":"Block does not exists on Blockchain",
 		"3002":"CThinBlockHash in incremental evidence does not match CThinBlockHash on Blockchain",
 		"3003":"MerkleRootHash in incremental evidence does not match MerkleRootHash on Blockchain",
+		"3004":"Could not connect to Blockchain network using Node URL",
 	},
 	throwError: function(errorCode, msgSuffix) {
 	    var errorMessage = this.errors[errorCode] + ", " + msgSuffix;
