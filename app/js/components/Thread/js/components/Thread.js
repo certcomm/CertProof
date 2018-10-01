@@ -39,6 +39,7 @@ export default class Thread extends React.Component {
         $("body").on("click", function(event, target) {
             if (event.target.tagName == 'A') {
                 if($(event.target).hasClass("in-same-thread")){
+                    console.log("dsfsdfsdf");
                     event.preventDefault();
                     var ttn = event.target.getAttribute('data-ttn');
                     CommonFunc.comments.openInAppLinks(event.target.href, ttn);
