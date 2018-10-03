@@ -1,6 +1,7 @@
 import React from 'react';
 import { observer } from "mobx-react";
 import PerfectScrollbar from 'perfect-scrollbar';
+import Clipboard from 'react-clipboard.js';
 
 const {shell} = window.require('electron');
 
@@ -588,6 +589,8 @@ export default class Dashboard extends React.Component {
         } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
             filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
             this.evidenceType = 'Certified L2';
+            
+            this.state.blockchainAnchorDisable = true;
         } else {
             filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
             this.evidenceType = 'Backup';
@@ -758,9 +761,11 @@ export default class Dashboard extends React.Component {
         if (x.style.display === "none" || x.style.display == "") {
             document.getElementsByClassName("col")[0].className = "exp fancy";
             x.style.display = "block";
+            $(".log-container").addClass("log-container-hgt");
         } else {
             document.getElementsByClassName("exp")[0].className = "col fancy";
             x.style.display = "none";
+            $(".log-container").removeClass("log-container-hgt");
         }
 
         this.implementScrollOnModal();
@@ -802,10 +807,13 @@ export default class Dashboard extends React.Component {
                     if (element6 && element6.length > 0) {
                         new PerfectScrollbar('.log-container-ps').update();
                     }
+
+                    if($(".advanced-container .more .exp").length > 0) $(".log-container").addClass("log-container-hgt");
+                    /*
                     var element7 =  document.getElementsByClassName('modal-xpanel-lhs-container');
                     if (element7 && element7.length > 0) {
                         new PerfectScrollbar('.modal-xpanel-lhs-container').update();
-                    }
+                    }*/
                 }, 50);
             }
 
@@ -832,11 +840,11 @@ export default class Dashboard extends React.Component {
     }
 
     reproveEvidence(e){
-        this.state.log = "";
-        this.state.errLog = [];
+        this.setState({log: "", errLog: []});
 
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "inline-block";
         document.getElementsByClassName("verification-container")[0].style.display = "none";
+        document.getElementsByClassName("verification-failed-container")[0].style.display = "none";
         document.getElementsByClassName("log-container-ps")[0].classList.add("hidden");
     }
 
@@ -1272,6 +1280,10 @@ export default class Dashboard extends React.Component {
         }
     }
 
+    emptyFunc(e){
+        console.log("Empty func !!");
+    }
+
 	render() {
         var storeFileName = this.store.getFileName(),
             data = this.store.getData(),
@@ -1285,6 +1297,21 @@ export default class Dashboard extends React.Component {
         
         // set state
         this.state.stateData = data;
+
+        if(this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ){
+            if(this.state.blockchainAnchorDisable){
+                var tooltip = "Warning: The Blockchain part of the proof has been disabled. This proof cannot be considered definitive. In  order to enable the Blockchain part of the proof, click on \"More Details\" above and switch \"Perform Blockchain Proof\" to on.";
+                var toolalert = "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s). Click on \'More Details\' to switch it on.";
+                if(this.evidenceType == 'Certified L2'){
+                    tooltip = toolalert = "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s).";
+                }
+            }else{
+                var tooltip = toolalert = "Warning: This is an L1 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).";
+            }
+            var inforBtn = <div title={tooltip} onClick={() => {swal(toolalert)}} className="prove-warning-sign" />;
+        }else{
+            var inforBtn = <div className="prove-info-sign-null">&nbsp;</div>;
+        }
         
 		return (
             <div className="panel-container">
@@ -1362,16 +1389,16 @@ export default class Dashboard extends React.Component {
 
                                             <div className="clear"></div>
                                             {
-                                                this.evidenceType == 'Certified L1' && !this.state.emptyBlockchainAnchorsOn ? (
+                                                !this.state.emptyBlockchainAnchorsOn ? (
                                                     <div>
                                                         <div className="info-label">Perform Blockchain Proof </div>
                                                         <div className="fl bold"> : </div>
                                                         <div className="info-value">
-                                                            <div className="link" onClick={this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable, this.state.isProveRunning)}>
+                                                            <div className="link" onClick={this.evidenceType == 'Certified L2' ? this.emptyFunc.bind(this) : this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable, this.state.isProveRunning)}>
                                                                 <div className="switch">
                                                                     <div className="onoffswitch">
                                                                         {
-                                                                            this.state.isProveRunning ? (
+                                                                            this.state.isProveRunning || this.evidenceType == 'Certified L2' ? (
                                                                                 <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} disabled />
                                                                             ) : <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} readOnly />
                                                                         }
@@ -1408,11 +1435,7 @@ export default class Dashboard extends React.Component {
                                     <div className="evidence-prove-form">
                                         <div>
                                             <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
-                                            {
-                                                this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ? (
-                                                    <div onClick={() => {swal(this.state.blockchainAnchorDisable ? 'Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s). Click on \'More Details\' to switch it on."' : 'Warning: This is an L1 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).')}} className="prove-warning-sign" />
-                                                ) : <div className="prove-info-sign-null">&nbsp;</div>
-                                            }
+                                            {inforBtn}
                                         </div>
                                     </div>
                                     <div className="progress-bar-container hidden">
@@ -1420,6 +1443,7 @@ export default class Dashboard extends React.Component {
                                             Proving
                                             <div className="fr fa-spin"></div>
                                         </div>
+                                        {inforBtn}
                                         {/* <div className="cancel-link" style={{marginTop: 10}}>Cancel</div> */}
                                     </div>
                                     <div className="verification-container hidden">
@@ -1431,6 +1455,7 @@ export default class Dashboard extends React.Component {
                                             Re-Prove
                                             <div className="fr re-prove-icon"></div>
                                         </div>
+                                        {inforBtn}
                                     </div>
                                     <div className="verification-failed-container hidden">
                                         <div className="btn-primary prove-failed-btn tooltip">
@@ -1438,11 +1463,33 @@ export default class Dashboard extends React.Component {
                                             Proof Failed
                                             <div className="fr prove-failed-icon"></div>
                                         </div>
+                                        <div onClick={this.reproveEvidence.bind(this)} className="btn-success re-prove-btn">
+                                            Re-Prove
+                                            <div className="fr re-prove-icon"></div>
+                                        </div>
+                                        {inforBtn}
                                     </div>
                                 </div>
                             ) : null
                         }
                         <div className="clear" />
+                        {
+                            this.state.log != "" || this.state.errLog.length > 0 ? (
+                                <div className="copy-to-clipboard-container">
+                                    <div id="clip-log-text" className="hidden">Log Copied to Clipboard</div>
+                                    <Clipboard
+                                        data-clipboard-text={this.state.log+"<br/>\n\n"+(this.state.errLog.length > 0 ? JSON.stringify(this.state.errLog) : "")}
+                                        onSuccess={ () => {
+                                            document.getElementById('clip-log-text').className = 'copied-message-text';
+                                            setTimeout(function(){
+                                                document.getElementById('clip-log-text').className = 'hidden';
+                                            }, 3000);
+                                        }}>
+                                        <div title="Copy Log to Clipboard" className={"copy-to-clipboard "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "")} />
+                                    </Clipboard>
+                                </div>
+                            ) : null
+                        }
                         <div className={"log-container-ps "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "log-container")}>
                             <div className="log-text" dangerouslySetInnerHTML={{__html: this.state.log}} />
                             <div className="clear" />

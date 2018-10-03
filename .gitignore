@@ -62,3 +62,5 @@ typings/
 
 app/CertProofBundle.js
 app/reactifyBundle.js
+
+package-lock.json

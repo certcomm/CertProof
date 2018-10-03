@@ -217,7 +217,7 @@ a.breadcrumb {
   position: relative;
 }
 
-.xpanel .advanced-container div:first-child{
+.xpanel .advanced-container div.more{
 	cursor: pointer; color: #1c84c6;
 }
 .xpanel .xpanel-lhs-container {
@@ -331,7 +331,7 @@ a.breadcrumb {
   float: left; width: 33px;
 }
 .xpanel .prove-info-sign, .xpanel .prove-warning-sign {
-  float: left; position: relative; margin: 8px 0px 0px 7px; cursor: pointer;
+  display: inline-block; position: relative; margin: 8px 0px 0px 7px; cursor: pointer; vertical-align: top;
 }
 .xpanel .prove-info-sign:before{
   content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
@@ -394,12 +394,32 @@ a.breadcrumb {
   text-align: left; font-size: 13px; overflow: auto; border: solid 1px #EFEFEF;
   margin-top: 14px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
 }
+.log-container-hgt{
+  height: calc(100vh - 550px)!important;
+}
+
 .log-container .log-text{
   color: forestgreen;
 }
 .log-container .err-text{
   color: #FF0000;
 }
+.xpanel .copy-to-clipboard-container{
+  position: relative; height: 15px;
+}
+.xpanel .copy-to-clipboard-container button{
+  float: right; border: none; padding: 0; background: transparent; cursor: pointer;
+}
+.xpanel .copy-to-clipboard {
+  float: right; padding-right: 15px; margin-top: 10px;
+}
+.xpanel .copy-to-clipboard:before {
+  color: #000000; content: "#"; font-family: "tmail"; font-size: 16px; position: fixed;
+}
+.xpanel-lhs-container .copied-message-text {
+	position: absolute; right: 0; top: 4px; background: #1AB394; color: #FFFFFF; z-index: 999; padding: 2px 20px; display: block;
+}
+
 
 /*    Raw evidence json      */
 .panel-container .xpanel-modal.xpanel-modal-inspenia{
