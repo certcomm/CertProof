@@ -1312,6 +1312,9 @@ export default class Dashboard extends React.Component {
         }else{
             var inforBtn = <div className="prove-info-sign-null">&nbsp;</div>;
         }
+
+        var pureCopiedText = this.state.log+(this.state.errLog.length > 0 ? "\n\n"+JSON.stringify(this.state.errLog) : "");
+        pureCopiedText = pureCopiedText.replace(/(<([^>]+)>)/ig,"");
         
 		return (
             <div className="panel-container">
@@ -1478,7 +1481,7 @@ export default class Dashboard extends React.Component {
                                 <div className="copy-to-clipboard-container">
                                     <div id="clip-log-text" className="hidden">Log Copied to Clipboard</div>
                                     <Clipboard
-                                        data-clipboard-text={this.state.log+"<br/>\n\n"+(this.state.errLog.length > 0 ? JSON.stringify(this.state.errLog) : "")}
+                                        data-clipboard-text={pureCopiedText}
                                         onSuccess={ () => {
                                             document.getElementById('clip-log-text').className = 'copied-message-text';
                                             setTimeout(function(){
