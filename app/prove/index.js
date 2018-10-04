@@ -3,9 +3,13 @@ var proverConstants = require("./app/config/constants.js");
 
 function LogEmitter() {
 	this.indentTimes = 0;
+    this.terminated = false;
 };
 LogEmitter.prototype = {	
-	log: function(msg) {console.log(this.getPaddedMsg(msg));},
+	log: function(msg) {
+	    console.log(this.getPaddedMsg(msg));
+	    this.stopIfTerminated();
+	},
 	error: function(err) {console.error(err);},
 	getPaddedMsg : function(msg) {
                 return "-".repeat(this.indentTimes*3) + msg;
@@ -15,6 +19,14 @@ LogEmitter.prototype = {
 	},
 	deindent: function() {
 		this.indentTimes--;
+	},
+	triggerTerminate() {
+	    this.terminated = true;
+	},
+	stopIfTerminated() {
+	    if(this.terminated == true) {
+	        throw {name:"0000",message:"Terminated by user action"}
+	    }
 	}
 };
 var logEmitter = new LogEmitter();

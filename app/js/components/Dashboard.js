@@ -25,7 +25,8 @@ var Constants = require("./../../config/constants.js");
 var proverConstants = require("../../prove/app/config/constants.js");
 
 function LogEmitter() {
-    this.indentTimes = 0;    
+    this.indentTimes = 0;
+    this.terminated = false;
 };
 
 @observer
@@ -243,6 +244,7 @@ export default class Dashboard extends React.Component {
                     me.setStates({log: this.getPaddedMsg(msg)})
                 else
                     me.setStates({log: me.state.log+"<br />"+ this.getPaddedMsg(msg)})
+        	    this.stopIfTerminated();
             },
             error: (err) => {
                 this.state.errLog.push(err);
@@ -255,7 +257,15 @@ export default class Dashboard extends React.Component {
             },
             deindent: function() {
                 this.indentTimes--;
-            }            
+            },
+            triggerTerminate() {
+                this.terminated = true;
+            },
+            stopIfTerminated() {
+                if(this.terminated == true) {
+                    throw {name:"0000",message:"Terminated by user action"}
+                }
+            }
         };
         this.logEmitter = new LogEmitter();
     }
