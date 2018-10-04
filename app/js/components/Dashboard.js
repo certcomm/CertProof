@@ -1322,7 +1322,7 @@ export default class Dashboard extends React.Component {
                         });
 
                         if(defaultNetworks.length > 0){
-                            var proveInfo = "Will prove on the "+networkType.type+" ( "+defaultNetworks.join()+" ) Blockchain";
+                            var proveInfo = "the "+networkType.type+" ( "+defaultNetworks.join()+" ) Blockchain";
                             allNetworks.push(proveInfo);
                         }
                     }
@@ -1498,7 +1498,7 @@ export default class Dashboard extends React.Component {
                                             {inforBtn}
                                         </div>
                                         <div className="clear" />
-                                        <div className="prove-info-text">{proveInfoHTML}</div>
+                                        <div className="prove-info-text">Will prove on {proveInfoHTML}</div>
                                     </div>
                                     <div className="progress-bar-container hidden">
                                         <div className="proving-btn">
@@ -1508,7 +1508,7 @@ export default class Dashboard extends React.Component {
                                         <div onClick={this.terminateProveEvidence.bind(this)} className="btn-primary prove-cancel-btn"> Cancel </div>
                                         {inforBtn}
                                         <div className="clear" />
-                                        <div className="prove-info-text prove-info-text-proving">{proveInfoHTML}</div>
+                                        <div className="prove-info-text prove-info-text-proving">Proving on {proveInfoHTML}</div>
                                     </div>
                                     <div className="verification-container hidden">
                                         <div className="btn-primary proved-btn">
@@ -1521,7 +1521,7 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         {inforBtn}
                                         <div className="clear" />
-                                        <div className="prove-info-text prove-info-text-proved">{proveInfoHTML}</div>
+                                        <div className="prove-info-text prove-info-text-proved">Proved on  {proveInfoHTML}</div>
                                     </div>
                                     <div className="verification-failed-container hidden">
                                         <div className="btn-primary prove-failed-btn tooltip">
@@ -1535,7 +1535,7 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         {inforBtn}
                                         <div className="clear" />
-                                        <div className="prove-info-text prove-info-text-failed">{proveInfoHTML}</div>
+                                        <div className="prove-info-text prove-info-text-failed">Unable to proved against {proveInfoHTML}</div>
                                     </div>
                                 </div>
                             ) : null
