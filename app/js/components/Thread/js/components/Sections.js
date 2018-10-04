@@ -79,11 +79,12 @@ export default class Sections extends React.Component {
     }
 
     openModal(section) {
-        this.setState({modalIsOpen: true, section: section});
+        if(!this.state.modalIsOpen) this.setState({modalIsOpen: true, section: section});
     }
 
     closeModal() {
         this.setState({modalIsOpen: false, section: ""});
+        TaskList.destroyTasklistComponent("modal-content-container");
     }
 
     configSectionModal(){
@@ -133,7 +134,13 @@ export default class Sections extends React.Component {
                 obj.expandTask = true;
             }
 
-            setTimeout(function(){ TaskList.loadSection(obj); }, 500);
+            setTimeout(function(){
+                if(TaskList && TaskList.data && Object.keys(TaskList.data).length > 0){
+                    TaskList.destroyTasklistComponent("modal-content-container");
+                    TaskList.data = {};
+                }
+                TaskList.loadSection(obj);
+            }, 500);
             sectionHTML = "loading...";
         }else{
             sectionHTML = <div className="information-message">Section not supported.</div>

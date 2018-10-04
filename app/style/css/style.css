@@ -146,8 +146,26 @@ a.breadcrumb {
 .logo{
   text-align: center;
 }
+.ethereum-logo{
+  width: 12px; color: gray; margin: 0px 7px 0px -7px; vertical-align: bottom; background-color: #A7B1C2;
+}
 .margin-between {
   margin-left: 3px;
+}
+.evidence-prove-container{
+  position: relative;
+}
+.evidence-prove-container .prove-info-text{
+  position: absolute; left: 15%; margin: 5px; color: #1C84C6;
+}
+.evidence-prove-container .prove-info-text-proving{
+  color: #1C84C6;
+}
+.evidence-prove-container .prove-info-text-proved{
+  color: #1AB394;
+}
+.evidence-prove-container .prove-info-text-failed{
+  color: #FF0000;
 }
 .panel-container {
 	background-color:white; width:100%; font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -314,6 +332,9 @@ a.breadcrumb {
 }
 .xpanel .prove-failed-btn {
   border: 1px solid #bb0909; background-color: #FF0000; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; line-height: 29px; width: 165px;
+}
+.xpanel .prove-cancel-btn {
+  border: 1px solid #bb0909; background-color: #FF0000; color: #FFFFFF; border-radius: 6px; font-size: 24px; padding: 6px 15px 6px 12px; width: 77px; display: inline-block; margin-left: 8px; cursor: pointer;
 }
 .xpanel .prove-failed-icon:after {
   content: "\E00E"; font-family: "tmail"; font-size: 16px;
@@ -574,7 +595,7 @@ a.breadcrumb {
 }
 .onoffswitch-checkbox:disabled + .onoffswitch-label,
 .onoffswitch-checkbox:disabled + .onoffswitch-label .onoffswitch-switch {
-  border-color: #919191; cursor: wait;
+  border-color: #919191; cursor: default;
 }
 div.tooltip {
 	position: relative; display: inline-block; width: 100%;

@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.43.1",
+	"version": "1.0.44",
 	"description": "CertProof",
 	"main": "main.js",
 	"build": {
@@ -62,7 +62,7 @@
 		"section:build-reactify": "browserify -o ./app/plugins/reactifyBundle.js -r react -r react-dom -r flux -r underscore -r",
 		"section:build-tasklist": "browserify -r ./app/plugins/tasklist/js/app.js:TaskList > ./app/plugins/tasklist/js/tmailReactBundle.js -x=react -x=react-dom -x=flux -x=underscore",
 		"section:build-form": "browserify -r ./app/plugins/form/js/form.js:Form > ./app/plugins/form/js/tmailReactBundle.js -x=react -x=react-dom -x=flux -x=underscore",
-		"section:build-minify": "uglifyjs ./app/plugins/reactifyBundle.js ./app/plugins/tasklist/js/tmailReactBundle.js ./app/plugins/form/js/tmailReactBundle.js -o ./app/plugins/reactBundle.min.js"
+		"section:build-minify": "uglifyjs ./app/plugins/reactifyBundle.js ./app/plugins/tasklist/js/tmailReactBundle.js ./app/plugins/form/js/tmailReactBundle.js -b -o ./app/plugins/reactBundle.min.js"
 	},
 	"babel": {
 		"presets": [

@@ -844,6 +844,7 @@ export default class Dashboard extends React.Component {
 
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "inline-block";
         document.getElementsByClassName("verification-container")[0].style.display = "none";
+        document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
         document.getElementsByClassName("verification-failed-container")[0].style.display = "none";
         document.getElementsByClassName("log-container-ps")[0].classList.add("hidden");
     }
@@ -1183,7 +1184,10 @@ export default class Dashboard extends React.Component {
                                 allNetworks.map((ntwrkType, i) => {
                                     return <div key={"lhs-cset-"+i+Math.random()}>
                                         <div className="evidence-cnum-list-normal">
-                                            <div className="info-label">{ntwrkType.type}</div>
+                                            <div className="info-label">
+                                                <img className="ethereum-logo" src={ConfigImages.default.ethereumLogo} alt={ntwrkType.type} title={ntwrkType.type} />
+                                                {ntwrkType.type}
+                                            </div>
                                             <div className="clear" />
                                         </div>
                                         <div className="hide-evidence-list">
@@ -1284,6 +1288,52 @@ export default class Dashboard extends React.Component {
         console.log("Empty func !!");
     }
 
+    terminateProveEvidence(e){
+        this.reproveEvidence();
+        prover.terminateProve(this.logEmitter);
+    }
+
+    getDefaultNodes(){
+        var evidenceData = this.store.getEvidenceManifestData(),
+            blockchainAnchorsOn = evidenceData.blockchainAnchorsOn;
+        
+        if(this.networkJson != "" && this.evidenceType == 'Certified L1'){
+            if(!blockchainAnchorsOn && !this.state.emptyBlockchainAnchorsOn){
+                return null;
+            }else if(this.state.emptyBlockchainAnchorsOn){
+                return null;
+            }
+            
+            var allNetworks = [];
+            blockchainAnchorsOn.map(networkType => {
+                this.networkJson.map((e) => {
+                    if(e.type == networkType.type){
+                        var defaultNetworks = [];
+                        e.networks.map(en => {
+                            networkType.networks.map(networkName => {
+                                if(en.name == networkName && en.value){
+                                    en.value.map(networkVal => {
+                                        if(networkVal.default){
+                                            defaultNetworks.push(en.name);
+                                        }
+                                    });
+                                }
+                            });
+                        });
+
+                        if(defaultNetworks.length > 0){
+                            var proveInfo = "Will prove on the "+networkType.type+" ( "+defaultNetworks.join()+" ) Blockchain";
+                            allNetworks.push(proveInfo);
+                        }
+                    }
+                });
+            });
+            return allNetworks;
+        }else{
+            return null;
+        }
+    }
+
 	render() {
         var storeFileName = this.store.getFileName(),
             data = this.store.getData(),
@@ -1298,12 +1348,18 @@ export default class Dashboard extends React.Component {
         // set state
         this.state.stateData = data;
 
+        var proveInfoHTML = null;
+        if(this.evidenceType == 'Certified L1'){
+            var proveInfoArr = this.getDefaultNodes();
+            proveInfoHTML = proveInfoArr.join("\n");
+        }
+
         if(this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ){
             if(this.state.blockchainAnchorDisable){
                 var tooltip = "Warning: The Blockchain part of the proof has been disabled. This proof cannot be considered definitive. In  order to enable the Blockchain part of the proof, click on \"More Details\" above and switch \"Perform Blockchain Proof\" to on.";
                 var toolalert = "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s). Click on \'More Details\' to switch it on.";
                 if(this.evidenceType == 'Certified L2'){
-                    tooltip = toolalert = "Warning: The Blockchain Proof has been disabled. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s).";
+                    tooltip = toolalert = "Warning: This is a Layer 2 (L2) evidence file. It does not contain Layer 1 (L1) evidence which is used to prove certified operations against the blockchain. Hence only internal self-consistency is being proved. This should not be considered a definitive proof of certified operation(s).";
                 }
             }else{
                 var tooltip = toolalert = "Warning: This is an L1 Evidence with no Blockchain anchor. Hence only internal self-consistency can be proved. this should NOT be considered a definitive proof of certified operation(s).";
@@ -1314,6 +1370,7 @@ export default class Dashboard extends React.Component {
         }
 
         var pureCopiedText = this.state.log+(this.state.errLog.length > 0 ? "\n\n"+JSON.stringify(this.state.errLog) : "");
+        pureCopiedText = pureCopiedText.replace(/<br\s*[\/]?>/gi, "\n");
         pureCopiedText = pureCopiedText.replace(/(<([^>]+)>)/ig,"");
         
 		return (
@@ -1440,14 +1497,18 @@ export default class Dashboard extends React.Component {
                                             <div onClick={this.proveEvidence.bind(this)} className="fl prove-btn btn-success">Prove</div>
                                             {inforBtn}
                                         </div>
+                                        <div className="clear" />
+                                        <div className="prove-info-text">{proveInfoHTML}</div>
                                     </div>
                                     <div className="progress-bar-container hidden">
                                         <div className="proving-btn">
                                             Proving
                                             <div className="fr fa-spin"></div>
                                         </div>
+                                        <div onClick={this.terminateProveEvidence.bind(this)} className="btn-primary prove-cancel-btn"> Cancel </div>
                                         {inforBtn}
-                                        {/* <div className="cancel-link" style={{marginTop: 10}}>Cancel</div> */}
+                                        <div className="clear" />
+                                        <div className="prove-info-text prove-info-text-proving">{proveInfoHTML}</div>
                                     </div>
                                     <div className="verification-container hidden">
                                         <div className="btn-primary proved-btn">
@@ -1459,6 +1520,8 @@ export default class Dashboard extends React.Component {
                                             <div className="fr re-prove-icon"></div>
                                         </div>
                                         {inforBtn}
+                                        <div className="clear" />
+                                        <div className="prove-info-text prove-info-text-proved">{proveInfoHTML}</div>
                                     </div>
                                     <div className="verification-failed-container hidden">
                                         <div className="btn-primary prove-failed-btn tooltip">
@@ -1471,6 +1534,8 @@ export default class Dashboard extends React.Component {
                                             <div className="fr re-prove-icon"></div>
                                         </div>
                                         {inforBtn}
+                                        <div className="clear" />
+                                        <div className="prove-info-text prove-info-text-failed">{proveInfoHTML}</div>
                                     </div>
                                 </div>
                             ) : null

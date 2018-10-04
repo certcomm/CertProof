@@ -343,11 +343,12 @@ export const comments = {
 		}, 500);
 	},
 	scrollIntoViewIfNeeded: function(target, subEl) {
-		// $('.middle-container').animate({ scrollTop: ($(target).offset().top+200) }, 500);
-		$(target)[0].scrollIntoView({ block: 'start',  behavior: 'smooth' })
+		$('.middle-container').animate({ scrollTop: ($(target).offset().top-200) }, 500);
+		// $(target)[0].scrollIntoView({ block: 'start',  behavior: 'smooth' })
 
 		var blinkedEl = subEl ? subEl : target;
 		this.blinkElement(blinkedEl);
+		return false;
 	},
 	limitCharacters: function(text, count){
 		return text.slice(0, count) + ((text.length > count) ? "..." : "");
