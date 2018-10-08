@@ -220,14 +220,55 @@ export default class Dashboard extends React.Component {
             </Modal>
         );
     }
-    
+
+    mergeTwoNetworkJson(){
+        // get network json from store
+        var userNetworkJson = this.store.getNetworkJson(),
+            appDefaultNetworkJson = this.store.getAppDefaultNetworkJson();
+        
+        /*
+        * there are two networks (app default store at other place and user added networks store in user app data folder)
+        *   now we need to fetch both networks and combine into single object for use in further within app
+        * */
+        if(appDefaultNetworkJson.length > 0){
+            var clonedNetworkJson = JSON.parse(JSON.stringify(appDefaultNetworkJson));
+            // appDefaultNetworkJson.map((globalFileJson, pi) => {
+                // appDefaultNetworkJson[pi].networks.map((globalFileJsonNetworks, pni) => {
+                    // globalFileJsonNetworks.value.map(function(e, ei) {
+                        userNetworkJson.map((uglobalFileJson, upi) => {
+                            // if(globalFileJson.type == uglobalFileJson.type){
+                                userNetworkJson[upi].networks.map((uglobalFileJsonNetworks, upni) => {
+                                    // if(appDefaultNetworkJson[pi].networks[pni].name == uglobalFileJsonNetworks.name){
+                                        // do not add if already added
+                                        uglobalFileJsonNetworks.value.map(function(ue, uei) {
+                                            var cexistPIndex = clonedNetworkJson[upi].networks[upni].value.map(function(cue, cuei) {
+                                                // if custom network is set default then appdefault should be set false
+                                                if(ue.default && ue.custom){
+                                                    cue.default = false;
+                                                }
+                                                return cue.url;
+                                            }).indexOf(ue.url);
+                                            if(cexistPIndex < 0){
+                                                clonedNetworkJson[upi].networks[upni].value.push(ue);
+                                            }
+                                        });
+                                    // }
+                                });
+                            // }
+                        });
+                    // });
+                // });
+            // });
+        }
+        this.networkJson = clonedNetworkJson;
+    }
+
     componentWillMount(){
         this.isMountedComponent = true;
 
         this.store.resetRawJson();
 
-        // get network json from store
-        this.networkJson = this.store.getNetworkJson();
+        this.mergeTwoNetworkJson();
     }
 
     componentWillUnmount() {
@@ -260,6 +301,9 @@ export default class Dashboard extends React.Component {
             },
             triggerTerminate() {
                 this.terminated = true;
+            },
+            resetTermination() {
+                this.terminated = false;
             },
             stopIfTerminated() {
                 if(this.terminated == true) {
@@ -792,6 +836,9 @@ export default class Dashboard extends React.Component {
     }
 
     proveEvidence(e){
+        // reset termination
+        this.logEmitter.resetTermination();
+
         // to disable back button
         this.setStates({isProveRunning: true});
         document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
@@ -862,19 +909,7 @@ export default class Dashboard extends React.Component {
     navigateToLiveThread(link){
         shell.openExternal(link);
     }
-
-    removeDefaultFromNetworkJson(){
-        var json = this.networkJson;
-        if(json && json.length > 0){
-            json.map(ntwk => {
-                return ntwk.value.map(node => {
-                    return node.default = false;
-                })
-            })
-        }
-        return json;
-    }
-
+    
     addNode(nname, ntype, e){
         if(this.addedNode.trim() == ""){
             swal("Field should not be empty.");
@@ -926,12 +961,19 @@ export default class Dashboard extends React.Component {
 
         //  check if networkjson exist
         if(this.networkJson && this.networkJson.length > 0){
+            var clonedNetworkJson = JSON.parse(JSON.stringify(this.networkJson));
             this.networkJson.map((globalFileJson, pi) => {
                 if(globalFileJson.type == ntype){
                     this.networkJson[pi].networks.map((globalFileJsonNetworks, pni) => {
+                        globalFileJsonNetworks.value.map(function(ad, adi) {
+                            // should delete all appdefault urls object
+                            if(ad.appDefault){
+                                clonedNetworkJson[pi].networks[pni].value.splice(adi, 1);
+                            }
+                        });
                         if(globalFileJsonNetworks.name == nname){
                             // do not add if already added
-                            var existPIndex = globalFileJsonNetworks.value.map(function(e) {
+                            var existPIndex = globalFileJsonNetworks.value.map(function(e, ei) {
                                 if(e.url != obj.url ){
                                     e.default = false;
                                 }
@@ -939,6 +981,7 @@ export default class Dashboard extends React.Component {
                             }).indexOf(obj.url);
                             if(existPIndex < 0){
                                 globalFileJsonNetworks.value.push(obj);
+                                clonedNetworkJson[pi].networks[pni].value.push(obj);
                             }else{
                                 if(globalFileJsonNetworks.value[pni]) globalFileJsonNetworks.value[pni].default = false;
                             }
@@ -968,12 +1011,13 @@ export default class Dashboard extends React.Component {
                     });
                 }
             })
-
-            FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
+            
+            FileSystem.writeFile(fileName, JSON.stringify(clonedNetworkJson), {spaces:4}, (err) => {
                 if(err){
                     console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
                 }else{
-                    console.log("File Updated");
+                    this.store.setNetworkJson(clonedNetworkJson);
+                    this.setStates({clonedNetworkJson: clonedNetworkJson});
                 }
             });
         }
@@ -986,13 +1030,20 @@ export default class Dashboard extends React.Component {
 
         var t = () => {
             var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
+            var clonedNetworkJson = JSON.parse(JSON.stringify(this.networkJson));
 
             this.networkJson.map((globalFileJson, gfj1) => {
                 if(globalFileJson.type == ntype){
-                    this.networkJson[gfj1].networks.map(globalFileJsonNetwork => {
+                    this.networkJson[gfj1].networks.map((globalFileJsonNetwork, gfj2) => {
+                        globalFileJsonNetwork.value.map(function(ad, adi) {
+                            // should delete all appdefault urls object
+                            if(ad.appDefault){
+                                clonedNetworkJson[gfj1].networks[gfj2].value.splice(adi, 1);
+                            }
+                        });
                         // delete added custom node
                         if(globalFileJsonNetwork.name == nname){
-                            var existPIndex = globalFileJsonNetwork.value.map(function(e) { return e.url; }).indexOf(url);
+                            var existPIndex = globalFileJsonNetwork.value.map(function(e, gi) { return e.url; }).indexOf(url);
                             if(existPIndex >= 0){
                                 if(globalFileJsonNetwork.value[existPIndex].default){
                                     var getPAppDefaultIndex = globalFileJsonNetwork.value.map(function(e) { return e.appDefault; }).indexOf(true);
@@ -1001,6 +1052,7 @@ export default class Dashboard extends React.Component {
                                     }
                                 }
                                 globalFileJsonNetwork.value.splice(existPIndex, 1);
+                                clonedNetworkJson[gfj1].networks[gfj2].value.splice(clonedNetworkJson[gfj1].networks[gfj2].value.map(function(e, gi) { return e.url; }).indexOf(url), 1);
                             }
                         }
                     });
@@ -1026,12 +1078,13 @@ export default class Dashboard extends React.Component {
                     });
                 }
             });
-        
-            FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
+            
+            FileSystem.writeFile(fileName, JSON.stringify(clonedNetworkJson), {spaces:4}, (err) => {
                 if(err){
                     console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
                 }else{
-                    console.log("File Updated");
+                    this.store.setNetworkJson(clonedNetworkJson);
+                    this.setStates({clonedNetworkJson: clonedNetworkJson});
                 }
             });
         }
@@ -1065,15 +1118,29 @@ export default class Dashboard extends React.Component {
         }else{
             t();
         }
-        
     }
 
     setDefaultNode(url, nname, ntype, e){
         var fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
 
+        var clonedNetworkJson = JSON.parse(JSON.stringify(this.networkJson));
         this.networkJson.map((globalFileJson, gi) => {
             if(globalFileJson.type == ntype){
-                this.networkJson[gi].networks.map((globalFileJsonNetwork) => {
+                this.networkJson[gi].networks.map((globalFileJsonNetwork, ggi) => {
+                    globalFileJsonNetwork.value.map(function(ad, adi) {
+                        // should delete all appdefault urls object
+                        if(ad.appDefault){
+                            clonedNetworkJson[gi].networks[ggi].value.splice(adi, 1);
+                        }else{
+                            clonedNetworkJson[gi].networks[ggi].value.map(function(e, gggi) {
+                                if(e.url == url){
+                                    clonedNetworkJson[gi].networks[ggi].value[gggi].default = true;
+                                }else{
+                                    clonedNetworkJson[gi].networks[ggi].value[gggi].default = false;
+                                }
+                            });
+                        }
+                    });
                     // change default set node
                     if(globalFileJsonNetwork.name == nname){
                         var existPIndex = globalFileJsonNetwork.value.map(function(e, i) {
@@ -1109,11 +1176,12 @@ export default class Dashboard extends React.Component {
             }
         });
     
-        FileSystem.writeFile(fileName, JSON.stringify(this.networkJson), {spaces:4}, (err) => {
+        FileSystem.writeFile(fileName, JSON.stringify(clonedNetworkJson), {spaces:4}, (err) => {
             if(err){
                 console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
             }else{
-                console.log("File Updated");
+                this.store.setNetworkJson(clonedNetworkJson);
+                this.setStates({clonedNetworkJson: clonedNetworkJson});
             }
         });
     }
@@ -1204,7 +1272,7 @@ export default class Dashboard extends React.Component {
                                             {
                                                 ntwrkType.networks && ntwrkType.networks.map( (ntwrk, i) => {
                                                     var selectionCls = "";
-                                                    if(i == 0 && this.state.network == ''){
+                                                    if( (i == 0 && this.state.network == '') || (JSON.stringify(this.state.network) != JSON.stringify(ntwrk) ) ){
                                                         this.state.network = ntwrk;
                                                         this.state.networkType = ntwrkType.type;
                                                         selectionCls = "evidence-cnum-list-selected";
@@ -1299,8 +1367,7 @@ export default class Dashboard extends React.Component {
     }
 
     terminateProveEvidence(e){
-        this.reproveEvidence();
-        prover.terminateProve(this.logEmitter);
+        this.logEmitter.triggerTerminate();
     }
 
     getDefaultNodes(){
@@ -1359,9 +1426,11 @@ export default class Dashboard extends React.Component {
         this.state.stateData = data;
 
         var proveInfoHTML = null;
-        if(this.evidenceType == 'Certified L1'){
+        if(!this.state.blockchainAnchorDisable && this.evidenceType == 'Certified L1'){
             var proveInfoArr = this.getDefaultNodes();
             proveInfoHTML = proveInfoArr.join("\n");
+
+            if(proveInfoHTML == "") proveInfoHTML = null;
         }
 
         if(this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ){
@@ -1508,7 +1577,11 @@ export default class Dashboard extends React.Component {
                                             {inforBtn}
                                         </div>
                                         <div className="clear" />
-                                        <div className="prove-info-text">Will prove on {proveInfoHTML}</div>
+                                        {
+                                            proveInfoHTML != null ? (
+                                                <div className="prove-info-text">Will prove on {proveInfoHTML}</div>
+                                            ) : null
+                                        }
                                     </div>
                                     <div className="progress-bar-container hidden">
                                         <div className="proving-btn">
@@ -1518,7 +1591,11 @@ export default class Dashboard extends React.Component {
                                         <div onClick={this.terminateProveEvidence.bind(this)} className="btn-primary prove-cancel-btn"> Cancel </div>
                                         {inforBtn}
                                         <div className="clear" />
-                                        <div className="prove-info-text prove-info-text-proving">Proving on {proveInfoHTML}</div>
+                                        {
+                                            proveInfoHTML != null ? (
+                                                <div className="prove-info-text prove-info-text-proving">Proving on {proveInfoHTML}</div>
+                                            ) : null
+                                        }
                                     </div>
                                     <div className="verification-container hidden">
                                         <div className="btn-primary proved-btn">
@@ -1531,7 +1608,11 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         {inforBtn}
                                         <div className="clear" />
-                                        <div className="prove-info-text prove-info-text-proved">Proved on  {proveInfoHTML}</div>
+                                        {
+                                            proveInfoHTML != null ? (
+                                                <div className="prove-info-text prove-info-text-proved">Proved on  {proveInfoHTML}</div>
+                                            ) : null
+                                        }
                                     </div>
                                     <div className="verification-failed-container hidden">
                                         <div className="btn-primary prove-failed-btn tooltip">
@@ -1545,7 +1626,11 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         {inforBtn}
                                         <div className="clear" />
-                                        <div className="prove-info-text prove-info-text-failed">Unable to proved against {proveInfoHTML}</div>
+                                        {
+                                            proveInfoHTML != null ? (
+                                                <div className="prove-info-text prove-info-text-failed">Unable to proved against {proveInfoHTML}</div>
+                                            ) : null
+                                        }
                                     </div>
                                 </div>
                             ) : null

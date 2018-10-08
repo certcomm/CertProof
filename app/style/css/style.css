@@ -147,7 +147,7 @@ a.breadcrumb {
   text-align: center;
 }
 .ethereum-logo{
-  width: 12px; color: gray; margin: 0px 7px 0px -7px; vertical-align: bottom; background-color: #A7B1C2;
+  margin: 0px 5px 0px -5px; vertical-align: top;
 }
 .margin-between {
   margin-left: 3px;
@@ -156,7 +156,7 @@ a.breadcrumb {
   position: relative;
 }
 .evidence-prove-container .prove-info-text{
-  position: absolute; left: 15%; margin: 5px; color: #1C84C6;
+  position: absolute; left: 15%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600;
 }
 .evidence-prove-container .prove-info-text-proving{
   color: #1C84C6;

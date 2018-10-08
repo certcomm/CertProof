@@ -14,6 +14,7 @@ export class CertProofStore {
 	@observable uploadedFilePath = '';
 	@observable error = '';
 	@observable networkJson = '';
+	@observable appDefaultNetworkJson = '';
 	
 	setData(data) {
 		Object.assign(this.data, data);
@@ -22,6 +23,10 @@ export class CertProofStore {
 	
 	setNetworkJson(json) {
 		this.networkJson = [...json];
+	}
+	
+	setAppDefaultNetworkJson(json) {
+		this.appDefaultNetworkJson = [...json];
 	}
 
 	setRawJson(data) {
@@ -88,6 +93,10 @@ export class CertProofStore {
 
 	getNetworkJson() {
 		return this.networkJson;
+	}
+
+	getAppDefaultNetworkJson() {
+		return this.appDefaultNetworkJson;
 	}
 
 	getRawJson() {

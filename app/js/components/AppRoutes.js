@@ -16,52 +16,99 @@ export default class AppRoutes extends React.Component {
         this.store = props.certProofStore;
     }
 
-    componentWillMount(){
-        var staticNetwork = Constants.default.blockChainAnchorsOn,
-            json = JSON.stringify(staticNetwork),
-            fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName;
-        
-        // create upload folder if not already created
-        if (!FileSystem.existsSync(Constants.default.networkFileFolder)){
-            FileSystem.mkdirSync(Constants.default.networkFileFolder);
-        }
-        
+    addNetwork(fileName, json, type){
         FileSystem.exists(fileName, (exists) => {
             if(exists) {
                 FileSystem.readFile(fileName, (err, content) => {
                     if(err){
-                        console.log("Err while reading data from "+Constants.default.networkJsonFileName, err);
+                        console.log("Err while reading"+(type == "appDeafult" ? " app default" : "")+" data from "+Constants.default.networkJsonFileName, err);
                         return;
                     }
-                    var parseJson = JSON.parse(content);
-                    this.store.setNetworkJson(parseJson);
-                    
-                    parseJson.map(node => {
-                        var recordExist = staticNetwork.map(function(e) { return e.name; }).indexOf(node.name);
-                        if(recordExist >=0){
-                            
+                    if(type == "appDeafult"){
+                        FileSystem.writeFile(fileName, json, {spaces:4}, (err) => {
+                            this.store.setAppDefaultNetworkJson(JSON.parse(json));
+                        });
+                    }else{
+                        try{
+                            var parseJson = JSON.parse(content);
+                        }catch(e){
+                            var parseJson = json;
                         }
-                    })
-                    // FileSystem.writeFile(fileName, JSON.stringify(parseJson), {spaces:4}, (err) => {
-                    //     if(err){
-                    //         console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
-                    //         return;
-                    //     }
-                    // })
+                        
+                        // should remove appdefault URls for user network json
+                        var clonedNetworkJson = JSON.parse(JSON.stringify(parseJson)),
+                            isAppDefaultUrlsExist = false;
+                        parseJson.map((node, p1) => {
+                            return node.networks.map((network, p2) => {
+                                // network.value = [];
+                                return network.value.map(function(e, p3) {
+                                    // should delete all appdefault urls object
+                                    if(e.appDefault){
+                                        isAppDefaultUrlsExist = true;
+                                        clonedNetworkJson[p1].networks[p2].value.splice(p3, 1);
+                                    }
+                                    return network;
+                                });
+                            })
+                        });
+                        if(isAppDefaultUrlsExist){
+                            FileSystem.writeFile(fileName, JSON.stringify(clonedNetworkJson), {spaces:4}, (err) => {
+                                if(err){
+                                    console.log("Err while writing"+(type == "appDeafult" ? " app default" : "")+" data into "+Constants.default.networkJsonFileName, err);
+                                    return;
+                                }else{
+                                    this.store.setNetworkJson(clonedNetworkJson);
+                                }
+                            });
+                        }else{
+                            this.store.setNetworkJson(parseJson);
+                        }
+                    }
                 })
             } else {
                 FileSystem.writeFile(fileName, json, {spaces:4}, (err) => {
                     if(err){
-                        console.log("Err while writing data into "+Constants.default.networkJsonFileName, err);
+                        console.log("Err while writing"+(type == "appDeafult" ? " app default" : "")+" data into "+Constants.default.networkJsonFileName, err);
                         return;
                     }else{
                         var parseJson = JSON.parse(json);
-                        this.store.setNetworkJson(parseJson);
-                        console.log("File Created");
+                        if(type == "appDeafult"){
+                            this.store.setAppDefaultNetworkJson(parseJson);
+                        }else{
+                            this.store.setNetworkJson(parseJson);
+                        }
                     }
                 });
             }
         });
+    }
+
+    componentWillMount(){
+        var staticNetwork = Constants.default.blockChainAnchorsOn,
+            json = JSON.stringify(staticNetwork),
+            fileName = Constants.default.networkFileFolder+Constants.default.networkJsonFileName,
+            fileAppDefaultName = Constants.default.networkAppDefaultFileFolder+Constants.default.networkJsonFileName;
+        
+        // create upload folder if not already created
+        if (!FileSystem.existsSync(Constants.default.networkAppDefaultFileFolder)){
+            FileSystem.mkdirSync(Constants.default.networkAppDefaultFileFolder);
+        }
+
+        // create upload folder if not already created
+        if (!FileSystem.existsSync(Constants.default.networkFileFolder)){
+            FileSystem.mkdirSync(Constants.default.networkFileFolder);
+        }
+
+        // should remove appdefault URls for user network json
+        var parseJson = JSON.parse(json).map(node => {
+            return node.networks.map(network => {
+                network.value = [];
+                return network;
+            })
+        })
+
+        this.addNetwork(fileAppDefaultName, json, "appDeafult");
+        this.addNetwork(fileName, JSON.stringify(parseJson), "userData");
     }
 	
 	render() {
