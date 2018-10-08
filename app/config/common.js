@@ -343,7 +343,7 @@ export const comments = {
 		}, 500);
 	},
 	scrollIntoViewIfNeeded: function(target, subEl) {
-		$('.middle-container').animate({ scrollTop: ($(target).offset().top-200) }, 500);
+		$('.middle-container').animate({ scrollTop: ($('.middle-container').scrollTop() + $(target).offset().top-150) }, 500);
 		// $(target)[0].scrollIntoView({ block: 'start',  behavior: 'smooth' })
 
 		var blinkedEl = subEl ? subEl : target;

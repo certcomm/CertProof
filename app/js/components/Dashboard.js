@@ -969,7 +969,12 @@ export default class Dashboard extends React.Component {
                             // should delete all appdefault urls object
                             if(ad.appDefault){
                                 clonedNetworkJson[pi].networks[pni].value.splice(adi, 1);
+                            }else{
+                                if(clonedNetworkJson[pi].networks[pni].value[adi]) clonedNetworkJson[pi].networks[pni].value[adi].default = false;
                             }
+                        });
+                        clonedNetworkJson[pi].networks[pni].value.map(function(cad, cadi) {
+                            cad.default = false;
                         });
                         if(globalFileJsonNetworks.name == nname){
                             // do not add if already added

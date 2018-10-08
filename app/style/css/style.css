@@ -1,3 +1,6 @@
+html {
+  overflow: hidden;
+}
 body {
   font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif; background-color: #FFFFFF; font-size: 13px; color: #676a6c; overflow-x: hidden; margin: 0;
 }
@@ -242,7 +245,7 @@ a.breadcrumb {
 	margin-top: 20px;
 }
 .xpanel .xpanel-lhs-container.modal-xpanel-lhs-container {
-  overflow: auto; position: relative; height: calc(100vh - 112px);
+  overflow: hidden; position: relative; height: calc(100vh - 112px);
 }
 .xpanel .xpanel-info-container {
   margin-bottom: 20px; /* display: inline-block; */
