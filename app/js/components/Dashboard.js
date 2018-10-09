@@ -1215,6 +1215,8 @@ export default class Dashboard extends React.Component {
         e.preventDefault();
         if(!btnDisabled){
             this.setStates({blockchainAnchorDisable: isEnable});
+            
+            this.reproveEvidence();
         }
     }
 
