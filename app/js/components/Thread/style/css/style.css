@@ -135,6 +135,11 @@ div.writers-count-wrapper .h-inner-wrapper {
 .modal-file-container .modal-header .btn-close:before {
 	color: #d2d1d1; content: "\E00E"; font-family: tmail; font-size: 12px; cursor: pointer; line-height: 17px;
 }
+.modal-container .modal-footer,
+.modal-file-container .modal-footer {
+	align-items: center; border-top-color: #E9ECEF; border-top-style: solid; border-top-width: 1px; display: flex; justify-content: flex-end; padding: 15px 0 0 0;
+}
+
 .contribute-data .contribute-info {
     float:left; padding-top: 9px;
 }

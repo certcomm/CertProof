@@ -93,6 +93,9 @@ a.breadcrumb {
 .btn {
   -moz-user-select: none; background-image: none; border: 1px solid #E7EAEC; border-radius: 4px; cursor: pointer; display: inline-block; font-size: 13px; font-weight: 500; line-height: 1.42857; margin-bottom: 0; padding: 6px 12px; text-align: center; white-space: nowrap;
 }
+.btn-gray {
+  background-color: #E6E6E6; border-color: #D2D2D2; color: #676A6C; font-weight: 600;
+}
 .btn-primary {
   background-color: #1AB394; border-color: #1AB394; color: #FFFFFF;
 }
@@ -422,7 +425,7 @@ a.breadcrumb {
   margin-top: 14px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
 }
 .log-container-model{
-  height: calc(100vh - 200px)!important; white-space: nowrap!important; word-break: keep-all;
+  height: calc(100vh - 220px)!important; white-space: nowrap!important; word-break: keep-all;
 }
 .log-container-hgt{
   height: calc(100vh - 550px)!important;

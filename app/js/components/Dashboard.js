@@ -230,17 +230,25 @@ export default class Dashboard extends React.Component {
     }
 
     configProveLogModal(){
-        var pureCopiedText = this.state.log+(this.state.errLog.length > 0 ? "\n\n"+JSON.stringify(this.state.errLog) : "");
-        pureCopiedText = pureCopiedText.replace(/<br\s*[\/]?>/gi, "\n");
-        pureCopiedText = pureCopiedText.replace(/(<([^>]+)>)/ig,"");
+        var infoHTML = null,
+            statelog = "", pureCopiedText = "",
+            stateErrLog = [];
+        if(this.state.proveLogModalIsOpen){
+            statelog = this.state.log;
+            stateErrLog = this.state.errLog;
 
-        var infoHTML = null;
-        if(this.proveInfoHTML != null && $(".prove-info-text:visible")[0]){
-            var infoCls = $(".prove-info-text:visible")[0].className,
-                infoText = $(".prove-info-text:visible")[0].innerHTML;
-            
-            infoHTML = <div className={"fr "+infoCls} dangerouslySetInnerHTML={{__html: infoText}} />;
+            pureCopiedText = this.state.log+(this.state.errLog.length > 0 ? "\n\n"+JSON.stringify(this.state.errLog) : "");
+            pureCopiedText = pureCopiedText.replace(/<br\s*[\/]?>/gi, "\n");
+            pureCopiedText = pureCopiedText.replace(/(<([^>]+)>)/ig,"");
+
+            if(this.proveInfoHTML != null && $(".prove-info-text:visible")[0]){
+                var infoCls = $(".prove-info-text:visible")[0].className,
+                    infoText = $(".prove-info-text:visible")[0].innerHTML;
+                
+                infoHTML = <div className={"fr "+infoCls} dangerouslySetInnerHTML={{__html: infoText}} />;
+            }
         }
+
         return (
             <Modal
                 isOpen={this.state.proveLogModalIsOpen}
@@ -248,39 +256,46 @@ export default class Dashboard extends React.Component {
                 style={customStyles}
                 ariaHideApp={false}
                 contentLabel="Proof Log">
-                <div className={"modal-file-container"}>
-                    <div className="modal-header">
-                        <div className="fl modal-section-title evidence-prove-container">Proof Log {infoHTML != null ? " - " : ""}{infoHTML}</div>
-                        <div className="fr btn-close" onClick={this.proveModalAction.bind(this, false)} />
-                        <div className="copy-to-clipboard-container">
-                            <div id="clip-log-text-modal" className="hidden">Log Copied to Clipboard</div>
-                            <Clipboard
-                                data-clipboard-text={pureCopiedText}
-                                onSuccess={ () => {
-                                    document.getElementById('clip-log-text-modal').className = 'copied-message-text';
-                                    setTimeout(function(){
-                                        document.getElementById('clip-log-text-modal').className = 'hidden';
-                                    }, 3000);
-                                }}>
-                                <div title="Copy Log to Clipboard" className={"copy-to-clipboard "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "")} />
-                            </Clipboard>
-                        </div>
-                    </div>
-                    <div className="clear" />
-                    <div className="log-container-model log-container">
-                        <div className="log-text" dangerouslySetInnerHTML={{__html: this.state.log}} />
-                        <div className="clear" />
-                        {
-                            this.state.errLog.length > 0 ? (
-                                <div className="err-text"><br />Error: 
-                                    <div className='pretty-json err-text'>
-                                        {this.prettyPrint(this.state.errLog)}
-                                    </div>
+                {
+                    statelog != "" ? (
+                        <div className={"modal-file-container"}>
+                            <div className="modal-header">
+                                <div className="fl modal-section-title evidence-prove-container">Proof Log {infoHTML != null ? " - " : ""}{infoHTML}</div>
+                                <div className="fr btn-close" onClick={this.proveModalAction.bind(this, false)} />
+                                <div className="copy-to-clipboard-container">
+                                    <div id="clip-log-text-modal" className="hidden">Log Copied to Clipboard</div>
+                                    <Clipboard
+                                        data-clipboard-text={pureCopiedText}
+                                        onSuccess={ () => {
+                                            document.getElementById('clip-log-text-modal').className = 'copied-message-text';
+                                            setTimeout(function(){
+                                                document.getElementById('clip-log-text-modal').className = 'hidden';
+                                            }, 3000);
+                                        }}>
+                                        <div title="Copy Log to Clipboard" className={"copy-to-clipboard "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "")} />
+                                    </Clipboard>
                                 </div>
-                            ) : null
-                        }
-                    </div>
-                </div>
+                            </div>
+                            <div className="clear" />
+                            <div className="log-container-model log-container">
+                                <div className="log-text" dangerouslySetInnerHTML={{__html: statelog}} />
+                                <div className="clear" />
+                                {
+                                    stateErrLog.length > 0 ? (
+                                        <div className="err-text"><br />Error: 
+                                            <div className='pretty-json err-text'>
+                                                {this.prettyPrint(this.state.errLog)}
+                                            </div>
+                                        </div>
+                                    ) : null
+                                }
+                            </div>
+                            <div className="modal-footer">
+                                <button onClick={this.proveModalAction.bind(this, false)} data-dismiss="modal" className="btn btn-gray" type="button">Close</button>
+                            </div>
+                        </div>
+                    ) : null
+                }
             </Modal>
         );
     }
