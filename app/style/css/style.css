@@ -161,6 +161,9 @@ a.breadcrumb {
 .evidence-prove-container .prove-info-text{
   position: absolute; left: 15%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600;
 }
+.modal-section-title.evidence-prove-container .prove-info-text{
+  margin: 0px 0 0 5px; color: #1C84C6; font-size: 13px; font-weight: 600; position: initial;
+}
 .evidence-prove-container .prove-info-text-proving{
   color: #1C84C6;
 }
@@ -418,10 +421,12 @@ a.breadcrumb {
   text-align: left; font-size: 13px; overflow: auto; border: solid 1px #EFEFEF;
   margin-top: 14px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
 }
+.log-container-model{
+  height: calc(100vh - 200px)!important; white-space: nowrap!important; word-break: keep-all;
+}
 .log-container-hgt{
   height: calc(100vh - 550px)!important;
 }
-
 .log-container .log-text{
   color: forestgreen;
 }
@@ -432,7 +437,7 @@ a.breadcrumb {
   position: relative; height: 15px;
 }
 .xpanel .copy-to-clipboard-container button{
-  float: right; border: none; padding: 0; background: transparent; cursor: pointer;
+  float: right; border: none; padding: 0; background: transparent; cursor: pointer; margin-right: 18px;
 }
 .xpanel .copy-to-clipboard {
   float: right; padding-right: 15px; margin-top: 10px;
@@ -443,7 +448,21 @@ a.breadcrumb {
 .xpanel-lhs-container .copied-message-text {
 	position: absolute; right: 0; top: 4px; background: #1AB394; color: #FFFFFF; z-index: 999; padding: 2px 20px; display: block;
 }
-
+.new-tab-icon {
+  position: relative; cursor: pointer;
+}
+.new-tab-icon:before {
+  color: #676A6C; content: "R"; font-family: tmail; font-size: 15px; right: 0; padding: 0; position: absolute; top: 10px;
+}
+.modal-header .copy-to-clipboard-container button{
+  float: right; border: none; padding: 0; background: transparent; cursor: pointer; margin-right: 25px;
+}
+.modal-header .copy-to-clipboard:before {
+  color: #000000; content: "#"; font-family: "tmail"; font-size: 16px; position: fixed;
+}
+.modal-header .copied-message-text {
+	position: absolute; right: 20px; top: 25px; background: #1AB394; color: #FFFFFF; z-index: 999; padding: 2px 20px; display: block;
+}
 
 /*    Raw evidence json      */
 .panel-container .xpanel-modal.xpanel-modal-inspenia{

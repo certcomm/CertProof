@@ -43,9 +43,11 @@ export default class Dashboard extends React.Component {
         this.addedNode = '';
         this.addedNodeProtocol = 'https://';
         this.defaultNodeUrls = {};
+        this.proveInfoHTML = null;
 
         this.state = {
             modalIsOpen: false,
+            proveLogModalIsOpen: false,
             blockchainModalIsOpen: false,
             blockchainAnchorDisable: false,
             emptyBlockchainAnchorsOn: false,
@@ -65,6 +67,7 @@ export default class Dashboard extends React.Component {
         this.isMountedComponent = false;
 
         this.blockchainModalAction = this.blockchainModalAction.bind(this);
+        this.proveModalAction = this.proveModalAction.bind(this);
     }
 
     setStates(states){
@@ -85,6 +88,11 @@ export default class Dashboard extends React.Component {
     
     blockchainModalAction(isVisible) {
         this.setStates({blockchainModalIsOpen: isVisible});
+    }
+    
+    proveModalAction(isVisible) {
+        if(isVisible) this.implementScrollOnModal();
+        this.setStates({proveLogModalIsOpen: isVisible});
     }
     
     replacer(match, pIndent, pKey, pVal, pEnd) {
@@ -221,6 +229,62 @@ export default class Dashboard extends React.Component {
         );
     }
 
+    configProveLogModal(){
+        var pureCopiedText = this.state.log+(this.state.errLog.length > 0 ? "\n\n"+JSON.stringify(this.state.errLog) : "");
+        pureCopiedText = pureCopiedText.replace(/<br\s*[\/]?>/gi, "\n");
+        pureCopiedText = pureCopiedText.replace(/(<([^>]+)>)/ig,"");
+
+        var infoHTML = null;
+        if(this.proveInfoHTML != null && $(".prove-info-text:visible")[0]){
+            var infoCls = $(".prove-info-text:visible")[0].className,
+                infoText = $(".prove-info-text:visible")[0].innerHTML;
+            
+            infoHTML = <div className={"fr "+infoCls} dangerouslySetInnerHTML={{__html: infoText}} />;
+        }
+        return (
+            <Modal
+                isOpen={this.state.proveLogModalIsOpen}
+                onRequestClose={this.proveModalAction.bind(this, false)}
+                style={customStyles}
+                ariaHideApp={false}
+                contentLabel="Proof Log">
+                <div className={"modal-file-container"}>
+                    <div className="modal-header">
+                        <div className="fl modal-section-title evidence-prove-container">Proof Log {infoHTML != null ? " - " : ""}{infoHTML}</div>
+                        <div className="fr btn-close" onClick={this.proveModalAction.bind(this, false)} />
+                        <div className="copy-to-clipboard-container">
+                            <div id="clip-log-text-modal" className="hidden">Log Copied to Clipboard</div>
+                            <Clipboard
+                                data-clipboard-text={pureCopiedText}
+                                onSuccess={ () => {
+                                    document.getElementById('clip-log-text-modal').className = 'copied-message-text';
+                                    setTimeout(function(){
+                                        document.getElementById('clip-log-text-modal').className = 'hidden';
+                                    }, 3000);
+                                }}>
+                                <div title="Copy Log to Clipboard" className={"copy-to-clipboard "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "")} />
+                            </Clipboard>
+                        </div>
+                    </div>
+                    <div className="clear" />
+                    <div className="log-container-model log-container">
+                        <div className="log-text" dangerouslySetInnerHTML={{__html: this.state.log}} />
+                        <div className="clear" />
+                        {
+                            this.state.errLog.length > 0 ? (
+                                <div className="err-text"><br />Error: 
+                                    <div className='pretty-json err-text'>
+                                        {this.prettyPrint(this.state.errLog)}
+                                    </div>
+                                </div>
+                            ) : null
+                        }
+                    </div>
+                </div>
+            </Modal>
+        );
+    }
+
     mergeTwoNetworkJson(){
         // get network json from store
         var userNetworkJson = this.store.getNetworkJson(),
@@ -334,6 +398,7 @@ export default class Dashboard extends React.Component {
             this.createPScroll("pretty-json-3", 4);
             this.createPScroll("pretty-json-4", 5);
             this.createPScroll("pretty-json-5", 6);
+            this.createPScroll("log-container-model", 7);
         }, 50);
     }
     
@@ -1439,6 +1504,7 @@ export default class Dashboard extends React.Component {
 
             if(proveInfoHTML == "") proveInfoHTML = null;
         }
+        this.proveInfoHTML = proveInfoHTML;
 
         if(this.state.blockchainAnchorDisable || (this.state.emptyBlockchainAnchorsOn && this.evidenceType == 'Certified L1') ){
             if(this.state.blockchainAnchorDisable){
@@ -1657,6 +1723,7 @@ export default class Dashboard extends React.Component {
                                         }}>
                                         <div title="Copy Log to Clipboard" className={"copy-to-clipboard "+(this.state.log == "" && this.state.errLog.length <= 0 ? "hidden" : "")} />
                                     </Clipboard>
+                                    <div title="View this log in a wide dialog" className="new-tab-icon" onClick={this.proveModalAction.bind(this, true)} />
                                 </div>
                             ) : null
                         }
@@ -1680,6 +1747,7 @@ export default class Dashboard extends React.Component {
                 </div>
                 {this.configSectionModal()}
                 {this.configBlockchainNetworksModal()}
+                {this.configProveLogModal()}
             </div>
         );
 	}
