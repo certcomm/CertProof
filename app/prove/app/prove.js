@@ -56,7 +56,7 @@ module.exports = {
         this.proveConfig = proveConfig;
         var outer = this;
         return new Promise((resolve, reject) => {
-            this.logEmitter.log("Proof Started");
+            this.logEmitter.log("Starting Proof");
             this.entries = zip.entries()
             if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)) {
                 return;
@@ -113,8 +113,12 @@ module.exports = {
                     zip.close();
                     return;
                 }
+                var deindented = false;
                 try {
                     this.logEmitter.indent();
+                    this.logEmitter.log("");
+                    this.logEmitter.log("");
+                    this.logEmitter.log("Starting Proof for cnum:" + cnum);
                     evidenceUtils.ensureFileExists("1024", this.entries, Constants.default.incManifestJsonFileName)
                     var incManifestJson = cpJsonUtils.parseJson(zip.entryDataSync(Constants.default.incManifestJsonFileName).toString('utf-8'));
                     outer.validateIncManifest(cnum, incManifestJson);
@@ -132,10 +136,10 @@ module.exports = {
                         outer.proveForwards(sacManifestJson, zip);
                     }    
                     await outer.proveCThinBlockInfo(reject, cnum, incManifestJson, sacManifestJson, zip);
-                    this.logEmitter.log("proved", incEvidenceFileName);
+                    this.logEmitter.log("cnum:" + cnum + " proved", incEvidenceFileName);
                     if (cnum != highestcnum) {
-                        this.logEmitter.log("");
-                        this.logEmitter.log("");
+                        this.logEmitter.deindent();
+                        deindented=true;
                         await outer.proveIncEvidence(evidenceJson, extractedEvidenceFolder, mainZipEntries, cnum+1);
                     }
                     resolve("proved")
@@ -145,7 +149,9 @@ module.exports = {
                     zip.close();
                     reject(err.message);
                 } finally {
-                    this.logEmitter.deindent();
+                    if (!deindented) {
+                        this.logEmitter.deindent();
+                    }
                 }
             });  
         });
