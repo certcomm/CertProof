@@ -149,6 +149,7 @@ export default class Sections extends React.Component {
             <Modal
                 isOpen={this.state.modalIsOpen}
                 onRequestClose={this.closeModal}
+                shouldCloseOnOverlayClick={false}
                 style={modalCSS}
                 ariaHideApp={false}
                 contentLabel="Section Modal">

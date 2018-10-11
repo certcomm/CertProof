@@ -49,6 +49,7 @@ export default class Attachments extends React.Component {
             <Modal
                 isOpen={this.state.modalIsOpen}
                 onRequestClose={this.closeModal}
+                shouldCloseOnOverlayClick={false}
                 style={customStyles}
                 ariaHideApp={false}
                 contentLabel="Attachment Modal">

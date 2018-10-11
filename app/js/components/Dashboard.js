@@ -126,6 +126,7 @@ export default class Dashboard extends React.Component {
             <Modal
                 isOpen={this.state.modalIsOpen}
                 onRequestClose={this.closeModal}
+                shouldCloseOnOverlayClick={false}
                 style={customStyles}
                 ariaHideApp={false}
                 contentLabel="Section Modal">
@@ -214,6 +215,7 @@ export default class Dashboard extends React.Component {
             <Modal
                 isOpen={this.state.blockchainModalIsOpen}
                 onRequestClose={this.blockchainModalAction.bind(this, false)}
+                shouldCloseOnOverlayClick={false}
                 style={customStyles}
                 ariaHideApp={false}
                 contentLabel="Section Modal">
@@ -253,6 +255,7 @@ export default class Dashboard extends React.Component {
             <Modal
                 isOpen={this.state.proveLogModalIsOpen}
                 onRequestClose={this.proveModalAction.bind(this, false)}
+                shouldCloseOnOverlayClick={false}
                 style={customStyles}
                 ariaHideApp={false}
                 contentLabel="Proof Log">
@@ -937,27 +940,24 @@ export default class Dashboard extends React.Component {
             storeEntries: true
         });
 
+        var implementScrollForProve = function(){
+            setTimeout(()=>{
+                var element6 =  document.getElementsByClassName('log-container-ps');
+                if (element6 && element6.length > 0) {
+                    new PerfectScrollbar('.log-container-ps').update();
+                }
+
+                if($(".advanced-container .more .exp").length > 0) $(".log-container").addClass("log-container-hgt");
+            }, 50);
+        }
+
         proveZip.on('ready', () => {
-            var implementScrollForProve = function(){
-                setTimeout(()=>{
-                    var element6 =  document.getElementsByClassName('log-container-ps');
-                    if (element6 && element6.length > 0) {
-                        new PerfectScrollbar('.log-container-ps').update();
-                    }
-
-                    if($(".advanced-container .more .exp").length > 0) $(".log-container").addClass("log-container-hgt");
-                    /*
-                    var element7 =  document.getElementsByClassName('modal-xpanel-lhs-container');
-                    if (element7 && element7.length > 0) {
-                        new PerfectScrollbar('.modal-xpanel-lhs-container').update();
-                    }*/
-                }, 50);
-            }
-
             // this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
             var proveConfig = {extractedEvidenceFolder:Constants.default.extractedEvidenceFolder,
                                performBlockchainProof:!this.state.blockchainAnchorDisable,
                                networkNodeUrlsMap:this.defaultNodeUrls};
+            
+            implementScrollForProve();
             prover.proveExtractedEvidenceZip(this.logEmitter, proveConfig, proveZip)
             .then((response) => {
                 proveZip.close();
