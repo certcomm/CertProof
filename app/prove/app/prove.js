@@ -273,11 +273,13 @@ module.exports = {
                             var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
                             cpJsonUtils.ensureJsonHas("1020", incManifestJson.blockchainAnchorsOn[0], "type", "networks");
                             var cblockProvedKey = cThinBlockJson.shardKey + ":" + cThinBlockJson.blockNum;
+                            var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
                             if(!this.cblocksProved.has(cblockProvedKey)) {
                                 //for now prove on first type and first network in the type
-                                var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
                                 await blockchainUtils.proveOnBlockChain(this.logEmitter, this.proveConfig.networkNodeUrlsMap, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
                                 this.cblocksProved.add(cblockProvedKey);
+                            } else {
+                                this.logEmitter.log("Already Proved shard=" + cThinBlockJson.shardKey + ",cblockNum=" + cThinBlockJson.blockNum  + " on blockchain networkType= " + networkType);
                             }
                         }
                     } else {
