@@ -362,11 +362,11 @@ export default class Dashboard extends React.Component {
         this.copyEvidence();
 
         LogEmitter.prototype = {
-            log: function(msg) {
+            log: function(msg, delimiter="-") {
                 if(me.state.log == "")
-                    me.setStates({log: this.getPaddedMsg(msg)})
+                    me.setStates({log: this.getPaddedMsg(msg, delimiter)})
                 else
-                    me.setStates({log: me.state.log+"<br />"+ this.getPaddedMsg(msg)})
+                    me.setStates({log: me.state.log+"<br />"+ this.getPaddedMsg(msg, delimiter)})
         	    this.stopIfTerminated();
             },
             error: (err) => {
@@ -376,8 +376,8 @@ export default class Dashboard extends React.Component {
                     this.setState({errLog: this.state.errLog});
                 }
             },
-            getPaddedMsg : function(msg) {
-                return "-".repeat(this.indentTimes*3) + msg;
+            getPaddedMsg : function(msg, delimiter="-") {
+                return delimiter.repeat(this.indentTimes*3) + msg;
             },
             indent: function() {
                 this.indentTimes++;

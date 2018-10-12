@@ -279,7 +279,7 @@ module.exports = {
                                 await blockchainUtils.proveOnBlockChain(this.logEmitter, this.proveConfig.networkNodeUrlsMap, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
                                 this.cblocksProved.add(cblockProvedKey);
                             } else {
-                                this.logEmitter.log("Already Proved shard=" + cThinBlockJson.shardKey + ",cblockNum=" + cThinBlockJson.blockNum  + " on blockchain networkType= " + networkType);
+                                this.logEmitter.log("Already Proved shard=" + cThinBlockJson.shardKey + ",cblockNum=" + cThinBlockJson.blockNum  + " on blockchain networkType= " + networkType, "*");
                             }
                         }
                     } else {

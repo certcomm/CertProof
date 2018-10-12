@@ -7,12 +7,12 @@ var cThinBlockAnchorOpsAbi = require("../contract-abi/CThinBlockAnchorOps.json")
 var Web3 = require('web3');
 module.exports = {
     proveOnBlockChain: async function(logEmitter, networkNodeUrlsMap, networkType, governorDomainName, shard, cblockNum, cThinBlockHash, cThinBlockMerkleRootHash) {
-        logEmitter.log("Proving shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
+        logEmitter.log("Proving shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType, "*");
         try {
             logEmitter.indent();
             var web3 = getWeb3(logEmitter, networkNodeUrlsMap, networkType);
             var cThinBlockAnchor = await getCThinBlockAnchor(web3, networkType, governorDomainName, shard, cblockNum);
-            logEmitter.log("Found cThinBlockAnchor=[" + cThinBlockAnchor +"] on blockchain networkType= " + networkType);
+            logEmitter.log("Found cThinBlockAnchor=[" + cThinBlockAnchor +"] on blockchain networkType= " + networkType, "*");
             if(cThinBlockAnchor==null) {
                 errorMessages.throwError("3001", ", shard="+shard+",blockNum="+cblockNum);
             }
@@ -27,14 +27,14 @@ module.exports = {
         } finally {
             logEmitter.deindent();
         }
-        logEmitter.log("Proved shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType);
+        logEmitter.log("Proved shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType, "*");
     }
 }
 
 function getWeb3(logEmitter, networkNodeUrlsMap, networkType) {
-    logEmitter.log("getting network url from networkNodeUrlsMap=" + JSON.stringify(networkNodeUrlsMap));
+    logEmitter.log("getting network url from networkNodeUrlsMap=" + JSON.stringify(networkNodeUrlsMap), "*");
     var networkNodeUrl=getNetworkNodeUrl(networkNodeUrlsMap, networkType);
-    logEmitter.log("Proving on networkNodeUrl=" + networkNodeUrl);
+    logEmitter.log("Proving on networkNodeUrl=" + networkNodeUrl, "*");
     var web3 = new Web3(new Web3.providers.HttpProvider(networkNodeUrl));
     if(!web3.isConnected()) {
         errorMessages.throwError("3004", ", networkNodeUrl=" + networkNodeUrl  + ", networkType=" + networkType);
