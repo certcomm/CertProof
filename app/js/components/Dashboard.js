@@ -913,10 +913,17 @@ export default class Dashboard extends React.Component {
     }
 
     checkProveEvidence(isPassed){
-        var verificationBtn = isPassed === false ? "verification-failed-container" : "verification-container";
+        // var verificationBtn = isPassed === false ? "verification-failed-container" : "verification-container";
         if(document.getElementsByClassName("progress-bar-container")[0]){
+            document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
             document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
-            document.getElementsByClassName(verificationBtn)[0].style.display = "block";
+            if(isPassed === false){
+                document.getElementsByClassName("verification-container")[0].style.display = "none";
+                document.getElementsByClassName("verification-failed-container")[0].style.display = "block";
+            }else{
+                document.getElementsByClassName("verification-container")[0].style.display = "block";
+                document.getElementsByClassName("verification-failed-container")[0].style.display = "none";
+            }
         }
         this.setStates({isProveRunning: false});
     }
@@ -1457,7 +1464,7 @@ export default class Dashboard extends React.Component {
     }
 
     terminateProveEvidence(e){
-        this.checkProveEvidence(false);
+        this.checkProveEvidence();
         this.logEmitter.triggerTerminate();
     }
 
