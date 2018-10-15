@@ -91,8 +91,10 @@ export default class Dashboard extends React.Component {
     }
     
     proveModalAction(isVisible) {
-        if(isVisible) this.implementScrollOnModal();
         this.setStates({proveLogModalIsOpen: isVisible});
+        setTimeout(()=>{
+            if(isVisible) this.implementScrollOnModal();
+        }, 100);
     }
     
     replacer(match, pIndent, pKey, pVal, pEnd) {
@@ -352,7 +354,7 @@ export default class Dashboard extends React.Component {
 
         this.mergeTwoNetworkJson();
     }
-
+    
     componentWillUnmount() {
         this.isMountedComponent = false;
     }
@@ -1464,7 +1466,7 @@ export default class Dashboard extends React.Component {
     }
 
     terminateProveEvidence(e){
-        this.checkProveEvidence();
+        this.checkProveEvidence(false);
         this.logEmitter.triggerTerminate();
     }
 
