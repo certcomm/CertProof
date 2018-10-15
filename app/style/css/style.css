@@ -363,6 +363,12 @@ a.breadcrumb {
 .xpanel .prove-info-sign, .xpanel .prove-warning-sign {
   display: inline-block; position: relative; margin: 8px 0px 0px 7px; cursor: pointer; vertical-align: top;
 }
+.switch .prove-warning-sign {
+  margin: 0px 0px 0px 5px; cursor: auto;
+}
+.prove-info-text .prove-warning-sign {
+  margin: -4px 0px 0px 5px; cursor: auto;
+}
 .xpanel .prove-info-sign:before{
   content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
 }
@@ -373,7 +379,10 @@ a.breadcrumb {
   content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
 }
 .xpanel .prove-warning-sign:after{
-  content: "\E037"; font-family: "tmail"; font-size: 13px; color: #fcae4e; position: absolute; left: 6px; top: 8px;
+  content: "\E037"; font-family: "tmail"; font-size: 13px; color: #fcae4e; position: absolute; left: 6px; top: 8px; font-weight: 500;
+}
+.switch .prove-warning-sign:after{
+  top: 1px;
 }
 
 /*        Progress bar       */
