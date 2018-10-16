@@ -38,6 +38,7 @@ module.exports = {
 		"2005":"Deleted Section that did not exist or was deleted",
 		"2006":"Narrowed Writer SAC across changeset",
 		"2007":"Writer SAC (changeset N) != Writer SAC (Changeset N-1) + Added Writer (Changeset N)",
+		"2008":"Inconsistent writer image mapping",
 		"2009":"Inconsistent Digital Signature presence",
 		"2010":"Inconsistent CBlockInfo presence",
 		"2011":"Inconsistent field",

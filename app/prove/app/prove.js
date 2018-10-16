@@ -129,7 +129,7 @@ module.exports = {
                     evidenceUtils.ensureHashMatches(this.logEmitter, "1005", sacManifestData, incManifestJson.sacHash, "sacHash for cnum:" + cnum);
 
                     var sacManifestJson = cpJsonUtils.parseJson(sacManifestData.toString('utf-8'));
-                    outer.validateSacManifest(cnum, sacManifestJson);
+                    outer.validateSacManifest(cnum, sacManifestJson, incManifestJson);
 
                     outer.proveChangeset(cnum, sacManifestJson, zip)
                     outer.proveSsac(cnum, sacManifestJson.ssacHash, zip);
@@ -307,7 +307,7 @@ module.exports = {
     },
 
 
-    validateSacManifest: function(cnum, sacManifestJson) {
+    validateSacManifest: function(cnum, sacManifestJson, incManifestJson) {
         cpJsonUtils.ensureJsonHas("1010",sacManifestJson, "ttnGlobal");
         cpJsonUtils.ensureJsonHas("1009",sacManifestJson, "subject");
         cpJsonUtils.ensureJsonHas("1013",sacManifestJson, "governor");
@@ -319,10 +319,10 @@ module.exports = {
         evidenceUtils.ensureSacSchemaVersionSupported(this.logEmitter, sacManifestJson.sacSchemaVersion);
         evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
 
-        this.validateWriters(cnum, sacManifestJson);
+        this.validateWriters(cnum, sacManifestJson, incManifestJson);
     },
 
-    validateWriters: function (cnum, sacManifestJson) {
+    validateWriters: function (cnum, sacManifestJson, incManifestJson) {
         var changeset = sacManifestJson.changeset;
         cpJsonUtils.ensureJsonHas("1014", changeset, "creator");
         this.validateWriter("1014", changeset.creator);
@@ -354,6 +354,13 @@ module.exports = {
                 errorMessages.throwError("2006", "missing writer:" + foreverTmailAddress);       
             }
         }
+        //test writerImageMapping matches
+        for(var writerImageMapping of incManifestJson.writerImageMappings) {
+            if(!wsacForeverTmailAddress.has(writerImageMapping.foreverTmailAddress)) {
+                errorMessages.throwError("2008", "missing writer in sac:" + writerImageMapping.foreverTmailAddress);
+            }
+        }
+
         if(!creatorExists) {
             errorMessages.throwError("1021", "missing:" + creatorForeverTmailAddress);
         }
