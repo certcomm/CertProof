@@ -44,6 +44,8 @@ export default class Dashboard extends React.Component {
         this.addedNodeProtocol = 'https://';
         this.defaultNodeUrls = {};
         this.proveInfoHTML = null;
+        this.isEthereum = false;
+        this.isEthereumMainnet = false;
 
         this.state = {
             modalIsOpen: false,
@@ -91,8 +93,10 @@ export default class Dashboard extends React.Component {
     }
     
     proveModalAction(isVisible) {
-        if(isVisible) this.implementScrollOnModal();
         this.setStates({proveLogModalIsOpen: isVisible});
+        setTimeout(()=>{
+            if(isVisible) this.implementScrollOnModal();
+        }, 100);
     }
     
     replacer(match, pIndent, pKey, pVal, pEnd) {
@@ -352,7 +356,7 @@ export default class Dashboard extends React.Component {
 
         this.mergeTwoNetworkJson();
     }
-
+    
     componentWillUnmount() {
         this.isMountedComponent = false;
     }
@@ -1464,7 +1468,7 @@ export default class Dashboard extends React.Component {
     }
 
     terminateProveEvidence(e){
-        this.checkProveEvidence();
+        this.checkProveEvidence(false);
         this.logEmitter.triggerTerminate();
     }
 
@@ -1483,6 +1487,9 @@ export default class Dashboard extends React.Component {
             blockchainAnchorsOn.map(networkType => {
                 this.networkJson.map((e) => {
                     if(e.type == networkType.type){
+                        if(e.type.toLowerCase() == "ethereum"){
+                            this.isEthereum = true;
+                        }
                         var defaultNetworks = [];
                         e.networks.map(en => {
                             networkType.networks.map(networkName => {
@@ -1490,6 +1497,9 @@ export default class Dashboard extends React.Component {
                                     en.value.map(networkVal => {
                                         if(networkVal.default){
                                             defaultNetworks.push(en.name);
+                                            if(en.name.toLowerCase() == "mainnet"){
+                                                this.isEthereumMainnet = true;
+                                            }
                                         }
                                     });
                                 }
@@ -1523,9 +1533,10 @@ export default class Dashboard extends React.Component {
         // set state
         this.state.stateData = data;
 
+        // to check network and network type
+        var proveInfoArr = this.getDefaultNodes();
         var proveInfoHTML = null;
         if(!this.state.blockchainAnchorDisable && this.evidenceType == 'Certified L1'){
-            var proveInfoArr = this.getDefaultNodes();
             proveInfoHTML = proveInfoArr.join("\n");
 
             if(proveInfoHTML == "") proveInfoHTML = null;
@@ -1550,7 +1561,16 @@ export default class Dashboard extends React.Component {
         var pureCopiedText = this.state.log+(this.state.errLog.length > 0 ? "\n\n"+JSON.stringify(this.state.errLog) : "");
         pureCopiedText = pureCopiedText.replace(/<br\s*[\/]?>/gi, "\n");
         pureCopiedText = pureCopiedText.replace(/(<([^>]+)>)/ig,"");
-        
+
+        var networkAgainstIcon = null, networkTypeAgainstIcon = null;
+        if(this.evidenceType == 'Certified L1'){
+            if(!this.isEthereum){
+                networkAgainstIcon = <div title="Can only prove against Ethereum Blockchain" className="prove-warning-sign" />;
+            } else if(!this.isEthereumMainnet){
+                networkTypeAgainstIcon = <div title="L1 Proofs against Ethereum test networks should not be considered definitive" className="prove-warning-sign" />;
+            }
+        }
+
 		return (
             <div className="panel-container">
                 <div className="xpanel">
@@ -1632,11 +1652,11 @@ export default class Dashboard extends React.Component {
                                                         <div className="info-label">Perform Blockchain Proof </div>
                                                         <div className="fl bold"> : </div>
                                                         <div className="info-value">
-                                                            <div className="link" onClick={this.evidenceType == 'Certified L2' ? this.emptyFunc.bind(this) : this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable, this.state.isProveRunning)}>
+                                                            <div className="link" onClick={this.evidenceType == 'Certified L2' || !this.isEthereum ? this.emptyFunc.bind(this) : this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable, this.state.isProveRunning)}>
                                                                 <div className="switch">
-                                                                    <div className="onoffswitch">
+                                                                    <div className="fl onoffswitch">
                                                                         {
-                                                                            this.state.isProveRunning || this.evidenceType == 'Certified L2' ? (
+                                                                            this.state.isProveRunning || this.evidenceType == 'Certified L2' || !this.isEthereum ? (
                                                                                 <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} disabled />
                                                                             ) : <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} readOnly />
                                                                         }
@@ -1645,6 +1665,7 @@ export default class Dashboard extends React.Component {
                                                                             <span className="onoffswitch-switch"></span>
                                                                         </label>
                                                                     </div>
+                                                                    {networkAgainstIcon}
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1654,7 +1675,7 @@ export default class Dashboard extends React.Component {
                                                         <div className="fl bold"> : </div>
                                                         <div className="info-value">
                                                             {
-                                                                !this.state.blockchainAnchorDisable ? (
+                                                                !this.state.blockchainAnchorDisable && this.isEthereum ? (
                                                                     <a className="link" onClick={this.blockchainModalAction.bind(this, true)}>Update</a>
                                                                 ) : <a className="no-link">Update</a>
                                                             }
@@ -1678,7 +1699,7 @@ export default class Dashboard extends React.Component {
                                         <div className="clear" />
                                         {
                                             proveInfoHTML != null ? (
-                                                <div className="prove-info-text">Will prove on {proveInfoHTML}</div>
+                                                <div className="prove-info-text">Will prove on {proveInfoHTML} {networkTypeAgainstIcon}</div>
                                             ) : null
                                         }
                                     </div>

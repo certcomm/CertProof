@@ -180,10 +180,10 @@ a.breadcrumb {
 	background-color:white; width:100%; font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 .panel-container .xpanel {
-	width:40%; float:left; text-align: center; padding: 0 0 0 14px; box-sizing: border-box; height: 95vh;
+	width:40%; float:left; text-align: center; padding: 0 0 0 14px; box-sizing: border-box; height: 97vh;
 }
 .panel-container .ypanel {
-	width: 59%; float: right; border-left:1px solid #EFEFEF;
+	width: 59%; float: right; border-left:1px solid #EFEFEF; height: calc(100vh - 5px);
 }
 .panel-container .xpanel-modal {
   width: 200px; float: left; padding: 0 0 0 14px; box-sizing: border-box; position: relative; height: calc(100vh - 178px);
@@ -363,6 +363,12 @@ a.breadcrumb {
 .xpanel .prove-info-sign, .xpanel .prove-warning-sign {
   display: inline-block; position: relative; margin: 8px 0px 0px 7px; cursor: pointer; vertical-align: top;
 }
+.switch .prove-warning-sign {
+  margin: 0px 0px 0px 5px; cursor: auto;
+}
+.prove-info-text .prove-warning-sign {
+  margin: -4px 0px 0px 5px; cursor: auto;
+}
 .xpanel .prove-info-sign:before{
   content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
 }
@@ -373,7 +379,10 @@ a.breadcrumb {
   content: "O"; font-family: "tmail"; font-size: 26px; color: #fcae4e;
 }
 .xpanel .prove-warning-sign:after{
-  content: "\E037"; font-family: "tmail"; font-size: 13px; color: #fcae4e; position: absolute; left: 6px; top: 8px;
+  content: "\E037"; font-family: "tmail"; font-size: 13px; color: #fcae4e; position: absolute; left: 6px; top: 8px; font-weight: 500;
+}
+.switch .prove-warning-sign:after{
+  top: 1px;
 }
 
 /*        Progress bar       */
@@ -425,7 +434,7 @@ a.breadcrumb {
   margin-top: 14px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
 }
 .log-container-model{
-  height: 450px!important; white-space: nowrap!important; word-break: keep-all;
+  height: calc(100vh - 225px) !important; min-height: 450px; white-space: nowrap!important; word-break: keep-all;
 }
 .log-container-hgt{
   height: calc(100vh - 550px)!important;
