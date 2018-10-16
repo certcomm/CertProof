@@ -1652,7 +1652,7 @@ export default class Dashboard extends React.Component {
                                                         <div className="info-label">Perform Blockchain Proof </div>
                                                         <div className="fl bold"> : </div>
                                                         <div className="info-value">
-                                                            <div className="link" onClick={this.evidenceType == 'Certified L2' ? this.emptyFunc.bind(this) : this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable, this.state.isProveRunning)}>
+                                                            <div className="link" onClick={this.evidenceType == 'Certified L2' || !this.isEthereum ? this.emptyFunc.bind(this) : this.blockchainAnchorDisableFunc.bind(this, !this.state.blockchainAnchorDisable, this.state.isProveRunning)}>
                                                                 <div className="switch">
                                                                     <div className="fl onoffswitch">
                                                                         {
@@ -1675,7 +1675,7 @@ export default class Dashboard extends React.Component {
                                                         <div className="fl bold"> : </div>
                                                         <div className="info-value">
                                                             {
-                                                                !this.state.blockchainAnchorDisable ? (
+                                                                !this.state.blockchainAnchorDisable && this.isEthereum ? (
                                                                     <a className="link" onClick={this.blockchainModalAction.bind(this, true)}>Update</a>
                                                                 ) : <a className="no-link">Update</a>
                                                             }

@@ -180,10 +180,10 @@ a.breadcrumb {
 	background-color:white; width:100%; font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 .panel-container .xpanel {
-	width:40%; float:left; text-align: center; padding: 0 0 0 14px; box-sizing: border-box; height: 95vh;
+	width:40%; float:left; text-align: center; padding: 0 0 0 14px; box-sizing: border-box; height: 97vh;
 }
 .panel-container .ypanel {
-	width: 59%; float: right; border-left:1px solid #EFEFEF;
+	width: 59%; float: right; border-left:1px solid #EFEFEF; height: calc(100vh - 5px);
 }
 .panel-container .xpanel-modal {
   width: 200px; float: left; padding: 0 0 0 14px; box-sizing: border-box; position: relative; height: calc(100vh - 178px);

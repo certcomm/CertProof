@@ -17,10 +17,10 @@ class Comment extends React.Component {
         this.store = props.store;
         this.comment = props.comment;
         this.data = props.data;
-        this.ttn = props.data.ttn;
+        this.ttn = (props.data) ? props.data.ttn : null;
 
         CommonFunc.comments.data = props.data;
-        CommonFunc.comments.ttnURL = props.data.ttnURL;
+        CommonFunc.comments.ttnURL = (props.data) ? props.data.ttnURL : null;
     }
 
     componentDidMount(){

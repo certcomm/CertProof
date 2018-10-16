@@ -170,7 +170,10 @@ export default class Thread extends React.Component {
             headerData = data && data.header ? data.header : null,
             forwardedCommentHtml = null;
         
-        if(err == "" && headerData == null) return null;
+        if(err == "" && headerData == null) {
+            if(!data.comments) return null;
+            return <Comments comments={data.comments} data={headerData} store={this.store} />
+        }
 
         if(data.forwards){
             //  we are considering latest forward if that is certified 
