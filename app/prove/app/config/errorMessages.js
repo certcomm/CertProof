@@ -40,7 +40,7 @@ module.exports = {
 		"2007":"Writer SAC (changeset N) != Writer SAC (Changeset N-1) + Added Writer (Changeset N)",
 		"2009":"Inconsistent Digital Signature presence",
 		"2010":"Inconsistent CBlockInfo presence",
-		"2011":"Inconsistent governor",
+		"2011":"Inconsistent field",
 		"2012":"Missing manifest file",
 		// Blockchain Tests 
 		"3001":"Block does not exists on Blockchain",

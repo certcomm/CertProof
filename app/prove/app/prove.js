@@ -57,6 +57,7 @@ module.exports = {
         var outer = this;
         return new Promise((resolve, reject) => {
             this.logEmitter.log("Starting Proof");
+            this.logEmitter.log("proveConfig=" + JSON.stringify(proveConfig));
             this.entries = zip.entries()
             if(evidenceUtils.rejectIfErrorFileExists(reject, this.entries)) {
                 return;
@@ -217,8 +218,13 @@ module.exports = {
         cpJsonUtils.ensureJsonHas("1020", incManifestJson, "sacHash","incEvidenceSchemaVersion", "hasDigitalSignature", "hasCBlockInfo");
         evidenceUtils.assertEquals("2009", incManifestJson.hasDigitalSignature, this.hasDigitalSignature);                
         evidenceUtils.assertEquals("2010", incManifestJson.hasCBlockInfo, this.hasCBlockInfo);                
-
-        evidenceUtils.ensureIncEvidenceSchemaVersionSupported(this.logEmitter, incManifestJson.incEvidenceSchemaVersion)    
+        evidenceUtils.assertEquals("2003", incManifestJson.ttnGlobal, this.ttnGlobal);
+        evidenceUtils.assertEquals("2002", incManifestJson.ttn, this.ttn);
+        evidenceUtils.ensureIncEvidenceSchemaVersionSupported(this.logEmitter, incManifestJson.incEvidenceSchemaVersion)
+        if(evidenceUtils.schemaVersionGreaterThanEqualTo(incManifestJson.incEvidenceSchemaVersion, "1.1")) {
+            cpJsonUtils.ensureJsonHas("1020", incManifestJson, "governor", "shardKey", "blockNum");
+            evidenceUtils.assertEquals("2011", incManifestJson.governor, this.governor, "governor");
+        }
     },
 
     proveCThinBlockInfo : async function(reject, cnum, incManifestJson, sacManifestJson, zip) {
@@ -237,6 +243,12 @@ module.exports = {
                     var cThinBlockJson = cpJsonUtils.parseJson(cThinBlockData.toString('utf-8'));
                     cpJsonUtils.ensureJsonHas("1010",cThinBlockJson, "blockNum", "cThinBlockMerkleRootHash","governor","shardKey");
                     cThinBlockMerkleRootHashes.add(cThinBlockJson.cThinBlockMerkleRootHash);
+                    if(cThinBlockJson.cThinBlockMerkleRootHash==incManifestJson.cThinBlockMerkleRoot) {
+                        if(evidenceUtils.schemaVersionGreaterThanEqualTo(incManifestJson.incEvidenceSchemaVersion, "1.1")) {
+                            evidenceUtils.assertEquals("2011", incManifestJson.shardKey, cThinBlockJson.shardKey, "shardKey");
+                            evidenceUtils.assertEquals("2011", incManifestJson.blockNum, cThinBlockJson.blockNum, "blockNum");
+                        }
+                    }
                     for(var op of cThinBlockJson.operations) {
                         cpJsonUtils.ensureJsonHas("1010", op, "transactionNum", "ttnGlobalHash", "sacHash", "ssacHash", "changeNum");
                         opsHashes.add(op.ttnGlobalHash + ":" + op.changeNum + op.sacHash);
@@ -265,7 +277,7 @@ module.exports = {
                 this.logEmitter.log("Proving ssacMerklePath");
                 evidenceUtils.proveMerklePathToRoot(this.logEmitter, incManifestJson.cThinBlockMerkleRoot, sacManifestJson.ssacHash, incManifestJson.ssacMerklePath);
 
-                if(this.proveConfig.performBlockchainProof){
+                if(this.proveConfig.performBlockchainProof) {
                     if ((typeof incManifestJson.blockchainAnchorsOn)!="undefined") {
                         for(var cThinBlockHash of incManifestJson.cThinBlockHashes) {
                             var cThinBlockFilePath = "cBlockInfo/" + cThinBlockHash + ".json";
@@ -303,7 +315,7 @@ module.exports = {
                                                     , "changeset","ssac", "ssacHash", "wsac");
         evidenceUtils.assertEquals("2003", sacManifestJson.ttnGlobal, this.ttnGlobal);
         evidenceUtils.assertEquals("2002", sacManifestJson.ttn, this.ttn);                
-        evidenceUtils.assertEquals("2011", sacManifestJson.governor, this.governor);                
+        evidenceUtils.assertEquals("2011", sacManifestJson.governor, this.governor, "governor");
         evidenceUtils.ensureSacSchemaVersionSupported(this.logEmitter, sacManifestJson.sacSchemaVersion);
         evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
 

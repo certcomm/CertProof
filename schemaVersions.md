@@ -42,3 +42,4 @@
 | 5 |added sacHash and renamed manifest.json to sacManifest.json|
 | 6 |Swapped Level1 and Level2 for Layer1 and Layer2 blockchain|
 | 1.0 |changed to major.minor format|
+| 1.1 |added governor, shard and cblock|
