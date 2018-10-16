@@ -146,9 +146,9 @@ module.exports = {
                 logEmitter.log(msg + " leads to hash:" + digest.toString('hex'));
             }
             var actualRootHash = digest.toString('hex');
-            logEmitter.log("actualRootHash:" + actualRootHash)
+            logEmitter.log("actualMerkleRootHash:" + actualRootHash)
             if(actualRootHash != merkleRootHash) {
-                errorMessages.throwError("1022", "expectedRootHash:" + merkleRootHash +", actualRootHash=" + actualRootHash);            
+                errorMessages.throwError("1029", "expectedMerkleRootHash:" + merkleRootHash +", actualMerkleRootHash=" + actualRootHash);
             }
             logEmitter.log("MerkleTree proved leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash);
         } finally {

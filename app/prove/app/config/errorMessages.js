@@ -29,6 +29,7 @@ module.exports = {
 		"1026":"Schema version should be in Major.Minor format",
 		"1027":"Failure due to Unsupported forward compatibility Schema Version",
 		"1028":"Warning due to Unsupported forward compatibility Schema Version",
+		"1029":"MerkleRootHash validation failed",
 
 		 //Across Multiple Incremental Evidence 
 		"2001":"Missing or non-contiguous change num",
