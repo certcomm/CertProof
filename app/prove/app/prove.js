@@ -129,13 +129,15 @@ module.exports = {
                     evidenceUtils.ensureHashMatches(this.logEmitter, "1005", sacManifestData, incManifestJson.sacHash, "sacHash for cnum:" + cnum);
 
                     var sacManifestJson = cpJsonUtils.parseJson(sacManifestData.toString('utf-8'));
-                    outer.validateSacManifest(cnum, sacManifestJson, incManifestJson);
+                    var allWsacForeverTmailAddress = new Set();
+                    outer.validateSacManifest(cnum, sacManifestJson, allWsacForeverTmailAddress);
 
                     outer.proveChangeset(cnum, sacManifestJson, zip)
                     outer.proveSsac(cnum, sacManifestJson.ssacHash, zip);
                     if (cnum==1) {
-                        outer.proveForwards(sacManifestJson, zip);
-                    }    
+                        outer.proveForwards(sacManifestJson, zip, allWsacForeverTmailAddress);
+                    }
+                    outer.validateWriterImageMapping(incManifestJson, allWsacForeverTmailAddress)
                     await outer.proveCThinBlockInfo(reject, cnum, incManifestJson, sacManifestJson, zip);
                     this.logEmitter.log("cnum:" + cnum + " proved", incEvidenceFileName);
                     if (cnum != highestcnum) {
@@ -158,7 +160,7 @@ module.exports = {
         });
     },
 
-    proveForwards : function (sacManifestJson, zip) {
+    proveForwards : function (sacManifestJson, zip, allWsacForeverTmailAddress) {
         if((typeof sacManifestJson.forwards)!="undefined") {
             for(var forward of sacManifestJson.forwards) {
                 cpJsonUtils.ensureJsonHas("1020", forward, "forwardedComments", "subject", "ttnGlobal", "ttn", "forwardedAtChangeNum", "threadType");            
@@ -168,11 +170,14 @@ module.exports = {
                     evidenceUtils.ensureFileExists("1025", zip.entries(), forwardedCommentSacManifestPath);
                     var forwardedCommentSacData = zip.entryDataSync(forwardedCommentSacManifestPath);
                     evidenceUtils.ensureHashMatches(this.logEmitter, "1025", forwardedCommentSacData, forwardedComment.sacHash, "forwardedComment for " + forwardedCommentSacManifestPath);
-                    this.logEmitter.log("Proved " + forwardedCommentSacManifestPath);                                            
+                    var forwardedCommentSacJson = cpJsonUtils.parseJson(forwardedCommentSacData.toString('utf-8'));
+                    wsacForeverTmailAddresses = this.getWsacForeverTmailAddresses(forwardedCommentSacJson)
+                    wsacForeverTmailAddresses.forEach(allWsacForeverTmailAddress.add, allWsacForeverTmailAddress);
+                    this.logEmitter.log("Proved " + forwardedCommentSacManifestPath);
                 }
             }
             this.logEmitter.log("proved forwards");
-        }    
+        }
     },
 
     proveChangeset:function (cnum, sacManifestJson, zip) {
@@ -307,7 +312,7 @@ module.exports = {
     },
 
 
-    validateSacManifest: function(cnum, sacManifestJson, incManifestJson) {
+    validateSacManifest: function(cnum, sacManifestJson, allWsacForeverTmailAddress) {
         cpJsonUtils.ensureJsonHas("1010",sacManifestJson, "ttnGlobal");
         cpJsonUtils.ensureJsonHas("1009",sacManifestJson, "subject");
         cpJsonUtils.ensureJsonHas("1013",sacManifestJson, "governor");
@@ -319,10 +324,10 @@ module.exports = {
         evidenceUtils.ensureSacSchemaVersionSupported(this.logEmitter, sacManifestJson.sacSchemaVersion);
         evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
 
-        this.validateWriters(cnum, sacManifestJson, incManifestJson);
+        this.validateWriters(cnum, sacManifestJson, allWsacForeverTmailAddress);
     },
 
-    validateWriters: function (cnum, sacManifestJson, incManifestJson) {
+    validateWriters: function (cnum, sacManifestJson, allWsacForeverTmailAddress) {
         var changeset = sacManifestJson.changeset;
         cpJsonUtils.ensureJsonHas("1014", changeset, "creator");
         this.validateWriter("1014", changeset.creator);
@@ -354,17 +359,27 @@ module.exports = {
                 errorMessages.throwError("2006", "missing writer:" + foreverTmailAddress);       
             }
         }
-        //test writerImageMapping matches
-        for(var writerImageMapping of incManifestJson.writerImageMappings) {
-            if(!wsacForeverTmailAddress.has(writerImageMapping.foreverTmailAddress)) {
-                errorMessages.throwError("2008", "missing writer in sac:" + writerImageMapping.foreverTmailAddress);
-            }
-        }
-
         if(!creatorExists) {
             errorMessages.throwError("1021", "missing:" + creatorForeverTmailAddress);
         }
+        wsacForeverTmailAddress.forEach(allWsacForeverTmailAddress.add, allWsacForeverTmailAddress);
         this.logEmitter.log("Validated writers for cnum:"+ cnum);                            
+    },
+
+    getWsacForeverTmailAddresses: function(sacManifestJson){
+        var wsacForeverTmailAddress = new Set();
+        for(var writer of sacManifestJson.wsac.writers) {
+            wsacForeverTmailAddress.add(writer.foreverTmailAddress);
+        }
+        return wsacForeverTmailAddress;
+    },
+
+    validateWriterImageMapping: function(incManifestJson, allWsacForeverTmailAddress) {
+        for(var writerImageMapping of incManifestJson.writerImageMappings) {
+            if(!allWsacForeverTmailAddress.has(writerImageMapping.foreverTmailAddress)) {
+                errorMessages.throwError("2008", "missing writer in sac:" + writerImageMapping.foreverTmailAddress);
+            }
+        }
     },
 
     validateWriter : function(errorCode, writer) {
