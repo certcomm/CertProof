@@ -965,6 +965,9 @@ export default class Dashboard extends React.Component {
             }, 50);
         }
 
+        if(!this.isEthereum){
+            this.state.blockchainAnchorDisable = true;
+        }
         proveZip.on('ready', () => {
             // this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
             var proveConfig = {extractedEvidenceFolder:Constants.default.extractedEvidenceFolder,
