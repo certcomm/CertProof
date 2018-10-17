@@ -965,13 +965,13 @@ export default class Dashboard extends React.Component {
             }, 50);
         }
 
+        var isDis = this.state.blockchainAnchorDisable;
         if(!this.isEthereum){
-            this.state.blockchainAnchorDisable = true;
+            isDis = true;
         }
         proveZip.on('ready', () => {
-            // this.defaultNodeUrls = [ ...new Set(this.defaultNodeUrls) ];
             var proveConfig = {extractedEvidenceFolder:Constants.default.extractedEvidenceFolder,
-                               performBlockchainProof:!this.state.blockchainAnchorDisable,
+                               performBlockchainProof:!isDis,
                                networkNodeUrlsMap:this.defaultNodeUrls};
             
             implementScrollForProve();
@@ -1660,7 +1660,7 @@ export default class Dashboard extends React.Component {
                                                                     <div className="fl onoffswitch">
                                                                         {
                                                                             this.state.isProveRunning || this.evidenceType == 'Certified L2' || !this.isEthereum ? (
-                                                                                <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} disabled />
+                                                                                <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={(this.isEthereum ? !this.state.blockchainAnchorDisable : false)} disabled />
                                                                             ) : <input type="checkbox" id="blockchainAnchorDisableCheck"  className="onoffswitch-checkbox" checked={!this.state.blockchainAnchorDisable} readOnly />
                                                                         }
                                                                         <label htmlFor="blockchainAnchorDisableCheck" className="onoffswitch-label">
