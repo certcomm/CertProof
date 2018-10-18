@@ -928,6 +928,8 @@ export default class Dashboard extends React.Component {
                 document.getElementsByClassName("verification-container")[0].style.display = "block";
                 document.getElementsByClassName("verification-failed-container")[0].style.display = "none";
             }
+            
+            document.getElementsByClassName("copy-to-clipboard-container")[0].classList.toggle("hide-ccc");
         }
         this.setStates({isProveRunning: false});
     }
@@ -1761,7 +1763,7 @@ export default class Dashboard extends React.Component {
                         <div className="clear" />
                         {
                             this.state.log != "" || this.state.errLog.length > 0 ? (
-                                <div className="copy-to-clipboard-container">
+                                <div className="copy-to-clipboard-container hide-ccc">
                                     <div id="clip-log-text" className="hidden">Log Copied to Clipboard</div>
                                     <Clipboard
                                         data-clipboard-text={pureCopiedText}
