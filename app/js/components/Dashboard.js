@@ -726,12 +726,12 @@ export default class Dashboard extends React.Component {
         return changesetJson;
     }
 
-    getIncEvidenceFileName(evidenceJson, entries, ttn, cnum) {
+    getIncEvidenceFileName(evidenceJson, ttn, cnum) {
         var filename;
-        if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo) {
+        if(evidenceJson.hasCBlockInfo) {
             filename = "L1_INC_EV_"+ttn+"_"+cnum+".zip"
             this.evidenceType = 'Certified L1';
-        } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
+        } else if(evidenceJson.hasDigitalSignature || evidenceJson.certified) {
             filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
             this.evidenceType = 'Certified L2';
             
@@ -753,7 +753,7 @@ export default class Dashboard extends React.Component {
         // get highest cnum from file and run a loop
         var t = (cnum) =>{
             // create file name dynamically
-            var filename = this.getIncEvidenceFileName(json, this.entries, ttn, cnum)
+            var filename = this.getIncEvidenceFileName(json, ttn, cnum)
             var zipEntry = this.entries[filename];
 
             // read incremental change num zip without extreact

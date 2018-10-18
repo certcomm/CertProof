@@ -44,7 +44,8 @@ module.exports = {
 		"2010":"Inconsistent CBlockInfo presence",
 		"2011":"Inconsistent field",
 		"2012":"Missing manifest file",
-		// Blockchain Tests 
+		"2013":"Inconsistent certified presence",
+		// Blockchain Tests
 		"3001":"Block does not exists on Blockchain",
 		"3002":"CThinBlockHash in incremental evidence does not match CThinBlockHash on Blockchain",
 		"3003":"MerkleRootHash in incremental evidence does not match MerkleRootHash on Blockchain",

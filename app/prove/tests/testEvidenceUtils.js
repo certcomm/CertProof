@@ -13,6 +13,7 @@ describe('EvidenceUtils', function() {
       assert.equal(evidenceUtils.schemaVersionGreaterThanEqualTo("1.0","1.1"), false);
     });
   });
+
   describe('#schemaVersionSupported()', function() {
     var supportedSchemaVersions = {
         current : "1.5",
@@ -38,6 +39,18 @@ describe('EvidenceUtils', function() {
     it('should throw error on MinorVersionForwardCompatiblity', function() {
         assert.throws(()=>evidenceUtils.schemaVersionSupported(logEmitter, supportedSchemaVersions, "incEvidence", "1.6", true)
                       ,(err) =>err.name=="1028");
+    });
+  });
+
+  describe('#getIncEvidenceFileName()', function() {
+    it('should return proper incremental zip file Name', function() {
+      var ttn = "124-0203-0241";
+      var cnum = 6;
+      assert.equal(evidenceUtils.getIncEvidenceFileName({"hasCBlockInfo":true}, ttn, cnum), "L1_INC_EV_124-0203-0241_6.zip");
+      assert.equal(evidenceUtils.getIncEvidenceFileName({"hasCBlockInfo":false, "hasDigitalSignature":true}, ttn, cnum), "L2_INC_EV_124-0203-0241_6.zip");
+      assert.equal(evidenceUtils.getIncEvidenceFileName({"hasCBlockInfo":false, "hasDigitalSignature":false, "certified":true}, ttn, cnum), "L2_INC_EV_124-0203-0241_6.zip");
+      assert.equal(evidenceUtils.getIncEvidenceFileName({"hasCBlockInfo":false, "hasDigitalSignature":false}, ttn, cnum), "BACKUP_INC_124-0203-0241_6.zip");
+      assert.equal(evidenceUtils.getIncEvidenceFileName({"hasCBlockInfo":false, "hasDigitalSignature":false, "certified":false}, ttn, cnum), "BACKUP_INC_124-0203-0241_6.zip");
     });
   });
 });

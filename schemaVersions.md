@@ -30,6 +30,7 @@
 | 3 |added TtnUrl|
 | 4 |Swapped Level1 and Level2 for Layer1 and Layer2 blockchain|
 | 1.0 |changed to major.minor format|
+| 1.1 |added certified|
 
 ### IncEvidence Manifest
 
@@ -43,3 +44,4 @@
 | 6 |Swapped Level1 and Level2 for Layer1 and Layer2 blockchain|
 | 1.0 |changed to major.minor format|
 | 1.1 |added governor, shard and cblock|
+| 1.2 |added certified|

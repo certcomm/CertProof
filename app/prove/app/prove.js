@@ -89,6 +89,7 @@ module.exports = {
         this.ttnGlobal = evidenceJson.ttnGlobal;
         this.governor = evidenceJson.governor;
         this.hasDigitalSignature = evidenceJson.hasDigitalSignature;
+        this.certified = evidenceJson.certified;
         this.hasCBlockInfo = evidenceJson.hasCBlockInfo;
         this.cblocksProved = new Set()
         return await this.proveIncEvidence(evidenceJson,extractResponse.extractedEvidenceFolder, extractResponse.entries, 1);
@@ -99,7 +100,7 @@ module.exports = {
         return new Promise((resolve, reject) => {
             var ttn = evidenceJson.ttn;
             var highestcnum = evidenceJson.highestCnum;      
-            var incEvidenceFileName = evidenceUtils.getIncEvidenceFileName(evidenceJson, mainZipEntries, ttn, cnum)
+            var incEvidenceFileName = evidenceUtils.getIncEvidenceFileName(evidenceJson, ttn, cnum)
             evidenceUtils.ensureFileExists("2001", mainZipEntries, incEvidenceFileName);
             const zip = new StreamZip({
                 file: extractedEvidenceFolder + incEvidenceFileName,
@@ -222,7 +223,8 @@ module.exports = {
     validateIncManifest: function(cnum, incManifestJson) {
         cpJsonUtils.ensureJsonHas("1020", incManifestJson, "sacHash","incEvidenceSchemaVersion", "hasDigitalSignature", "hasCBlockInfo");
         evidenceUtils.assertEquals("2009", incManifestJson.hasDigitalSignature, this.hasDigitalSignature);                
-        evidenceUtils.assertEquals("2010", incManifestJson.hasCBlockInfo, this.hasCBlockInfo);                
+        evidenceUtils.assertEquals("2010", incManifestJson.hasCBlockInfo, this.hasCBlockInfo);
+        evidenceUtils.assertEquals("2013", incManifestJson.certified, this.certified);
         evidenceUtils.assertEquals("2003", incManifestJson.ttnGlobal, this.ttnGlobal);
         evidenceUtils.assertEquals("2002", incManifestJson.ttn, this.ttn);
         evidenceUtils.ensureIncEvidenceSchemaVersionSupported(this.logEmitter, incManifestJson.incEvidenceSchemaVersion)

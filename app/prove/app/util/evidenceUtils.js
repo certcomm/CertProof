@@ -26,11 +26,11 @@ module.exports = {
             errorMessages.throwError(errorCode, " " + msgPrefix + " doesn't match, expected=" + expected + ", actual=" + actual);
         }        
     },
-    getIncEvidenceFileName: function(evidenceJson, entries, ttn, cnum) {
+    getIncEvidenceFileName: function(evidenceJson, ttn, cnum) {
         var filename;
-        if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo) {
+        if(evidenceJson.hasCBlockInfo) {
             filename = "L1_INC_EV_"+ttn+"_"+cnum+".zip"
-        } else if(evidenceJson.hasDigitalSignature && evidenceJson.hasCBlockInfo==false) {
+        } else if(evidenceJson.hasDigitalSignature || evidenceJson.certified) {
             filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
         } else {
             filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";

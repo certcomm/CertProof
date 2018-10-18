@@ -7,6 +7,9 @@ LogEmitter.prototype = {
 	    console.log(this.getPaddedMsg(msg, delimiter));
 	    this.stopIfTerminated();
 	},
+	debug: function(msg, delimiter="-") {
+	    log(msg, delimiter);
+	},
 	error: function(err) {console.error(err);},
 	getPaddedMsg : function(msg, delimiter="-") {
                 return delimiter.repeat(this.indentTimes*3) + msg;
