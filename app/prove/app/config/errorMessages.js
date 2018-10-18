@@ -52,8 +52,8 @@ module.exports = {
 		"3004":"Could not connect to Blockchain network using Node URL",
 		"3005":"Blockchain anchors missing for one or more incremental evidences",
 	},
-	throwError: function(errorCode, msgSuffix) {
+	throwError: function(errorCode, msgSuffix, debugMsg = "") {
 	    var errorMessage = this.errors[errorCode] + ", " + msgSuffix;
-	    throw {name:errorCode, message:errorMessage};                            
+	    throw {name:errorCode, message:errorMessage, debugMsg:debugMsg};
 	}
 }

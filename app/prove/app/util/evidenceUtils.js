@@ -23,7 +23,7 @@ module.exports = {
     },
     assertEquals: function (errorCode, actual, expected, msgPrefix ="") {
         if(actual != expected) {
-            errorMessages.throwError(errorCode, " " + msgPrefix + " doesn't match, expected=" + expected + ", actual=" + actual);
+            errorMessages.throwError(errorCode, " " + msgPrefix + " doesn't match, actual=" + actual,  "expected=" + expected );
         }        
     },
     getIncEvidenceFileName: function(evidenceJson, ttn, cnum) {
@@ -47,7 +47,7 @@ module.exports = {
         }
         var hashFromContent = this.computeSha256Hash(data)
         if(hashFromContent!=expectedHash) {
-            errorMessages.throwError(errorCode, msgContext + " doesn't match, expected=" + expectedHash + ", actual=" + hashFromContent);
+            errorMessages.throwError(errorCode, msgContext + " doesn't match, actual=" + hashFromContent, "expected=" + expectedHash);
         } else {
             logEmitter.log(msgContext + " proved");                            
         }
@@ -148,7 +148,7 @@ module.exports = {
             var actualRootHash = digest.toString('hex');
             logEmitter.log("actualMerkleRootHash:" + actualRootHash)
             if(actualRootHash != merkleRootHash) {
-                errorMessages.throwError("1029", "expectedMerkleRootHash:" + merkleRootHash +", actualMerkleRootHash=" + actualRootHash);
+                errorMessages.throwError("1029", "actualMerkleRootHash=" + actualRootHash, "expectedMerkleRootHash:" + merkleRootHash);
             }
             logEmitter.log("MerkleTree proved leafSignature:"+ leafSignature + " is part of merkleRootHash:" + merkleRootHash);
         } finally {

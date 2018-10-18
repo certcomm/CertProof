@@ -373,6 +373,10 @@ export default class Dashboard extends React.Component {
                     me.setStates({log: me.state.log+"<br />"+ this.getPaddedMsg(msg, delimiter)})
         	    this.stopIfTerminated();
             },
+            debug: function(msg, delimiter="-") {
+        	    //do not log to screen for now
+        	    this.stopIfTerminated();
+            },
             error: (err) => {
                 this.state.errLog.push(err);
                 // to reset view if user terminated prove, because sometime `prover.proveExtractedEvidenceZip` does not return anything
