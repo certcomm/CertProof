@@ -140,7 +140,7 @@ module.exports = {
                     }
                     outer.validateWriterImageMapping(incManifestJson, allWsacForeverTmailAddress)
                     await outer.proveCThinBlockInfo(reject, cnum, incManifestJson, sacManifestJson, zip);
-                    this.logEmitter.log("cnum:" + cnum + " proved", incEvidenceFileName);
+                    this.logEmitter.log("Proved cnum:" + cnum);
                     if (cnum != highestcnum) {
                         this.logEmitter.deindent();
                         deindented=true;
@@ -163,19 +163,42 @@ module.exports = {
 
     proveForwards : function (sacManifestJson, zip, allWsacForeverTmailAddress) {
         if((typeof sacManifestJson.forwards)!="undefined") {
-            for(var forward of sacManifestJson.forwards) {
-                cpJsonUtils.ensureJsonHas("1020", forward, "forwardedComments", "subject", "ttnGlobal", "ttn", "forwardedAtChangeNum", "threadType");            
-                for(var forwardedComment of forward.forwardedComments) {
-                    cpJsonUtils.ensureJsonHas("1020", forwardedComment, "sacHash", "changeNum");            
-                    var forwardedCommentSacManifestPath = "forwards/" + forward.ttn + "_" + forwardedComment.changeNum + "_sacManifest.json";
-                    evidenceUtils.ensureFileExists("1025", zip.entries(), forwardedCommentSacManifestPath);
-                    var forwardedCommentSacData = zip.entryDataSync(forwardedCommentSacManifestPath);
-                    evidenceUtils.ensureHashMatches(this.logEmitter, "1025", forwardedCommentSacData, forwardedComment.sacHash, "forwardedComment for " + forwardedCommentSacManifestPath);
-                    var forwardedCommentSacJson = cpJsonUtils.parseJson(forwardedCommentSacData.toString('utf-8'));
-                    wsacForeverTmailAddresses = this.getWsacForeverTmailAddresses(forwardedCommentSacJson)
-                    wsacForeverTmailAddresses.forEach(allWsacForeverTmailAddress.add, allWsacForeverTmailAddress);
-                    this.logEmitter.log("Proved " + forwardedCommentSacManifestPath);
+            this.logEmitter.log("Proving forwards");
+            try {
+                this.logEmitter.indent();
+                for(var forward of sacManifestJson.forwards) {
+                    cpJsonUtils.ensureJsonHas("1020", forward, "forwardedComments", "subject", "ttnGlobal", "ttn", "forwardedAtChangeNum", "threadType");
+                    for(var forwardedComment of forward.forwardedComments) {
+                        cpJsonUtils.ensureJsonHas("1020", forwardedComment, "sacHash", "changeNum");
+                        var forwardedCommentSacManifestPath = "forwards/" + forward.ttn + "_" + forwardedComment.changeNum + "_sacManifest.json";
+                        this.logEmitter.log("Proving " + forwardedCommentSacManifestPath);
+                        try {
+                            this.logEmitter.indent();
+                            evidenceUtils.ensureFileExists("1025", zip.entries(), forwardedCommentSacManifestPath);
+                            var forwardedCommentSacData = zip.entryDataSync(forwardedCommentSacManifestPath);
+                            evidenceUtils.ensureHashMatches(this.logEmitter, "1025", forwardedCommentSacData, forwardedComment.sacHash, "forwardedCommentSac for " + forwardedCommentSacManifestPath);
+
+                            var forwardedCommentSacJson = cpJsonUtils.parseJson(forwardedCommentSacData.toString('utf-8'));
+                            if(forwardedCommentSacJson.metadataDeleted==true) {
+                                this.proveComment(forwardedCommentSacJson.changeNum, forwardedCommentSacJson.commentLeafHash, zip);
+                            } else {
+                                var changeset = forwardedCommentSacJson.changeset;
+                                var cnum = changeset.changeNum;
+                                this.proveComment(cnum, changeset.commentLeafHash, zip);
+                                this.proveAttachments(cnum, changeset, zip);
+                                this.proveSections(cnum, forwardedCommentSacJson.ssac, zip);
+
+                                wsacForeverTmailAddresses = this.getWsacForeverTmailAddresses(forwardedCommentSacJson)
+                                wsacForeverTmailAddresses.forEach(allWsacForeverTmailAddress.add, allWsacForeverTmailAddress);
+                            }
+                        } finally {
+                            this.logEmitter.deindent();
+                        }
+                        this.logEmitter.log("Proved " + forwardedCommentSacManifestPath);
+                    }
                 }
+            } finally {
+                this.logEmitter.deindent();
             }
             this.logEmitter.log("proved forwards");
         }
@@ -212,7 +235,7 @@ module.exports = {
 
             }
 
-            this.proveComment(cnum, changeset, zip);
+            this.proveComment(cnum, changeset.commentLeafHash, zip);
             this.proveAttachments(cnum, changeset, zip);    
         } finally {
             this.logEmitter.deindent();            
@@ -388,17 +411,16 @@ module.exports = {
         cpJsonUtils.ensureJsonHas(errorCode, writer, "foreverTmailAddress", "contemporaneousTmailAddress", "role");
     },
 
-    proveComment: function(cnum, changeset, zip) {
-        this.logEmitter.log("Proving comment for cnum:"+ cnum);                            
+    proveComment: function(cnum, commentLeafHash, zip) {
+        this.logEmitter.log("Proving comment for cnum:"+ cnum);
         //changeset may optionally have comment
         //thats why do the explcit check instead of ensureJsonHas 
-        if((typeof changeset.commentLeafHash)!="undefined") {
-            var commentLeafHash = changeset.commentLeafHash;
+        if((typeof commentLeafHash)!="undefined") {
             evidenceUtils.ensureFileExists("1001", zip.entries(), "comments/" + commentLeafHash +".html");
             var commentData = zip.entryDataSync("comments/" + commentLeafHash +".html")
             evidenceUtils.ensureHashMatches(this.logEmitter, "1001", commentData, commentLeafHash, "CommentLeafHash for cnum"+ cnum);
         }
-        this.logEmitter.log("Proved comment for cnum:"+ cnum);                            
+        this.logEmitter.log("Proved comment for cnum:"+ cnum);
     },
 
     proveAttachments: function(cnum, changeset, zip) {
@@ -408,7 +430,7 @@ module.exports = {
                 this.logEmitter.indent();            
                 for(var attachment of changeset.attachments) {
                     cpJsonUtils.ensureJsonHas("1020", attachment, "attachmentLeafHash","attachmentNum", "title")
-                    this.logEmitter.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum);
+                    this.logEmitter.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum + ",title:" + attachment.title);
                     var attachmentLeafHash = attachment.attachmentLeafHash;
                     var extension = path.extname(attachment.title);
                     var attachmentFilePath = "attachments/" + attachmentLeafHash + extension;
@@ -431,11 +453,22 @@ module.exports = {
             var ssacData = zip.entryDataSync(Constants.default.ssacManifestJsonFileName);
             evidenceUtils.ensureHashMatches(this.logEmitter, "1004", ssacData, ssacHash, "ssacHash for cnum:" + cnum);
             var ssac = cpJsonUtils.parseJson(ssacData.toString('utf-8'));
-            if((typeof ssac.sections)!="undefined") {
+            this.proveSections(cnum, ssac, zip);
+        } finally {
+            this.logEmitter.deindent();
+        }                
+        this.logEmitter.log("Proved ssac for cnum:"+ cnum);                            
+    },
+
+    proveSections : function(cnum, ssac, zip) {
+        this.logEmitter.log("Proving sections for cnum:"+ cnum);
+        if((typeof ssac.sections)!="undefined") {
+            try {
+                this.logEmitter.indent();
                 for(var section of ssac.sections) {
                     cpJsonUtils.ensureJsonHas("1017", section, "type", "title")
                     if(section.type == "file" && section.fileSectionState == "BOUND") {
-                        cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash")                        
+                        cpJsonUtils.ensureJsonHas("1017", section, "sectionLeafHash")
                     }
                     if(section.sectionLeafHash!=undefined) {
                         var sectionLeafHash = section.sectionLeafHash;
@@ -444,8 +477,8 @@ module.exports = {
                             if(section.type=="file") {
                                 cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName")
                                 extension = path.extname(section.fileSectionOriginalName);
-                            } 
-                            
+                            }
+
                             var sectionFilePath = "sections/" + sectionLeafHash + extension;
                             evidenceUtils.ensureFileExists("1002", zip.entries(), sectionFilePath);
                             var sectionData = zip.entryDataSync(sectionFilePath);
@@ -454,10 +487,11 @@ module.exports = {
                         }
                     }
                 }
+            } finally {
+                this.logEmitter.deindent();
             }
-        } finally {
-            this.logEmitter.deindent();
-        }                
-        this.logEmitter.log("Proved ssac for cnum:"+ cnum);                            
-    }
+        }
+        this.logEmitter.log("Proved sections for cnum:"+ cnum);
+    },
+
 };
