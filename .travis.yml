@@ -43,6 +43,7 @@ before_script:
   - sleep 3
 
 script:
+  - npm run test
   - npm run dist
 
 deploy:
