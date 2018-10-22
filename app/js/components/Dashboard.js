@@ -362,15 +362,23 @@ export default class Dashboard extends React.Component {
     }
 
     componentDidMount() {
-		var me = this;
+		var me = this, i = 0;
         this.copyEvidence();
 
         LogEmitter.prototype = {
             log: function(msg, delimiter="-") {
-                if(me.state.log == "")
+                i++;
+                if(me.state.log == ""){
                     me.setStates({log: this.getPaddedMsg(msg, delimiter)})
-                else
-                    me.setStates({log: me.state.log+"<br />"+ this.getPaddedMsg(msg, delimiter)})
+                }else{
+                    // just to implement this to improve performance
+                    if(i == 20){
+                        i = 0;
+                        me.setStates({log: me.state.log+"<br />"+ this.getPaddedMsg(msg, delimiter)})
+                    }else{
+                        me.state.log = me.state.log+"<br />"+ this.getPaddedMsg(msg, delimiter);
+                    }
+                }
         	    this.stopIfTerminated();
             },
             debug: function(msg, delimiter="-") {
@@ -838,8 +846,14 @@ export default class Dashboard extends React.Component {
                         var data = bufferData.toString('ascii');
                         
                         //  convert buffer data to json
-                        var jsonData = JSON.parse(data),
-                            cloneJsonData = JSON.parse(JSON.stringify(jsonData));
+                        try{
+                            var jsonData = JSON.parse(data);
+                        }catch(e){
+                            this.store.setError("We're Sorry: The uploaded evidence file could not be displayed. This may be because the file was tampered with or has been corrupted. Please click \"Prove\" to detect if there was any tampering");
+                            return false;
+                        }
+
+                        var cloneJsonData = JSON.parse(JSON.stringify(jsonData));
                         
                         this.store.setRawJson({json: cloneJsonData, type: "evidencemanifest"});
 
@@ -1722,7 +1736,7 @@ export default class Dashboard extends React.Component {
                                         <div className="clear" />
                                         {
                                             proveInfoHTML != null ? (
-                                                <div className="prove-info-text prove-info-text-proving">Proving on {proveInfoHTML}</div>
+                                                <div className="prove-info-text prove-info-text-proving">Proving on {proveInfoHTML} {networkTypeAgainstIcon}</div>
                                             ) : null
                                         }
                                     </div>
@@ -1739,7 +1753,7 @@ export default class Dashboard extends React.Component {
                                         <div className="clear" />
                                         {
                                             proveInfoHTML != null ? (
-                                                <div className="prove-info-text prove-info-text-proved">Proved on  {proveInfoHTML}</div>
+                                                <div className="prove-info-text prove-info-text-proved">Proved on  {proveInfoHTML} {networkTypeAgainstIcon}</div>
                                             ) : null
                                         }
                                     </div>
@@ -1757,7 +1771,7 @@ export default class Dashboard extends React.Component {
                                         <div className="clear" />
                                         {
                                             proveInfoHTML != null ? (
-                                                <div className="prove-info-text prove-info-text-failed">Unable to proved against {proveInfoHTML}</div>
+                                                <div className="prove-info-text prove-info-text-failed">Unable to proved against {proveInfoHTML} {networkTypeAgainstIcon}</div>
                                             ) : null
                                         }
                                     </div>

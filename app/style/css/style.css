@@ -162,7 +162,7 @@ a.breadcrumb {
   position: relative;
 }
 .evidence-prove-container .prove-info-text{
-  position: absolute; left: 15%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600;
+  position: absolute; left: 10%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600;
 }
 .modal-section-title.evidence-prove-container .prove-info-text{
   margin: 0px 0 0 5px; color: #1C84C6; font-size: 13px; font-weight: 600; position: initial;
@@ -174,7 +174,7 @@ a.breadcrumb {
   color: #1AB394;
 }
 .evidence-prove-container .prove-info-text-failed{
-  color: #FF0000;
+  color: #FF0000; left: 10%;
 }
 .panel-container {
 	background-color:white; width:100%; font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;

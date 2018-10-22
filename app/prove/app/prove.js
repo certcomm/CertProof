@@ -151,7 +151,7 @@ module.exports = {
                 } catch(err) {
                     this.logEmitter.error(err);
                     zip.close();
-                    reject(err.message);
+                    reject(err.message || err);
                 } finally {
                     if (!deindented) {
                         this.logEmitter.deindent();
