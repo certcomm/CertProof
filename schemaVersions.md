@@ -45,3 +45,4 @@
 | 1.0 |changed to major.minor format|
 | 1.1 |added governor, shard and cblock|
 | 1.2 |added certified|
+
