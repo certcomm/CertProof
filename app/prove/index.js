@@ -18,7 +18,10 @@ prover.extractEvidence(logEmitter, extractedEvidenceFolder, zipFilePath)
     })
 .then(function(response) {
         logEmitter.log("Proof Success!"+ response);
+        process.exit(0);
      })
 .catch(function(err) {
-        console.error("Proof Failed!", err);
+        logEmitter.log("Proof Failed!" + JSON.stringify(err));
+        logEmitter.error(err);
+        process.exit(1);
 });
