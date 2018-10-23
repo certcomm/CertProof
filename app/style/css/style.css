@@ -162,16 +162,16 @@ a.breadcrumb {
   position: relative;
 }
 .evidence-prove-container .prove-info-text{
-  position: absolute; left: 15%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600;
+  position: absolute; left: 12%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600; display: flex; width: 80%;
 }
 .modal-section-title.evidence-prove-container .prove-info-text{
   margin: 0px 0 0 5px; color: #1C84C6; font-size: 13px; font-weight: 600; position: initial;
 }
 .evidence-prove-container .prove-info-text-proving{
-  color: #1C84C6;
+  color: #1C84C6; left: 20%;
 }
 .evidence-prove-container .prove-info-text-proved{
-  color: #1AB394;
+  color: #1AB394; left: 18%;
 }
 .evidence-prove-container .prove-info-text-failed{
   color: #FF0000; left: 10%;
@@ -431,7 +431,7 @@ a.breadcrumb {
 }
 .log-container{
   text-align: left; font-size: 13px; overflow: auto; border: solid 1px #EFEFEF;
-  margin-top: 14px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
+  margin-top: 25px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
 }
 .log-container-model{
   height: calc(100vh - 225px) !important; min-height: 450px; white-space: nowrap!important; word-break: keep-all;
