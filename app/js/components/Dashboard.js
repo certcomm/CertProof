@@ -566,6 +566,8 @@ export default class Dashboard extends React.Component {
         var bufferData = null;
         try {
             bufferData = zip1.entryDataSync(filename);
+            var manifestJson = bufferData.toString('ascii'),
+                jsonData = JSON.parse(manifestJson);
         } catch(e) {
             if(!changesetJson.comments) changesetJson.comments = {}
 
@@ -575,7 +577,7 @@ export default class Dashboard extends React.Component {
                 
                 if(!isForwarded) this.store.setRawJson({cnum: cnum, json: "#"+cnum+" Deleted", type: "changeset"});
             }else{
-                changesetJson.comments[cnum] = "Missing "+filename+" file for changeset "+cnum;
+                changesetJson.comments[cnum] = "Missing or corrupted "+filename+" file for changeset "+cnum;
                 
                 if(!isForwarded) this.store.setRawJson({cnum: cnum, json: "Missing "+filename+" file for changeset "+cnum, type: "changeset"});
             }
