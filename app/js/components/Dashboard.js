@@ -586,9 +586,7 @@ export default class Dashboard extends React.Component {
         }
         
         if(bufferData != null){
-            var manifestJson = bufferData.toString('ascii'),
-                jsonData = JSON.parse(manifestJson),
-                cloneJsonData = JSON.parse(JSON.stringify(jsonData));
+            var cloneJsonData = JSON.parse(JSON.stringify(jsonData));
             
             if(!isForwarded) this.store.setRawJson({cnum: cnum, json: cloneJsonData, type: "changeset"});
             

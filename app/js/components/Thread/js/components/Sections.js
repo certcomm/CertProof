@@ -84,7 +84,10 @@ export default class Sections extends React.Component {
 
     closeModal() {
         this.setState({modalIsOpen: false, section: ""});
-        TaskList.destroyTasklistComponent("modal-content-container");
+        
+        if(this.state.section.type == "task_list"){
+            TaskList.destroyTasklistComponent("modal-content-container");
+        }
     }
 
     configSectionModal(){
@@ -449,9 +452,16 @@ export default class Sections extends React.Component {
                 }else if(section.type == 'grid'){
                     // convert bufferd data into json
                     var dataJson = bufferData.toString('utf-8');
+                    try{
+                        dataJson = JSON.parse(dataJson);
+                    }catch(e){
+                        swal("We're Sorry: File could not be displayed. This may be because the file was tampered with or has been corrupted. Please click \"Prove\" to detect if there was any tampering.");
+                        zip.close();
+                        return false;
+                    }
 
                     // call function to convert json into excel file
-                    this.writeAsExcel(JSON.parse(dataJson), function(r){
+                    this.writeAsExcel(dataJson, function(r){
                         // download the file
                         me.downloadFile(section.title+".xlsx", r);
                     });
