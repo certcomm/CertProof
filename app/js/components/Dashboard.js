@@ -386,10 +386,18 @@ export default class Dashboard extends React.Component {
         	    this.stopIfTerminated();
             },
             error: (err) => {
-                this.state.errLog.push(err);
+                if(this.state.errLog.length <= 0){
+                    this.state.errLog.push(err);
+                }else{
+                    if (this.state.errLog.filter(e => e.message === err).length < 0) {
+                        this.state.errLog.push(err);
+                    }
+                }
                 // to reset view if user terminated prove, because sometime `prover.proveExtractedEvidenceZip` does not return anything
                 if(this.logEmitter.terminated === true){
-                    this.setState({errLog: this.state.errLog});
+                    var cloneErrLog = JSON.parse(JSON.stringify(this.state.errLog));
+                    this.state.errLog = "";
+                    this.setState({errLog: cloneErrLog});
                 }
             },
             getPaddedMsg : function(msg, delimiter="-") {
@@ -849,10 +857,10 @@ export default class Dashboard extends React.Component {
                         try{
                             var jsonData = JSON.parse(data);
                         }catch(e){
-                            this.store.setError("We're Sorry: The uploaded evidence file could not be displayed. This may be because the file was tampered with or has been corrupted. Please click \"Prove\" to detect if there was any tampering");
+                            this.store.setError("We're Sorry: The uploaded evidence file could not be displayed. This may be because the file was tampered with or has been corrupted.");
                             return false;
                         }
-
+                        
                         var cloneJsonData = JSON.parse(JSON.stringify(jsonData));
                         
                         this.store.setRawJson({json: cloneJsonData, type: "evidencemanifest"});
@@ -946,9 +954,9 @@ export default class Dashboard extends React.Component {
                 document.getElementsByClassName("verification-container")[0].style.display = "block";
                 document.getElementsByClassName("verification-failed-container")[0].style.display = "none";
             }
-            
-            document.getElementsByClassName("copy-to-clipboard-container")[0].classList.toggle("hide-ccc");
         }
+        document.getElementsByClassName("copy-to-clipboard-container")[0].classList.remove("hide-ccc");
+
         this.setStates({isProveRunning: false});
     }
 
