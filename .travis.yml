@@ -46,7 +46,7 @@ script:
   - npm run dist
   - npm run test>dist/unit-test.log
   - npm run proof-tests
-  - tar -zcf dist/proof-tests-logs.zip dist/proof-tests-logs/*
+  - tar -zcf dist/proof-tests-logs.tar dist/proof-tests-logs/*
 
 deploy:
   provider: releases
