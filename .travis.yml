@@ -44,9 +44,9 @@ before_script:
 
 script:
   - npm run dist
-  - npm run test>dist/unit-test.log
-  - npm run proof-tests
-  - tar -zcf dist/proof-tests-logs.tar dist/proof-tests-logs/*
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run test>dist/unit-test.log          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run proof-tests          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then tar -zcf dist/proof-tests-logs.tar dist/proof-tests-logs/*          ; fi
 
 deploy:
   provider: releases
