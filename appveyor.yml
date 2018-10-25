@@ -12,6 +12,7 @@ install:
   - npm install -g npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
   - npm install
+  - set COMMIT_SHORT=%APPVEYOR_REPO_COMMIT:~0,7%
 matrix:
   fast_finish: true
 build: off
@@ -23,8 +24,8 @@ test_script:
 artifacts:
 - path: dist\*
 deploy:
-  release: certproof-win-latest-$(APPVEYOR_REPO_COMMIT)
-  description: 'CertProof windows latest $(APPVEYOR_REPO_COMMIT) release'
+  release: certproof-win-latest-$(COMMIT_SHORT)
+  description: 'CertProof windows latest $(COMMIT_SHORT) release'
   provider: GitHub
   auth_token:
     secure: OnTqF98RecRT7q6J9WVXhbqJG0kLis8FAiyA4y6BoxQHvPHbt43mEXifx3kPQ5ly

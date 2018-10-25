@@ -42,6 +42,9 @@ before_script:
   - sh -e /etc/init.d/xvfb start &
   - sleep 3
 
+env:
+  global:
+  — COMMIT_SHORT=${TRAVIS_COMMIT::7}
 script:
   - npm run dist
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run test>dist/unit-test.log          ; fi
@@ -56,9 +59,9 @@ deploy:
   file: dist/*
   skip_cleanup: true
   overwrite: true
-  name: "certproof-${TRAVIS_OS_NAME}-latest-${TRAVIS_COMMIT}"
-  body: "CertProof ${TRAVIS_OS_NAME} latest ${TRAVIS_COMMIT} release"
+  name: "certproof-${TRAVIS_OS_NAME}-latest-${COMMIT_SHORT}"
+  body: "CertProof ${TRAVIS_OS_NAME} latest ${COMMIT_SHORT} release"
   draft: true
-  tag_name: "certproof-${TRAVIS_OS_NAME}-latest-${TRAVIS_COMMIT}"
+  tag_name: "certproof-${TRAVIS_OS_NAME}-latest-${COMMIT_SHORT}"
   on:
     branch: master
