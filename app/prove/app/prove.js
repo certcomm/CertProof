@@ -187,8 +187,8 @@ module.exports = {
                                 this.proveComment(cnum, changeset.commentLeafHash, zip);
                                 this.proveAttachments(cnum, changeset, zip);
                                 this.proveSections(cnum, forwardedCommentSacJson.ssac, zip);
-
-                                wsacForeverTmailAddresses = this.getWsacForeverTmailAddresses(forwardedCommentSacJson)
+                                
+                                var wsacForeverTmailAddresses = this.getWsacForeverTmailAddresses(forwardedCommentSacJson)
                                 wsacForeverTmailAddresses.forEach(allWsacForeverTmailAddress.add, allWsacForeverTmailAddress);
                             }
                         } finally {
