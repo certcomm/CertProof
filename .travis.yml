@@ -49,7 +49,7 @@ script:
   - npm run dist
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run test>dist/unit-test.log          ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run proof-tests          ; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then zip dist/proof-tests-logs.zip dist/proof-tests-logs/*          ; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then zip -r dist/proof-tests-logs.zip dist/proof-tests-logs/*          ; fi
 
 deploy:
   provider: releases
