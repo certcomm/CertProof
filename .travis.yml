@@ -44,7 +44,7 @@ before_script:
 
 env:
   global:
-  — COMMIT_SHORT=${TRAVIS_COMMIT::7}
+    - COMMIT_SHORT=${TRAVIS_COMMIT::7}
 script:
   - npm run dist
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run test>dist/unit-test.log          ; fi
