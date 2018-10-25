@@ -5,12 +5,12 @@
 	"productName": "CertProof",
 	"version": "1.0.63",
 	"description": "CertProof",
-	"config": { "TRAVIS_COMMIT": "initialName" },
+	"config": { "GIT_COMMIT": "initialName" },
 	"main": "main.js",
 	"build": {
 		"appId": "com.tmail21.certproof",
 		"productName": "CertProof",
-		"artifactName": "${productName}-${os}-${arch}-${version}-${env.npm_package_config_TRAVIS_COMMIT}.${ext}",
+		"artifactName": "${productName}-${os}-${arch}-${version}-${env.npm_package_config_GIT_COMMIT}.${ext}",
 		"asar": true,
 		"mac": {
 			"category": "public.app-category.business",

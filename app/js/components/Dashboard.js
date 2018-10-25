@@ -1650,9 +1650,9 @@ export default class Dashboard extends React.Component {
                                             <div className="info-value">{process.env.npm_package_version}</div>
                                             
                                             <div className="clear"></div>
-                                            <div className="info-label">Build Number</div>
+                                            <div className="info-label">Commit Hash</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">{process.env.npm_package_config_TRAVIS_COMMIT}</div>
+                                            <div className="info-value">{process.env.npm_package_config_GIT_COMMIT}</div>
                                             
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
