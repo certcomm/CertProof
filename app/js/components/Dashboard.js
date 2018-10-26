@@ -1014,6 +1014,7 @@ export default class Dashboard extends React.Component {
                 implementScrollForProve();  // enable scroll after log loaded
             })
             .catch((err) => {
+                if(this.state.errLog.length <= 0) this.state.errLog.push(err);
                 proveZip.close();
                 this.checkProveEvidence(false);
                 implementScrollForProve();  // enable scroll after log loaded

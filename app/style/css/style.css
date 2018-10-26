@@ -434,7 +434,7 @@ a.breadcrumb {
   margin-top: 25px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
 }
 .log-container-model{
-  height: calc(100vh - 225px) !important; min-height: 450px; white-space: nowrap!important; word-break: keep-all;
+  height: calc(100vh - 250px) !important; min-height: 420px; white-space: nowrap!important; word-break: keep-all;
 }
 .log-container-hgt{
   height: calc(100vh - 550px)!important;
