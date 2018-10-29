@@ -147,11 +147,14 @@ export default class Thread extends React.Component {
             document.getElementsByClassName("colt")[0].className = "expt";
             target.style.height = target.scrollHeight+"px";
             setTimeout(function(){
-                document.getElementsByClassName("more")[1].scrollTop = 100;
+                $('.middle-container').animate({ scrollTop: $('.middle-container').scrollTop() + $('.more').offset().top+50 }, 500);
             }, 500);
         } else {
             document.getElementsByClassName("expt")[0].className = "colt";
             target.style.height = 0;
+            setTimeout(function(){
+                $('.middle-container').animate({ scrollTop:  $('.middle-container').height()+210 }, 500);
+            }, 500);
         }
     }
 
