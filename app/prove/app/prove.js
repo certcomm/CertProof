@@ -213,7 +213,7 @@ module.exports = {
         }
         cpJsonUtils.ensureJsonHas("1020",changeset, "changeNum", "sections");
         if(cnum!=changeset.changeNum) {
-            errorMessages.throwError("1016", "changeNum:" + changeNum);
+            errorMessages.throwError("1016", "changeNum:" + changeset.changeNum);
         }
         try {
             this.logEmitter.indent();
