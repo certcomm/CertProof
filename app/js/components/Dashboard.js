@@ -776,6 +776,21 @@ export default class Dashboard extends React.Component {
             var filename = this.getIncEvidenceFileName(json, ttn, cnum)
             var zipEntry = this.entries[filename];
 
+            if(!zipEntry){
+                if(!changesetJson.comments) changesetJson.comments = {}
+                changesetJson.comments[cnum] = "Missing or corrupted "+filename+" file for changeset "+cnum;
+                this.store.setRawJson({cnum: cnum, json: "Missing or corrupted "+filename+" file for changeset "+cnum, type: "changeset"});
+                
+                // we are in loop so below function should call only if all zip file's data has been extracted and added into single onject
+                cnum--;
+                if(cnum == 0){
+                    this.store.setData(changesetJson);
+                }else{
+                    t(cnum)
+                }
+                return false;
+            }
+
             // read incremental change num zip without extreact
             const zip1 = new StreamZip({
                 file: Constants.default.extractedEvidenceFolder+zipEntry.name,
