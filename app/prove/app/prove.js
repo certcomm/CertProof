@@ -378,14 +378,14 @@ module.exports = {
             }
             wsacForeverTmailAddress.add(writer.foreverTmailAddress);
         }
+        if(!creatorExists) {
+            errorMessages.throwError("1021", "missing:" + creatorForeverTmailAddress);
+        }
         //test for narrow of wsac
         for(var foreverTmailAddress of this.currentWriters) {
             if(!wsacForeverTmailAddress.has(foreverTmailAddress)) {
                 errorMessages.throwError("2006", "missing writer:" + foreverTmailAddress);       
             }
-        }
-        if(!creatorExists) {
-            errorMessages.throwError("1021", "missing:" + creatorForeverTmailAddress);
         }
         wsacForeverTmailAddress.forEach(allWsacForeverTmailAddress.add, allWsacForeverTmailAddress);
         this.logEmitter.log("Validated writers for cnum:"+ cnum);                            
