@@ -11,7 +11,6 @@ module.exports = {
 		"1008":"Unknown Thread Type",
 		"1009":"Missing Subject",
 		"1010":"Missing ttnGlobal",
-		"1011":"Invalid ttnGlobal Structure",
 		"1012":"Invalid Writer Structure",
 		"1013":"Missing Governor",
 		"1014": "Invalid Creator Structure",
