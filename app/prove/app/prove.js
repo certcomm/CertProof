@@ -400,10 +400,14 @@ module.exports = {
     },
 
     validateWriterImageMapping: function(incManifestJson, allWsacForeverTmailAddress) {
-        for(var writerImageMapping of incManifestJson.writerImageMappings) {
-            if(!allWsacForeverTmailAddress.has(writerImageMapping.foreverTmailAddress)) {
-                errorMessages.throwError("2008", "missing writer in sac:" + writerImageMapping.foreverTmailAddress);
+        if(incManifestJson.writerImageMappings){
+            for(var writerImageMapping of incManifestJson.writerImageMappings) {
+                if(!allWsacForeverTmailAddress.has(writerImageMapping.foreverTmailAddress)) {
+                    errorMessages.throwError("2008", "missing writer in sac:" + writerImageMapping.foreverTmailAddress);
+                }
             }
+        }else{
+            errorMessages.throwError("2008", "missing writer mapping");
         }
     },
 
