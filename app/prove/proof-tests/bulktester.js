@@ -15,7 +15,7 @@ async function proveDirectory(parentPath, zipsFolderName, expectedExitCode) {
             if(zipName.endsWith(".zip")) {
                 var zipFilePath = path.join(testZipsDirPath, zipName);
                 var outputLogPath = path.join(testLogDir, zipName)+ ".log";
-                var cmd = 'npm run prove "' + zipFilePath + '">' + outputLogPath;
+                var cmd = 'npm run prove "' + zipFilePath + '">"' + outputLogPath + '"';
                 console.log("Running " + cmd);
                 try {
                     child_process.execSync(cmd);
