@@ -88,6 +88,8 @@ module.exports = {
         this.ttn = evidenceJson.ttn;
         this.ttnGlobal = evidenceJson.ttnGlobal;
         this.governor = evidenceJson.governor;
+        this.isProductionGovernor = evidenceJson.isProductionGovernor;
+        this.governorStageURI = evidenceJson.governorStageURI;
         this.hasDigitalSignature = evidenceJson.hasDigitalSignature;
         this.certified = evidenceJson.certified;
         this.hasCBlockInfo = evidenceJson.hasCBlockInfo;
@@ -255,6 +257,11 @@ module.exports = {
             cpJsonUtils.ensureJsonHas("1020", incManifestJson, "governor");
             evidenceUtils.assertEquals("2011", incManifestJson.governor, this.governor, "governor");
         }
+        if(evidenceUtils.schemaVersionGreaterThanEqualTo(incManifestJson.incEvidenceSchemaVersion, "1.3")) {
+            cpJsonUtils.ensureJsonHas("1020", incManifestJson, "isProductionGovernor", "governorStageURI");
+            evidenceUtils.assertEquals("2011", incManifestJson.isProductionGovernor, this.isProductionGovernor, "isProductionGovernor");
+            evidenceUtils.assertEquals("2011", incManifestJson.governorStageURI, this.governorStageURI, "governorStageURI");
+        }
     },
 
     proveCThinBlockInfo : async function(reject, cnum, incManifestJson, sacManifestJson, zip) {
@@ -318,7 +325,7 @@ module.exports = {
                             var networkType = incManifestJson.blockchainAnchorsOn[0].networks[0];
                             if(!this.cblocksProved.has(cblockProvedKey)) {
                                 //for now prove on first type and first network in the type
-                                await blockchainUtils.proveOnBlockChain(this.logEmitter, this.proveConfig.networkNodeUrlsMap, networkType, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
+                                await blockchainUtils.proveOnBlockChain(this.logEmitter, this.proveConfig.networkNodeUrlsMap, networkType, incManifestJson.isProductionGovernor, cThinBlockJson.governor, cThinBlockJson.shardKey, cThinBlockJson.blockNum, cThinBlockHash, cThinBlockJson.cThinBlockMerkleRootHash);
                                 this.cblocksProved.add(cblockProvedKey);
                             } else {
                                 this.logEmitter.log("Already Proved shard=" + cThinBlockJson.shardKey + ",cblockNum=" + cThinBlockJson.blockNum  + " on blockchain networkType= " + networkType, "*");
@@ -346,6 +353,11 @@ module.exports = {
         evidenceUtils.assertEquals("2003", sacManifestJson.ttnGlobal, this.ttnGlobal);
         evidenceUtils.assertEquals("2002", sacManifestJson.ttn, this.ttn);                
         evidenceUtils.assertEquals("2011", sacManifestJson.governor, this.governor, "governor");
+        if(evidenceUtils.schemaVersionGreaterThanEqualTo(sacManifestJson.sacSchemaVersion, "1.1")) {
+            cpJsonUtils.ensureJsonHas("1020", sacManifestJson, "isProductionGovernor", "governorStageURI");
+            evidenceUtils.assertEquals("2011", sacManifestJson.isProductionGovernor, this.isProductionGovernor, "isProductionGovernor");
+            evidenceUtils.assertEquals("2011", sacManifestJson.governorStageURI, this.governorStageURI, "governorStageURI");
+        }
         evidenceUtils.ensureSacSchemaVersionSupported(this.logEmitter, sacManifestJson.sacSchemaVersion);
         evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
 

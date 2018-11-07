@@ -14,6 +14,7 @@
 | 10 |replaced tmailType with threadType|
 | 11 |changed defaultShard key from string to integer as 0|
 | 1.0 |changed to major.minor format|
+| 1.1 |added isProductionGovernor and governorStageURI|
 
 ### Thread Manifest
 
@@ -31,6 +32,7 @@
 | 4 |Swapped Level1 and Level2 for Layer1 and Layer2 blockchain|
 | 1.0 |changed to major.minor format|
 | 1.1 |added certified|
+| 1.2 |added isProductionGovernor and governorStageURI|
 
 ### IncEvidence Manifest
 
@@ -45,4 +47,4 @@
 | 1.0 |changed to major.minor format|
 | 1.1 |added governor, shard and cblock|
 | 1.2 |added certified|
-
+| 1.3 |added isProductionGovernor and governorStageURI|

@@ -6,12 +6,12 @@ var registryAbi = require("../contract-abi/Registry.json");
 var cThinBlockAnchorOpsAbi = require("../contract-abi/CThinBlockAnchorOps.json");
 var Web3 = require('web3');
 module.exports = {
-    proveOnBlockChain: async function(logEmitter, networkNodeUrlsMap, networkType, governorDomainName, shard, cblockNum, cThinBlockHash, cThinBlockMerkleRootHash) {
+    proveOnBlockChain: async function(logEmitter, networkNodeUrlsMap, networkType, isProductionGovernor, governorDomainName, shard, cblockNum, cThinBlockHash, cThinBlockMerkleRootHash) {
         logEmitter.log("Proving shard=" + shard + ",cblockNum=" + cblockNum  + " on blockchain networkType= " + networkType, "*");
         try {
             logEmitter.indent();
             var web3 = getWeb3(logEmitter, networkNodeUrlsMap, networkType);
-            var cThinBlockAnchor = await getCThinBlockAnchor(web3, networkType, governorDomainName, shard, cblockNum);
+            var cThinBlockAnchor = await getCThinBlockAnchor(web3, networkType, isProductionGovernor, governorDomainName, shard, cblockNum);
             logEmitter.log("Found cThinBlockAnchor=[" + cThinBlockAnchor +"] on blockchain networkType= " + networkType, "*");
             if(cThinBlockAnchor==null) {
                 errorMessages.throwError("3001", ", shard="+shard+",blockNum="+cblockNum);
@@ -42,8 +42,8 @@ function getWeb3(logEmitter, networkNodeUrlsMap, networkType) {
     return web3;
 }
 
-async function getCThinBlockAnchor(web3, networkType, governorDomainName, shard, cblockNum) {
-    var cThinBlockAnchorOps = await getCThinBlockAnchorOps(web3, networkType);
+async function getCThinBlockAnchor(web3, networkType, isProductionGovernor, governorDomainName, shard, cblockNum) {
+    var cThinBlockAnchorOps = await getCThinBlockAnchorOps(web3, networkType, isProductionGovernor);
     var exists = await cThinBlockAnchorOps.cThinBlockAnchorExists(governorDomainName, shard, cblockNum);
     if(exists) {
         return await cThinBlockAnchorOps.getCThinBlockAnchor(governorDomainName, shard, cblockNum);
@@ -51,14 +51,14 @@ async function getCThinBlockAnchor(web3, networkType, governorDomainName, shard,
     return null;
 }
 
-async function getCThinBlockAnchorOps(web3, networkType) {
-    var registry = getRegistry(web3, networkType);
+async function getCThinBlockAnchorOps(web3, networkType, isProductionGovernor) {
+    var registry = getRegistry(web3, networkType, isProductionGovernor);
     var cThinBlockAnchorOpsAddress = await registry.getContractAddr("CThinBlockAnchorOps");
     return web3.eth.contract(cThinBlockAnchorOpsAbi).at(cThinBlockAnchorOpsAddress);
 }
 
-function getRegistry(web3, networkType) {
-    var registryAddress = getRegistryAddress(networkType);
+function getRegistry(web3, networkType, isProductionGovernor) {
+    var registryAddress = getRegistryAddress(networkType, isProductionGovernor);
     return web3.eth.contract(registryAbi).at(registryAddress);
 }
 
@@ -69,12 +69,25 @@ function getNetworkNodeUrl(networkNodeUrlsMap, networkType) {
     return null;
 }
 
-function getRegistryAddress(networkType) {
-    switch (networkType) {
-        case "mainnet":
-            return "0x8f83c92dc3c874005e7c8151300eeabdf4a86023";
-        case "test_rinkeby":
-            return "0x8f83c92dc3c874005e7c8151300eeabdf4a86023";
+function getRegistryAddress(networkType, isProductionGovernor) {
+    if (isProductionGovernor == true) {
+        switch (networkType) {
+            case "mainnet":
+                return "foo";
+            case "test_rinkeby":
+                return "0xc5844e179a0ba1a1550baba37d434fdccbef4194";
+            case "testcase":
+                return "testProdRegistry";
+        }
+    } else {
+        switch (networkType) {
+            case "mainnet":
+                return "foo";
+            case "test_rinkeby":
+                return "0x8f83c92dc3c874005e7c8151300eeabdf4a86023";
+            case "testcase":
+                return "testDevRegistry";
+        }
     }
     return null;
 }
