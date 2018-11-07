@@ -96,7 +96,6 @@ module.exports = {
         if(majorSchemaVersion>expectedMajorSchemaVersion) {
             errorMessages.throwError("1027", "found " + schemaType + " MajorSchemaVersion:" + majorSchemaVersion + " but only versions less than " + expectedMajorSchemaVersion + " are supported");
         }
-
         if(warnOnMinorVersionForwardCompatiblity && majorSchemaVersion==expectedMajorSchemaVersion && minorSchemaVersion>expectedMinorSchemaVersion) {
             errorMessages.throwError("1028", "found " + schemaType + " schemaVersion:" + schemaVersion + " but only versions less than " + expectedMinorSchemaVersion + " are fully supported");
         }

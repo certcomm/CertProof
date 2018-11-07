@@ -252,7 +252,7 @@ module.exports = {
         evidenceUtils.assertEquals("2002", incManifestJson.ttn, this.ttn);
         evidenceUtils.ensureIncEvidenceSchemaVersionSupported(this.logEmitter, incManifestJson.incEvidenceSchemaVersion)
         if(evidenceUtils.schemaVersionGreaterThanEqualTo(incManifestJson.incEvidenceSchemaVersion, "1.1")) {
-            cpJsonUtils.ensureJsonHas("1020", incManifestJson, "governor", "shardKey", "blockNum");
+            cpJsonUtils.ensureJsonHas("1020", incManifestJson, "governor");
             evidenceUtils.assertEquals("2011", incManifestJson.governor, this.governor, "governor");
         }
     },
