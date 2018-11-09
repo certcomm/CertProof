@@ -161,20 +161,27 @@ a.breadcrumb {
 .evidence-prove-container{
   position: relative;
 }
+.evidence-prove-container .evidence-prove-container-text, .evidence-prove-container .prove-info-text {
+  color: #1C84C6; font-size: 13px; font-weight: 600; margin-top: 3px;
+}
+.xpanel .evidence-prove-container .evidence-prove-container-text .prove-warning-sign {
+  display: inline-block; position: relative; margin: -3px 0 0 0; cursor: default;
+}
 .evidence-prove-container .prove-info-text{
-  position: absolute; left: 12%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600; display: flex; width: 80%;
+  margin-top: 0;
+  /* position: absolute; left: 12%; margin: 5px; color: #1C84C6; font-size: 13px; font-weight: 600; display: flex; width: 80%; */
 }
 .modal-section-title.evidence-prove-container .prove-info-text{
   margin: 0px 0 0 5px; color: #1C84C6; font-size: 13px; font-weight: 600; position: initial;
 }
 .evidence-prove-container .prove-info-text-proving{
-  color: #1C84C6; left: 20%;
+  color: #1C84C6; /*left: 20%;*/
 }
 .evidence-prove-container .prove-info-text-proved{
-  color: #1AB394; left: 18%;
+  color: #1AB394; /*left: 18%;*/
 }
 .evidence-prove-container .prove-info-text-failed{
-  color: #FF0000; left: 10%;
+  color: #FF0000; /*left: 10%;*/
 }
 .panel-container {
 	background-color:white; width:100%; font-family:'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -392,6 +399,9 @@ a.breadcrumb {
 .evidence-prove-form .link-container {
   line-height: 18px; margin-left: 10px; text-align: center;
 }
+.evidence-prove-container-btn {
+  display: inline-flex;
+}
 .verification-container .tmail-certified-new-rhs:before {
   color: #4B8523; margin-top: -9px; font-size: 100px; display: inline-block;
 }
@@ -430,8 +440,7 @@ a.breadcrumb {
   border: 0 none; clip: rect(0px, 0px, 0px, 0px); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px;
 }
 .log-container{
-  text-align: left; font-size: 13px; overflow: auto; border: solid 1px #EFEFEF;
-  margin-top: 25px; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px);
+  text-align: left; font-size: 13px; overflow: auto; border: solid 1px #EFEFEF; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px); margin-top: 5px;
 }
 .log-container-model{
   height: calc(100vh - 250px) !important; min-height: 420px; white-space: nowrap!important; word-break: keep-all;
@@ -446,7 +455,7 @@ a.breadcrumb {
   color: #FF0000;
 }
 .xpanel .copy-to-clipboard-container{
-  position: relative; height: 15px;
+  position: absolute; right: 0; bottom: 14px;
 }
 .xpanel .copy-to-clipboard-container.show-ccc {
   z-index: 9; opacity: 1;
