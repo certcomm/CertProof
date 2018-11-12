@@ -318,33 +318,29 @@ export default class Dashboard extends React.Component {
         * */
         if(appDefaultNetworkJson.length > 0){
             var clonedNetworkJson = JSON.parse(JSON.stringify(appDefaultNetworkJson));
-            // appDefaultNetworkJson.map((globalFileJson, pi) => {
-                // appDefaultNetworkJson[pi].networks.map((globalFileJsonNetworks, pni) => {
-                    // globalFileJsonNetworks.value.map(function(e, ei) {
-                        userNetworkJson.map((uglobalFileJson, upi) => {
-                            // if(globalFileJson.type == uglobalFileJson.type){
-                                userNetworkJson[upi].networks.map((uglobalFileJsonNetworks, upni) => {
-                                    // if(appDefaultNetworkJson[pi].networks[pni].name == uglobalFileJsonNetworks.name){
-                                        // do not add if already added
-                                        uglobalFileJsonNetworks.value.map(function(ue, uei) {
-                                            var cexistPIndex = clonedNetworkJson[upi].networks[upni].value.map(function(cue, cuei) {
-                                                // if custom network is set default then appdefault should be set false
-                                                if(ue.default && ue.custom){
-                                                    cue.default = false;
-                                                }
-                                                return cue.url;
-                                            }).indexOf(ue.url);
-                                            if(cexistPIndex < 0){
-                                                clonedNetworkJson[upi].networks[upni].value.push(ue);
-                                            }
-                                        });
-                                    // }
+            if(userNetworkJson && userNetworkJson.map){
+                userNetworkJson.map((uglobalFileJson, upi) => {
+                    if(userNetworkJson && userNetworkJson[upi] && userNetworkJson[upi].networks && userNetworkJson[upi].networks.map){
+                        userNetworkJson[upi].networks.map((uglobalFileJsonNetworks, upni) => {
+                            if(uglobalFileJsonNetworks && uglobalFileJsonNetworks.value && uglobalFileJsonNetworks.value.map){
+                                // do not add if already added
+                                uglobalFileJsonNetworks.value.map(function(ue, uei) {
+                                    var cexistPIndex = clonedNetworkJson[upi].networks[upni].value.map(function(cue, cuei) {
+                                        // if custom network is set default then appdefault should be set false
+                                        if(ue.default && ue.custom){
+                                            cue.default = false;
+                                        }
+                                        return cue.url;
+                                    }).indexOf(ue.url);
+                                    if(cexistPIndex < 0){
+                                        clonedNetworkJson[upi].networks[upni].value.push(ue);
+                                    }
                                 });
-                            // }
+                            }
                         });
-                    // });
-                // });
-            // });
+                    }
+                });
+            }
         }
         this.networkJson = clonedNetworkJson;
     }

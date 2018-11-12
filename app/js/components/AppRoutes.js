@@ -38,19 +38,22 @@ export default class AppRoutes extends React.Component {
                         // should remove appdefault URls for user network json
                         var clonedNetworkJson = JSON.parse(JSON.stringify(parseJson)),
                             isAppDefaultUrlsExist = false;
-                        parseJson.map((node, p1) => {
-                            return node.networks.map((network, p2) => {
-                                // network.value = [];
-                                return network.value.map(function(e, p3) {
-                                    // should delete all appdefault urls object
-                                    if(e.appDefault){
-                                        isAppDefaultUrlsExist = true;
-                                        clonedNetworkJson[p1].networks[p2].value.splice(p3, 1);
-                                    }
-                                    return network;
-                                });
-                            })
-                        });
+                        
+                        if(parseJson && parseJson.map){
+                            parseJson.map((node, p1) => {
+                                return node.networks.map((network, p2) => {
+                                    // network.value = [];
+                                    return network.value.map(function(e, p3) {
+                                        // should delete all appdefault urls object
+                                        if(e.appDefault){
+                                            isAppDefaultUrlsExist = true;
+                                            clonedNetworkJson[p1].networks[p2].value.splice(p3, 1);
+                                        }
+                                        return network;
+                                    });
+                                })
+                            });
+                        }
                         if(isAppDefaultUrlsExist){
                             FileSystem.writeFile(fileName, JSON.stringify(clonedNetworkJson), {spaces:4}, (err) => {
                                 if(err){

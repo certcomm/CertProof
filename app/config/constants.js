@@ -2,7 +2,7 @@ const electron = window.require('electron');
 const remote = electron.remote;
 const appPath = remote.app.getAppPath();
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
-const appExePath = (electron.app || electron.remote.app).getPath('logs');
+// const appExePath = (electron.app || electron.remote.app).getPath('logs');
 
 export default {
 	supportedSchemaVersions: {
@@ -19,7 +19,7 @@ export default {
 	incManifestJsonFileName: "incEvidenceManifest.json",
 	errorFileName: "Errors.txt",
 	networkFileFolder: userDataPath+"/networks/",
-	networkAppDefaultFileFolder: appExePath+"/networks/",
+	networkAppDefaultFileFolder: userDataPath+"/defaultNetworks/",
 	networkJsonFileName: "networks.json",
 	blockChainAnchorsOn: [
 		{
