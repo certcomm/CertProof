@@ -1760,14 +1760,14 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         <div className="clear" />
                                         {
-                                            inforBtn != null ? (
-                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
+                                            productionGovernorHTML != null ? (
+                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
                                             ) : null
                                         }
                                         <div className="clear" />
                                         {
-                                            productionGovernorHTML != null ? (
-                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
+                                            inforBtn != null ? (
+                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
                                             ) : null
                                         }
                                         <div className="clear" />
@@ -1787,14 +1787,14 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         <div className="clear" />
                                         {
-                                            inforBtn != null ? (
-                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
+                                            productionGovernorHTML != null ? (
+                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
                                             ) : null
                                         }
                                         <div className="clear" />
                                         {
-                                            productionGovernorHTML != null ? (
-                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
+                                            inforBtn != null ? (
+                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
                                             ) : null
                                         }
                                         <div className="clear" />
@@ -1817,14 +1817,14 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         <div className="clear" />
                                         {
-                                            inforBtn != null ? (
-                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
+                                            productionGovernorHTML != null ? (
+                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
                                             ) : null
                                         }
                                         <div className="clear" />
                                         {
-                                            productionGovernorHTML != null ? (
-                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
+                                            inforBtn != null ? (
+                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
                                             ) : null
                                         }
                                         <div className="clear" />
@@ -1848,14 +1848,14 @@ export default class Dashboard extends React.Component {
                                         </div>
                                         <div className="clear" />
                                         {
-                                            inforBtn != null ? (
-                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
+                                            productionGovernorHTML != null ? (
+                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
                                             ) : null
                                         }
                                         <div className="clear" />
                                         {
-                                            productionGovernorHTML != null ? (
-                                                <div className="evidence-prove-container-text">{productionGovernorHTML} {productionGovernorInfoIcon}</div>
+                                            inforBtn != null ? (
+                                                <div className="evidence-prove-container-text">{inforBtnHTML} {inforBtn}</div>
                                             ) : null
                                         }
                                         <div className="clear" />

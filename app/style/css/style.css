@@ -440,7 +440,7 @@ a.breadcrumb {
   border: 0 none; clip: rect(0px, 0px, 0px, 0px); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px;
 }
 .log-container{
-  text-align: left; font-size: 13px; overflow: auto; border: solid 1px #EFEFEF; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 340px); margin-top: 5px;
+  text-align: left; font-size: 13px; overflow: auto; border: solid 1px #EFEFEF; padding: 9px; box-sizing: border-box; white-space: pre-wrap; word-break: break-all; position: relative; height: calc(100vh - 375px); margin-top: 5px;
 }
 .log-container-model{
   height: calc(100vh - 250px) !important; min-height: 420px; white-space: nowrap!important; word-break: keep-all;
