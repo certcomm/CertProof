@@ -30,8 +30,8 @@
             process.on('unhandledRejection', (reason, p) => {
                 alert(reason+' Unhandled Rejection at Promise '+ p);
             }).on('uncaughtException', err => {
-                alert(err+' Uncaught Exception thrown')
-                process.exit(1);
+                alert(err+' Uncaught Exception thrown');
+                // process.exit(1);
             });
             
             var ElectronMainClass = {
