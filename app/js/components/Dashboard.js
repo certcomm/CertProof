@@ -225,7 +225,6 @@ export default class Dashboard extends React.Component {
                 contentLabel="Section Modal">
                 <div className={"modal-file-container"}>
                     <div className="modal-header">
-                        {/* <div className="fl modal-section-title">When you click Prove, the current default Blockchain node URL(s) will be used by the Prover</div> */}
                         <div className="fr btn-close" onClick={this.blockchainModalAction.bind(this, false)} />
                         <div className="fr help" title="When you click Prove, the current default Blockchain node URL(s) will be used by the Prover" />
                     </div>
@@ -665,7 +664,6 @@ export default class Dashboard extends React.Component {
                     //  add all deleted changenum into array
                     forwardedChangesetJson.deletedComments = [];
                     
-                    // var forwardedComments = forward.forwardedComments.map((frdCmnt)=>{
                     for (var i=forward.forwardedAtChangeNum; i > 0; i--) {
                         var fn = "forwards/"+forward.ttn+"_"+i+"_"+Constants.default.manifestJsonFileName;
                         
@@ -681,7 +679,6 @@ export default class Dashboard extends React.Component {
                         // run same logic as simple comments, so will create two objects one for comments and other for forwarded comments
                         forwardedChangesetJson = this.readManifestJson(params);
                     }
-                    //});
                     forwards.unshift(forwardedChangesetJson);
                 });
                 // add forwarded comments into main object
@@ -954,7 +951,6 @@ export default class Dashboard extends React.Component {
     }
 
     checkProveEvidence(isPassed){
-        // var verificationBtn = isPassed === false ? "verification-failed-container" : "verification-container";
         if(document.getElementsByClassName("progress-bar-container")[0]){
             document.getElementsByClassName("evidence-prove-form")[0].style.display = "none";
             document.getElementsByClassName("progress-bar-container")[0].style.display = "none";
@@ -1447,7 +1443,6 @@ export default class Dashboard extends React.Component {
                                                     this.defaultNodeUrls[this.state.network.name] = [];
                                                 }
                                                 this.defaultNodeUrls[this.state.network.name].push(node.url);
-                                                // this.defaultNodeUrls = [...this.defaultNodeUrls, node.url]
                                             }
                                             return <div key={"node-row-sub-container-"+Math.random()} className="node-row-sub-container">
                                                 <div className="node-row-url fl">{node.url}</div>

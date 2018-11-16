@@ -296,10 +296,6 @@ export default class Sections extends React.Component {
         
         // set columns n rows format
         if(formatStack && formatStack.length > 0){
-            // formatStack = formatStack.filter(function(item, pos) {
-            //     return formatStack.indexOf(item) == pos;
-            // })
-
             formatStack = formatStack.sort(function(a,b){
                 if (a[0] < b[0]) return -1;
                 if (a[0] > b[0]) return 1;
@@ -491,7 +487,6 @@ export default class Sections extends React.Component {
                 var actionFunc = this.viewSection.bind(this, section);
 
 				if(section.type == 'file'){
-                    //actionFunc = this.viewFile.bind(this, section);
 					if(section.fileSectionState == 'BOUND'){
                         var fileExt = this.bifFileName(section.fileSectionOriginalName).ext;
 						sectionTypeTitle = 'File of type '+fileExt;

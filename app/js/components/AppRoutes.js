@@ -41,17 +41,20 @@ export default class AppRoutes extends React.Component {
                         
                         if(parseJson && parseJson.map){
                             parseJson.map((node, p1) => {
-                                return node.networks.map((network, p2) => {
-                                    // network.value = [];
-                                    return network.value.map(function(e, p3) {
-                                        // should delete all appdefault urls object
-                                        if(e.appDefault){
-                                            isAppDefaultUrlsExist = true;
-                                            clonedNetworkJson[p1].networks[p2].value.splice(p3, 1);
+                                if(node.networks && node.networks.map){
+                                    return node.networks.map((network, p2) => {
+                                        if(network.value && network.value.map){
+                                            return network.value.map(function(e, p3) {
+                                                // should delete all appdefault urls object
+                                                if(e.appDefault){
+                                                    isAppDefaultUrlsExist = true;
+                                                    clonedNetworkJson[p1].networks[p2].value.splice(p3, 1);
+                                                }
+                                                return network;
+                                            });
                                         }
-                                        return network;
-                                    });
-                                })
+                                    })
+                                }
                             });
                         }
                         if(isAppDefaultUrlsExist){
@@ -103,12 +106,16 @@ export default class AppRoutes extends React.Component {
         }
 
         // should remove appdefault URls for user network json
-        var parseJson = JSON.parse(json).map(node => {
-            return node.networks.map(network => {
-                network.value = [];
-                return network;
+        try{
+            var parseJson = JSON.parse(json).map(node => {
+                return node.networks.map(network => {
+                    network.value = [];
+                    return network;
+                })
             })
-        })
+        }catch(e){
+            var parseJson = [];
+        }
 
         this.addNetwork(fileAppDefaultName, json, "appDeafult");
         this.addNetwork(fileName, JSON.stringify(parseJson), "userData");

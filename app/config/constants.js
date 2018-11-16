@@ -2,7 +2,6 @@ const electron = window.require('electron');
 const remote = electron.remote;
 const appPath = remote.app.getAppPath();
 const userDataPath = (electron.app || electron.remote.app).getPath('userData');
-// const appExePath = (electron.app || electron.remote.app).getPath('logs');
 
 export default {
 	supportedSchemaVersions: {

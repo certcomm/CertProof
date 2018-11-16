@@ -344,7 +344,6 @@ export const comments = {
 	},
 	scrollIntoViewIfNeeded: function(target, subEl) {
 		$('.middle-container').animate({ scrollTop: ($('.middle-container').scrollTop() + $(target).offset().top-150) }, 500);
-		// $(target)[0].scrollIntoView({ block: 'start',  behavior: 'smooth' })
 
 		var blinkedEl = subEl ? subEl : target;
 		this.blinkElement(blinkedEl);
@@ -448,7 +447,6 @@ export const comments = {
 		if(el[0]){
 			this.scrollIntoViewIfNeeded(el);
 		}else{
-			// Ext.Msg.alert(url, "<i>Comment</i> "+v+" does not exist in this thread.", false, {inlineTLT: true});
 			alert("Comment "+v+" does not exist in this thread.");
 		}
 	},
@@ -472,10 +470,8 @@ export const comments = {
 			this.scrollIntoViewIfNeeded(el.parents(psEl));
 		}else if(el.length > 0){
 			var secTitle = el[0].getAttribute("data-section-title");
-			// Ext.Msg.alert(url, '<i>Section</i> "'+secTitle+'" is deleted.', false, {inlineTLT: true});
 			alert('Section "'+secTitle+'" is deleted.');
 		}else{
-			// Ext.Msg.alert(url, "<i>Section</i> "+v+" does not exist in this thread.", false, {inlineTLT: true});
 			alert("Section "+v+" does not exist in this thread.");
 		}
 	},
@@ -513,11 +509,9 @@ export const comments = {
 				el[0].setAttribute("data-tasknum", taskNum);
 				el[0].firstElementChild.click();
 			}else{
-				// Ext.Msg.alert(url, "<i>Section</i> "+secNum+" is not a Task List of Checklist type Section.", false, {inlineTLT: true});
 				alert("Section "+secNum+" is not a Task List of Checklist type Section.");
 			}
 		}else{
-			// Ext.Msg.alert(url, "<i>Section</i> "+secNum+" does not exist in this thread.", false, {inlineTLT: true});
 			alert("Section "+secNum+" does not exist in this thread.");
 		}
 	},
@@ -546,11 +540,9 @@ export const comments = {
 			}else if(el.find("div.anchor-np-attachment-"+attNum).length > 0){
 				this.scrollIntoViewIfNeeded(el);
 			}else{
-				// Ext.Msg.alert(url, "<i>Attachment</i> "+attNum+" in <i>Comment</i> "+cNum+" does not exist.", false, {inlineTLT: true});
 				alert("Attachment "+attNum+" in <i>Comment</i> "+cNum+" does not exist.");
 			}
 		}else{
-			// Ext.Msg.alert(url, "<i>Comment</i> "+cNum+" does not exist in this thread.", false, {inlineTLT: true});
 			alert("Comment "+cNum+" does not exist in this thread.");
 		}
 	},
@@ -585,7 +577,6 @@ export const comments = {
 		if(el){
 			this.scrollIntoViewIfNeeded(el);
 		}else{
-			// Ext.Msg.alert(url, "<i>Section</i> "+v+" does not exist in this thread.", false, {inlineTLT: true});
 			alert("Section "+v+" does not exist in this thread.");
 		}
 	},

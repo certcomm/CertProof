@@ -100,9 +100,6 @@ function createWindow() {
     win.webContents.on('did-finish-load', () => {
         win.setTitle("CertProof (Version "+app.getVersion()+")");
     });
-    
-    // to open console in packaged mode for debugging
-    // win.webContents.openDevTools();
 }
 
 var removeEvidence = (dirPath)=>{
@@ -139,12 +136,6 @@ app.on('window-all-closed', app.quit);
 app.on('before-quit', () => {
     // call function on app close
     removeEvidence();
-    
-    // win.removeAllListeners('close');
-    // win.close();
-
-    // notification can close on app kill
-    // if(notification && notification.close) notification.close();
 });
 
 app.on('ready', createWindow);
