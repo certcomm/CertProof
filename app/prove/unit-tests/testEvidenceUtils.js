@@ -14,6 +14,16 @@ describe('EvidenceUtils', function() {
     });
   });
 
+  describe('#getInlineImageExtensionByMimeType()', function() {
+    it('should return proper MimeType', function() {
+      assert.equal(evidenceUtils.getInlineImageExtensionByMimeType("image/jpeg"), "jpg");
+      assert.equal(evidenceUtils.getInlineImageExtensionByMimeType("image/jpg"), "jpg");
+      assert.equal(evidenceUtils.getInlineImageExtensionByMimeType("image/png"), "png");
+      assert.equal(evidenceUtils.getInlineImageExtensionByMimeType("image/gif"), "gif");
+      assert.equal(evidenceUtils.getInlineImageExtensionByMimeType(undefined), "");
+    });
+  });
+
   describe('#schemaVersionSupported()', function() {
     var supportedSchemaVersions = {
         current : "1.5",

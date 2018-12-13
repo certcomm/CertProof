@@ -26,6 +26,18 @@ module.exports = {
             errorMessages.throwError(errorCode, " " + msgPrefix + " doesn't match, actual=" + actual,  "expected=" + expected );
         }        
     },
+    getInlineImageExtensionByMimeType: function(mimeType) {
+        if(mimeType=="image/jpeg") {
+            return "jpg";
+        } else if(mimeType=="image/jpg") {
+            return "jpg";
+        } else if(mimeType=="image/png") {
+            return "png";
+        } else if(mimeType=="image/gif") {
+            return "gif";
+        }
+        return "";
+    },
     getIncEvidenceFileName: function(evidenceJson, ttn, cnum) {
         var filename;
         if(evidenceJson.hasCBlockInfo) {
@@ -34,7 +46,7 @@ module.exports = {
             filename = "L2_INC_EV_"+ttn+"_"+cnum+".zip"
         } else {
             filename = "BACKUP_INC_"+ttn+"_"+cnum+".zip";
-        } 
+        }
         return filename;
     },
     computeSha256Hash: function(data) {

@@ -188,6 +188,7 @@ module.exports = {
                                 var cnum = changeset.changeNum;
                                 this.proveComment(cnum, changeset.commentLeafHash, zip);
                                 this.proveAttachments(cnum, changeset, zip);
+                                this.proveInlineImages(cnum, changeset, zip);
                                 this.proveSections(cnum, forwardedCommentSacJson.ssac, zip);
                                 
                                 var wsacForeverTmailAddresses = this.getWsacForeverTmailAddresses(forwardedCommentSacJson)
@@ -239,6 +240,7 @@ module.exports = {
 
             this.proveComment(cnum, changeset.commentLeafHash, zip);
             this.proveAttachments(cnum, changeset, zip);    
+            this.proveInlineImages(cnum, changeset, zip);
         } finally {
             this.logEmitter.deindent();            
         }
@@ -437,7 +439,7 @@ module.exports = {
     },
 
     proveAttachments: function(cnum, changeset, zip) {
-        this.logEmitter.log("Proving attachments for cnum:"+ cnum);                            
+        this.logEmitter.log("Proving attachments for cnum:"+ cnum);
         if((typeof changeset.attachments)!="undefined") {
             try {
                 this.logEmitter.indent();            
@@ -454,8 +456,33 @@ module.exports = {
             } finally {
                 this.logEmitter.deindent();
             } 
-        }   
-        this.logEmitter.log("Proved attachments for cnum:"+ cnum);                            
+        }
+        this.logEmitter.log("Proved attachments for cnum:"+ cnum);
+    },
+
+    proveInlineImages: function(cnum, changeset, zip) {
+        if((typeof changeset.inlineImages)!="undefined") {
+            this.logEmitter.log("Proving inlineImages for cnum:"+ cnum);
+            try {
+                this.logEmitter.indent();
+                for(var inlineImage of changeset.inlineImages) {
+                    cpJsonUtils.ensureJsonHas("1020", inlineImage, "inlineImageLeafHash")
+                    this.logEmitter.log("Proving cnum:" + cnum+ ". inlineImageLeafHash:" + inlineImageLeafHash);
+                    var inlineImageLeafHash = inlineImage.inlineImageLeafHash;
+                    var extension = evidenceUtils.getInlineImageExtensionByMimeType(inlineImage.mimeType);
+                    if(extension!="") {
+                        extension = "." + extension;
+                    }
+                    var inlineImageFilePath = "inlineImages/" + inlineImageLeafHash + extension;
+                    evidenceUtils.ensureFileExists("1003", zip.entries(), inlineImageFilePath);
+                    var inlineImageData = zip.entryDataSync(inlineImageFilePath);
+                    evidenceUtils.ensureHashMatches(this.logEmitter, "1003", inlineImageData, inlineImageLeafHash, "inlineImageLeafHash for cnum:" + cnum+ ", inlineImageLeafHash:" + inlineImage.inlineImageLeafHash);
+                }
+            } finally {
+                this.logEmitter.deindent();
+            }
+            this.logEmitter.log("Proved inlineImages for cnum:"+ cnum);
+        }
     },
 
     proveSsac : function(cnum, ssacHash, zip) {
