@@ -447,7 +447,7 @@ module.exports = {
                     cpJsonUtils.ensureJsonHas("1020", attachment, "attachmentLeafHash","attachmentNum", "title")
                     this.logEmitter.log("Proving cnum:" + cnum+ ". attachmentNum:" + attachment.attachmentNum + ",title:" + attachment.title);
                     var attachmentLeafHash = attachment.attachmentLeafHash;
-                    var extension = path.extname(attachment.title);
+                    var extension = path.extname(attachment.title).toLowerCase();
                     var attachmentFilePath = "attachments/" + attachmentLeafHash + extension;
                     evidenceUtils.ensureFileExists("1003", zip.entries(), attachmentFilePath);
                     var attachmentData = zip.entryDataSync(attachmentFilePath);
@@ -516,7 +516,7 @@ module.exports = {
                             var extension = ".txt"
                             if(section.type=="file") {
                                 cpJsonUtils.ensureJsonHas("1017", section, "fileSectionOriginalName")
-                                extension = path.extname(section.fileSectionOriginalName);
+                                extension = path.extname(section.fileSectionOriginalName).toLowerCase();
                             }
 
                             var sectionFilePath = "sections/" + sectionLeafHash + extension;
