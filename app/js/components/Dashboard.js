@@ -19,6 +19,7 @@ const customStyles = {
 
 import Thread from "./Thread/js/components/Thread";
 import prover from "./../../prove/app/prove";
+import EvidenceUtils from "./../../prove/app/util/evidenceUtils.js";
 
 var ConfigImages = require("./../../config/images.js");
 var Constants = require("./../../config/constants.js");
@@ -538,6 +539,41 @@ export default class Dashboard extends React.Component {
         return changesetjson;
     }
 
+    replaceImgSrc(imgZip1, text, inlineImages) {
+		// need a wrapper
+		text = "<div>"+text+"</div>";
+		
+		var t = $.parseHTML(text);
+		$(t).each(function() {
+			$(this).find("img").each(function() {
+                var imgSrc = $(this).attr("src");
+                if(imgSrc.indexOf("dummyuser$dummyorg.com") !== -1){
+                    var explodeImgSrc = imgSrc.split("/");
+                    if(explodeImgSrc.length > 0){
+                        var ImgHash = explodeImgSrc[explodeImgSrc.length-1];
+                        
+                        inlineImages.map( (inlImg, i) => {
+                            if(inlImg.inlineImageLeafHash == ImgHash){
+                                var extension = EvidenceUtils.getInlineImageExtensionByMimeType(inlImg.mimeType);
+                                if(extension!="") {
+                                    extension = "." + extension;
+                                }
+                                var ReplacedimgSrc = "inlineImages/"+ImgHash+extension;
+                                try {
+                                    ReplacedimgSrc = imgZip1.entryDataSync(ReplacedimgSrc).base64Slice();
+                                    $(this).attr("src", "data:application/octet-stream;charset=utf-16le;base64," + ReplacedimgSrc);
+                                } catch(e) {
+                                    console.log("Error", e);
+                                }
+                        }
+                        })
+                    }
+                }
+			});
+		});
+		return t[0].innerHTML.toString();
+    }
+
     // read manifest.json files globally for root zip and forwaded comments too 
     readManifestJson(params){
         // get data only from `manifest.json` file
@@ -608,7 +644,12 @@ export default class Dashboard extends React.Component {
                 try{
                     var bufferData = zip1.entryDataSync(commentFileName);
                     // convert buffered data into string (utf-8 for binary data)
-                    jsonData.changeset.comment = bufferData.toString('utf-8');
+                    var chstcmt = bufferData.toString('utf-8');
+                    if(jsonData.changeset.inlineImages){
+                        chstcmt = this.replaceImgSrc(zip1, chstcmt, jsonData.changeset.inlineImages);
+                    }
+
+                    jsonData.changeset.comment = chstcmt;
                 }
                 catch(e){
                     console.log("Error >", e)
