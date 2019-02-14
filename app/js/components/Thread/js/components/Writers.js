@@ -7,6 +7,9 @@ export default class Writers extends React.Component {
 
         this.data = props.data;
         this.type = props.type;
+        this.visibleToOrg = props.visibleToOrg;
+        this.orgRestricted = props.orgRestricted;
+        this.domainName = props.domainName;
     }
     
     getFirstLetter(v){
@@ -125,20 +128,42 @@ export default class Writers extends React.Component {
             if(this.type == "added"){
                 writerPrefixHtml = <li className="added-writer t-add icon16x16"></li>
             }else if(this.type == "list" && writers.length > 1){
+                var orgVisibleToolTipHtml = '';
+				if(this.orgRestricted){
+					if(this.visibleToOrg){
+						orgVisibleToolTipHtml = <div class='orgVisibleTooltipContainer'><div class='infor'>Anyone in <b>{this.domainName}</b> can view</div><div class='writersBlueBg'>Writers</div></div>
+					}else{
+						orgVisibleToolTipHtml = <div class='orgVisibleTooltipContainer'><div class='infor'>Only users in <b>{this.domainName}</b> can be added</div><div class='writersBlueBg'>Writers</div></div>
+					}
+				}
                 writerPrefixHtml = <div data-tip data-for="writers-header-tooltip">
                     <div className="writers-count-wrapper">
-                        <div className="h-inner-wrapper"><span className="h-users-icon"></span></div>
+                        {
+                            this.orgRestricted ? (
+                                this.visibleToOrg ? (
+                                    <li className="globe-org margin-8"></li>
+                                ) : <li className="globe-org disabled-globe-org margin-8"></li>
+                            ) : <div className="h-inner-wrapper"><span className="h-users-icon"></span></div>
+                        }
                     </div>
                     <ReactTooltip className="tooltip-container" id="writers-header-tooltip" aria-haspopup='true' type="light" effect="solid" place="bottom">
                         <div className="actorsHoverView">
                             <div className="ahv-wrapper">
                                 <ul className="actors-writer writers-wrapper2 hover-list">
+                                    {orgVisibleToolTipHtml}
+                                    <div className="clear"></div>
                                     {this.getWriters(writers, "hover")}
                                 </ul>
                             </div>
                         </div>
                     </ReactTooltip>
                 </div>
+            }else if(this.orgRestricted){
+                if(this.visibleToOrg){
+                    writerPrefixHtml = <li title={'This thread is visible to anyone in my organization ('+this.domainName+')'} className="globe-org"></li>
+                }else{
+                    writerPrefixHtml = <li title={'Only users in '+this.domainName+' can be added as writers'} className="globe-org disabled-globe-org"></li>
+                }
             }
 
             return (

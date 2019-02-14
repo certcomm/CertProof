@@ -24,7 +24,7 @@ export default class Thread extends React.Component {
         this.store = ThreadStore;
         this.data = props.data;
         this.err = props.err;
-
+        
         this.state = {
             renderView: false,
             inCompatibleEvidence: false
@@ -132,7 +132,7 @@ export default class Thread extends React.Component {
                 {
                     headerData.writers && headerData.writers.length > 0 ? (
                         <div className="writer-header-container">
-                            <Writers key={"writer-header-container+"+Math.random()} data={headerData.writers} type={isForwarded ? "" : "list"} />
+                            <Writers key={"writer-header-container+"+Math.random()} data={headerData.writers} visibleToOrg={headerData.visibleToOrg} orgRestricted={headerData.orgRestricted} domainName={headerData.domainName} type={isForwarded ? "" : "list"} />
                         </div>
                     ) : null
                 }

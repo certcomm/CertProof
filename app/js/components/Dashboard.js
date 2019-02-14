@@ -665,12 +665,23 @@ export default class Dashboard extends React.Component {
                 // and reset the data with new property
                 this.store.setEvidenceManifestData(eManiFestData);
 
+                var domainName = "";
+                if(jsonData.changeset && jsonData.changeset.creator){
+                    var creatorAddress = jsonData.changeset.creator.contemporaneousTmailAddress;
+                    if(creatorAddress && creatorAddress.indexOf('$') >= 0){
+                        domainName = creatorAddress.substring(creatorAddress.lastIndexOf('$')+1);
+                    }
+                }
+
                 changesetJson.header = {
                     sacSchemaVersion: jsonData.sacSchemaVersion,
                     threadType: jsonData.threadType,
                     subject: jsonData.subject,
                     ttnGlobal: jsonData.ttnGlobal,
                     certified: jsonData.certified,
+                    visibleToOrg: jsonData.visibleToOrg,
+                    orgRestricted: jsonData.orgRestricted,
+                    domainName: domainName,
                     governor: jsonData.governor,
                     ttn: jsonData.ttn,
                     ttnURL: evidenceDataJson.ttnUrl,

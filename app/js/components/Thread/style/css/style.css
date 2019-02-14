@@ -694,7 +694,24 @@ ul li.writer-rounded.w-list-view div.w-info .w-name + .w-address {
     max-width: 100%;
 }
 /*  */
-
+.globe-org {
+    position: relative; margin-top: 12px !important;
+}
+.margin-8 {
+    margin-top: 8px !important;
+}
+.disabled-globe-org:before {
+    color: #AAAAAA !important;
+}
+.globe-org:before {
+    color: #18A689; content: "i"; font-family: tmail; font-size: 16px;
+}
+.orgVisibleTooltipContainer {
+    padding: 0px 10px 10px 10px; line-height: 20px;
+}
+.orgVisibleTooltipContainer .writersBlueBg {
+    background-color: #1c84c6; color: #FFFFFF; padding: 5px 0px; margin-top: 10px; text-align: center;
+}
 a.not-in-same-domain {
 	color: #337ab7;
 	text-decoration: none;
