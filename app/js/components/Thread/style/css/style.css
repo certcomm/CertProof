@@ -283,6 +283,9 @@ div.writers-count-wrapper .h-inner-wrapper {
 .t-grid:before {
 	color: #555555; content: "3"; font-family: tmail; font-size: 14px; font-weight: normal; left: 2px; position: absolute;
 }
+.t-spreadsheet:before {
+	color: #555555; content: "3"; font-family: tmail; font-size: 14px; font-weight: normal; left: 2px; position: absolute;
+}
 .t-file-icon-16{
 	min-width:18px; min-height: 16px; display:block; position: relative; margin-top: 4px;
 }

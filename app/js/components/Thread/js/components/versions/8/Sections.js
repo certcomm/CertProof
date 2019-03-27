@@ -172,6 +172,9 @@ export default class Sections extends React.Component {
                     case "grid":
                         return "t-grid";
                     break;
+                    case "spreadsheet":
+                        return "t-spreadsheet";
+                    break;
                     case "form":
                         return "t-form";
                     break;
@@ -190,6 +193,9 @@ export default class Sections extends React.Component {
                     break;
                     case "grid":
                         return "Grid";
+                    break;
+                    case "spreadsheet":
+                        return "Spreadsheet";
                     break;
                     case "form":
                         return "Form";
