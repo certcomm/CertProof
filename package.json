@@ -5,7 +5,9 @@
 	"productName": "CertProof",
 	"version": "1.0.63",
 	"description": "CertProof",
-	"config": { "GIT_COMMIT": "initialName" },
+	"config": {
+		"GIT_COMMIT": "initialName"
+	},
 	"main": "main.js",
 	"build": {
 		"appId": "com.tmail21.certproof",
@@ -50,7 +52,8 @@
 		"test": "mocha --recursive ./app/**/test*.js",
 		"pack": "build --dir",
 		"dist": "npm run packages && build",
-        "prove": "node ./app/prove/index.js",
+		"spreadsheet": "webpack --config app/plugins/spreadjs/webpack.config.js",
+		"prove": "node ./app/prove/index.js",
 		"proof-tests": "node ./app/prove/proof-tests/bulktester.js",
 		"packages": "npm-run-all package:*",
 		"package:reactify": "browserify -r react -r react-dom -r es6-promise -r | uglifyjs -c > ./app/reactifyBundle.js",
@@ -77,6 +80,7 @@
 		]
 	},
 	"dependencies": {
+		"@grapecity/spread-sheets": "^12.0.9",
 		"create-react-class": "^15.6.3",
 		"electron-notifications": "^1.0.0",
 		"es6-promise": "^4.1.0",
@@ -95,7 +99,9 @@
 		"react-tabs": "2.2.2",
 		"react-tooltip": "^3.4.0",
 		"underscore": "^1.8.3",
-		"web3": "^0.20.6"
+		"web3": "^0.20.6",
+		"webpack": "^4.29.6",
+		"webpack-cli": "^3.3.0"
 	},
 	"devDependencies": {
 		"babel-core": "^6.26.0",

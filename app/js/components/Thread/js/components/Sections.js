@@ -112,6 +112,12 @@ export default class Sections extends React.Component {
                 Form.getFormSection('modal-content-container', 'modal-content-container', JSON.parse(section.sectionContent), "read", false);
             }, 500);
             sectionHTML = "loading...";
+        }else if(section.type == "spreadsheet"){
+            setTimeout(() => {
+                section.sectionContent = section.sectionContent.split("/common-static/spreadJs/css/images/lock-icon.png").join("plugins/spreadjs/lock-icon.png");
+                window.onLoadInitializeSpreadSheet("modal-content-container", section.sectionContent);
+            }, 500);
+            sectionHTML = <span className='modal-content-container-span'>loading...</span>;
         }else if(section.type == "task_list"){
             var writers = (this.data.writers ? this.data.writers : this.data.addedWriters),
                 ttn = this.data.ttn,
