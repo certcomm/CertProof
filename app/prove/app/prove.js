@@ -355,12 +355,12 @@ module.exports = {
         evidenceUtils.assertEquals("2003", sacManifestJson.ttnGlobal, this.ttnGlobal);
         evidenceUtils.assertEquals("2002", sacManifestJson.ttn, this.ttn);                
         evidenceUtils.assertEquals("2011", sacManifestJson.governor, this.governor, "governor");
+        evidenceUtils.ensureSacSchemaVersionSupported(this.logEmitter, sacManifestJson.sacSchemaVersion);
         if(evidenceUtils.schemaVersionGreaterThanEqualTo(sacManifestJson.sacSchemaVersion, "1.1")) {
             cpJsonUtils.ensureJsonHas("1020", sacManifestJson, "isProductionGovernor", "governorStageURI");
             evidenceUtils.assertEquals("2011", sacManifestJson.isProductionGovernor, this.isProductionGovernor, "isProductionGovernor");
             evidenceUtils.assertEquals("2011", sacManifestJson.governorStageURI, this.governorStageURI, "governorStageURI");
         }
-        evidenceUtils.ensureSacSchemaVersionSupported(this.logEmitter, sacManifestJson.sacSchemaVersion);
         evidenceUtils.ensureThreadTypeSupported(sacManifestJson.threadType);
 
         this.validateWriters(cnum, sacManifestJson, allWsacForeverTmailAddress);
