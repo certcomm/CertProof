@@ -100,6 +100,9 @@ function createWindow() {
     win.webContents.on('did-finish-load', () => {
         win.setTitle("CertProof (Version "+app.getVersion()+")");
     });
+
+    // to open console in packaged mode for debugging
+    win.webContents.openDevTools();
 }
 
 var removeEvidence = (dirPath)=>{
