@@ -20,7 +20,7 @@ version: '{build}'
 shallow_clone: true
 clone_depth: 1
 test_script:
-  - npm config set certproof:GIT_COMMIT ${COMMIT_SHORT} && npm run dist
+  - npm config set certproof:GIT_COMMIT ${COMMIT_SHORT} && npm config set certproof:SPREADJS_LICENSE ${SPREADJS_LICENSE} && npm run dist
 artifacts:
 - path: dist\*
 deploy:

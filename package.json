@@ -6,7 +6,8 @@
 	"version": "1.0.63",
 	"description": "CertProof",
 	"config": {
-		"GIT_COMMIT": "initialName"
+		"GIT_COMMIT": "initialName",
+		"SPREADJS_LICENSE": "to be replaced at build time"
 	},
 	"main": "main.js",
 	"build": {
