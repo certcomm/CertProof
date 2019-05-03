@@ -7,8 +7,7 @@
 	"description": "CertProof",
 	"config": {
 		"GIT_COMMIT": "initialName",
-		"SPREADJS_LICENSE1": "to be replaced at build time part1",
-		"SPREADJS_LICENSE2": "to be replaced at build time part2"
+		"SPREADJS_LICENSE": "to be replaced at build time"
 	},
 	"main": "main.js",
 	"build": {
