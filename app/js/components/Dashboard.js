@@ -1731,7 +1731,7 @@ export default class Dashboard extends React.Component {
                                             <div className="clear"></div>
                                             <div className="info-label">Spread JS License--Remove me</div>
                                             <div className="fl bold"> : </div>
-                                            <div className="info-value">{process.env.npm_package_config_SPREADJS_LICENSE}</div>
+                                            <div className="info-value">{process.env.npm_package_config_SPREADJS_LICENSE1}{process.env.npm_package_config_SPREADJS_LICENSE2}</div>
 
                                             <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
