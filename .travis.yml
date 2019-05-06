@@ -46,7 +46,7 @@ env:
   global:
     - COMMIT_SHORT=${TRAVIS_COMMIT::7}
 script:
-  - npm config set certproof:GIT_COMMIT ${COMMIT_SHORT} && npm run dist
+  - npm config set certproof:GIT_COMMIT ${COMMIT_SHORT} && npm config set certproof:SPREADJS_LICENSE ${SPREADJS_LICENSE} && npm run dist
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run test>dist/unit-test.log          ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then npm run proof-tests          ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then zip -r dist/proof-tests-logs.zip dist/proof-tests-logs/*          ; fi
