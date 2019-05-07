@@ -1,6 +1,11 @@
 var gc = require('@grapecity/spread-sheets');
 
-var onLoadInitializeSpreadSheet = function (id, data) {
+// var ssLicense = process.env.npm_package_config_SPREADJS_LICENSE.replace (/(^")|("$)/g, '')
+// gc.Spread.Sheets.LicenseKey = ssLicense;
+
+var onLoadInitializeSpreadSheet = function (id, data, license) {
+    gc.Spread.Sheets.LicenseKey = license.replace (/(^")|("$)/g, '');
+
     var spread = new gc.Spread.Sheets.Workbook(document.getElementById(id));
     try {
         spread.fromJSON(JSON.parse(data));

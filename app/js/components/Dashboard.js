@@ -1729,11 +1729,6 @@ export default class Dashboard extends React.Component {
                                             <div className="info-value">{process.env.npm_package_config_GIT_COMMIT}</div>
                                             
                                             <div className="clear"></div>
-                                            <div className="info-label">Spread JS License--Remove me</div>
-                                            <div className="fl bold"> : </div>
-                                            <div className="info-value">{process.env.npm_package_config_SPREADJS_LICENSE}</div>
-
-                                            <div className="clear"></div>
                                             <div className="info-label">Schema Version</div>
                                             <div className="fl bold"> : </div>
                                             <div className="info-value">Inc-{evidenceData.evidenceSchemaVersion}</div>

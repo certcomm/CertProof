@@ -115,7 +115,7 @@ export default class Sections extends React.Component {
         }else if(section.type == "spreadsheet"){
             setTimeout(() => {
                 section.sectionContent = section.sectionContent.split("/common-static/spreadJs/css/images/lock-icon.png").join("plugins/spreadjs/lock-icon.png");
-                window.onLoadInitializeSpreadSheet("modal-content-container", section.sectionContent);
+                window.onLoadInitializeSpreadSheet("modal-content-container", section.sectionContent, process.env.npm_package_config_SPREADJS_LICENSE);
             }, 500);
             sectionHTML = <span className='modal-content-container-span'>loading...</span>;
         }else if(section.type == "task_list"){
