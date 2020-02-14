@@ -204,7 +204,10 @@ export default class Sections extends React.Component {
             setTimeout(() => {
                 section.sectionContent = section.sectionContent.split("/common-static/spreadJs/css/images/lock-icon.png").join("plugins/spreadjs/lock-icon.png");
 
-                var ssData = this.getSelections(section.sectionContent, section.selectionType, section.selectionVal);
+                if(section.selectionType && section.selectionVal)
+                    var ssData = this.getSelections(section.sectionContent, section.selectionType, section.selectionVal);
+                else
+                    var ssData = section.sectionContent;
 
                 window.onLoadInitializeSpreadSheet("modal-content-container", ssData, process.env.npm_package_config_SPREADJS_LICENSE);
             }, 500);
