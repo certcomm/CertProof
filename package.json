@@ -3,11 +3,11 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.63",
+	"version": "1.0.64",
 	"description": "CertProof",
 	"config": {
 		"GIT_COMMIT": "initialName",
-		"SPREADJS_LICENSE": "to be replaced at build time"
+		"SPREADJS_LICENSE": "TMail Inc,E955288499923575#B0y5nvJWV0BXWjdTO9VGOyg5NUZ7b4UXWkp7VYRXdTxGT4FWesxGeL5UbsRXM9VWZIxEcTBjeqZUNUJnUsVlTXVVMDVUOqBVM5MlVKREU5EzaM3ETUx6dvV6LL3CczdTVi5WQRRne6gFMrRUcsdXdqVWTYlzNUBlTIh7QFp4Ywo7YVFjehFXdVpFV7ZXcrhUTOhGS6RmUDRHRwdTZqJzZmZ7QrIVOvImWwRzd0dEVoZ7YrIWcBZmQJB7SaZGe6ZUZyBHaLJGW826QNtWS7QzbBRERMlGVXp7dyIEdTJkZWlVNOd4RiojITJCLiAjQ9EjN5EjNiojIIJCL9MjNwMDOxYDN0IicfJye&Qf35VfikkR9IkI0IyQiwiIyEjL6ByUKBCZhVmcwNlI0IiTis7W0ICZyBlIsIyM4cDMzADIxATNwkTMwIjI0ICdyNkIsIyYulEIslWYNRlI0ISYONkIsUWdyRnOiwmdFJCLiUzN5MjM9kTO4gDOyUTN9IiOiQWSiwSflNHbhZmOiI7ckJye0ICbuFkI1pjIEJCLi4TPRhzaCpVaJp7SwlTSZ9mN6dUdP9WSZFFSTllYitET5ZVOq5mZyVmdudkSjNFdIJ4drkHamtyQVN6RxNka5QWWY3Gd6dVeLJHVsZEcnZjTpZUWvAVNaV7dwBnWXhEayckRvg7azJ4ZG5WS5AzanJjZMzznW"
 	},
 	"main": "main.js",
 	"build": {

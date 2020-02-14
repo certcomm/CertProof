@@ -181,11 +181,19 @@ export const comments = {
 			var copiedLinkTTN = href.match(/\d{3}\-\d{4}\-\d{4}/g);
 			copiedLinkTTN = copiedLinkTTN ? copiedLinkTTN[0] : '';
 			
-			var isSectionVersion = false;
+			var isSectionVersion = false,
+				isSSSectionVersion = false;
 			if(splitArr[0].match("at VERSION") ){
 				isSectionVersion = true;
 				version = splitArr[0].match("at VERSION (.*?) in")[1];
 			}
+
+            if(type === 'CELL' || type === 'ROW' || type === 'COLUMN' || type === 'CELLRANGE' || type === 'ROWRANGE' || type === 'COLUMNRANGE' || type === 'SHEET' || val === 'CELL' || val === 'ROW' || val === 'COLUMN' || val === 'CELLRANGE' || val === 'ROWRANGE' || val === 'COLUMNRANGE' || val === 'SHEET'){
+                if(isSectionVersion){
+                    isSectionVersion = false;
+                    isSSSectionVersion = true
+                }
+            }
 
 			var inThreadSubject = "";
 			if(splitArr[0].match(" in THREAD &quot(.*?)&quot")){
@@ -275,6 +283,27 @@ export const comments = {
 					
 					v = v.replace($0, link);
 				break;
+                case "CELL":
+                case "ROW":
+                case "COLUMN":
+                case "CELLRANGE":
+                case "ROWRANGE":
+                case "COLUMNRANGE":
+                case "SHEET":
+                    if(type === 'CELLRANGE'){
+                        type = 'CELL RANGE';
+                    } else if(type === 'ROWRANGE'){
+                        type = 'ROW RANGE';
+                    } else if(type === 'COLUMNRANGE'){
+                        type = 'COLUMN RANGE';
+                    }
+                    var atVersionText = (isSSSectionVersion) ? ' at VERSION '+version : ''
+                    var showedText = type+' ' + val + atVersionText + ' in SECTION "' + title + '"' + threadttn4,
+                        showedTextinTooltip = me.htmlDecode(type+' ' + val + atVersionText + ' in SECTION "' + title + '"' + inThreadSubject + fullThreadttn),
+                        link = '<a data-meta-data="' + me.htmlEncode($0) + '" href="' + href + '" qtip="' + showedTextinTooltip + '">' + showedText + '</a>';
+
+                    v = v.replace($0, link);
+				break;
 				case "ATTACHMENT":
 					var cmtNum = (splitArr[0].match("COMMENT (.*) of") ? splitArr[0].match("COMMENT (.*) of") : splitArr[0].match("comment (.*) of"))[1].trim();
 
@@ -319,6 +348,28 @@ export const comments = {
 						showedTextinTooltip = me.htmlDecode('FORWARDED TASK '+val2+hoverTitle+' in SECTION '+tsectitle+commentText+inThreadSubject+fullThreadttn),
 						link = '<a data-meta-data="'+me.htmlEncode($0)+'" href="'+href+'" class="tooltip"><span>'+showedTextinTooltip+'</span>'+showedText+'</a>';
 					v = v.replace($0, link);
+				break;
+                case "FORWARDED CELL":
+                case "FORWARDED ROW":
+                case "FORWARDED COLUMN":
+                case "FORWARDED CELLRANGE":
+                case "FORWARDED ROWRANGE":
+                case "FORWARDED COLUMNRANGE":
+                case "FORWARDED SHEET":
+                    if(type === 'FORWARDED CELLRANGE'){
+                        type = 'FORWARDED CELL RANGE';
+                    } else if(type === 'FORWARDED ROWRANGE'){
+                        type = 'FORWARDED ROW RANGE';
+                    } else if(type === 'FORWARDED COLUMNRANGE'){
+                        type = 'FORWARDED COLUMN RANGE';
+                    }
+                    var atVersionText = (isSSSectionVersion) ? ' at VERSION '+version : '',
+                        commentText = changenum > 0 ? " in COMMENT " + changenum : "";
+
+                    var showedText = type+' ' + val2 + atVersionText + ' in SECTION "' + title + '"' + commentText + threadttn4,
+                        showedTextinTooltip = me.htmlDecode(type+' ' + val2 + atVersionText + ' in SECTION "' + title + '"' + commentText + inThreadSubject + fullThreadttn),
+                        link = '<a data-meta-data="' + me.htmlEncode($0) + '" href="' + href + '" qtip="' + showedTextinTooltip + '">' + showedText + '</a>';
+                    v = v.replace($0, link);
 				break;
 				case "FORWARDED ATTACHMENT":
 					var cmtNum = (splitArr[0].match("COMMENT (.*) in") ? splitArr[0].match("COMMENT (.*) in") : splitArr[0].match("comment (.*) in"))[1].trim();
@@ -393,6 +444,15 @@ export const comments = {
 					this.viewForwardedLinks();
 				}
 				setTimeout(() => { this.viewTask(data, splitHashVal, subType); }, tt);
+			break;
+			case "#spreadsheet-selection":
+			case "#forwarded-spreadsheet-selection":
+				var subType = "";
+				if (splitHash[0] == "#forwarded-spreadsheet-selection") {
+					subType = "forward-";
+					this.viewForwardedLinks();
+				}
+				this.viewSpreadSheetSection(data, splitHashVal, subType);
 			break;
 			case "#attachment":
 			case "#forwarded-attachment":
@@ -475,6 +535,54 @@ export const comments = {
 			alert("Section "+v+" does not exist in this thread.");
 		}
 	},
+    viewSpreadSheetSection: function(data, v, inThread, subType) {
+        var inc = 0,
+            fwdttn = 0,
+            splitValArr = v.split(":");
+        if (subType == "forward-") {
+            fwdttn = splitValArr[0];
+            inc = 1;
+        }
+        var secNum = splitValArr[inc],
+            sectionVersion = splitValArr[inc+1],
+            wnum = splitValArr[inc+2],
+            selectionType = splitValArr[inc+3],
+            selectionVal = splitValArr[inc+4];
+        if(selectionType === 'ROWRANGE' || selectionType === 'COLUMNRANGE' || selectionType === 'CELLRANGE')
+            selectionVal = selectionVal+':'+splitValArr[inc+5];
+
+        var pEl = '',
+            psEl = "div.section-el ",
+            vnum = "NA",
+            tmailtype = "undefined";
+        if (subType == "forward-") {
+			pEl = ".forwarded-item-wrapper .section-container";
+			this.scrollIntoViewIfNeeded($(pEl));
+        }
+
+        var el = $(pEl + "[data-sectionnum='" + secNum + "']");
+
+        var url = this.ttnURL + "#" + subType + "spreadsheet-selection="+(fwdttn ? fwdttn + ":" : "") +secNum+":"+sectionVersion+":"+wnum+":"+selectionType+":"+selectionVal;
+        url = "<div class='t-url-dialog-icon'></div> <span qtip='" + url + "'>" + url + "</span>";
+
+        if (el.parents(psEl).find("a")[0]) {
+            if (el[0].getAttribute("data-section-type") == "spreadsheet") {
+				if(subType == "forward-"){
+					vnum = el[0].getAttribute("data-version");
+				}
+				tmailtype = el[0].getAttribute("data-tmailType");
+
+				el[0].setAttribute("data-selectiontype", selectionType);
+				el[0].setAttribute("data-selectionval", selectionVal);
+				el[0].firstElementChild.click();
+            } else {
+                var secTitle = el[0].getAttribute("data-section-title");
+                alert(url, '<i>Section</i> "' + secTitle + '" is deleted.');
+            }
+        } else {
+            alert(url, "<i>Section</i> " + secNum + " does not exist in this thread.");
+        }
+    },
 	viewTask: function(data, v, subType){
 		var splitValArr = v.split(":"),
 			secNum = splitValArr[0],

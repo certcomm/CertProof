@@ -89,6 +89,94 @@ export default class Sections extends React.Component {
             TaskList.destroyTasklistComponent("modal-content-container");
         }
     }
+    
+    getSelections(data, selectionType, selectionVal){
+        var newSelections = {}
+        if(selectionVal !== ''){
+            let colStringVal = selectionVal.replace(/[0-9]/g, ''),
+                rowVal = Number(selectionVal.replace(/\D/g, ''))-1,
+                colVal = this.lettersToNumber(colStringVal),
+                tolRow = 0,
+                tolCol = 0;
+            switch(selectionType){
+                case "ROW":
+                    tolRow = 1;
+                    tolCol = 1000;
+                break;
+                case "ROWRANGE":
+                    rowVal = Number(selectionVal.split(':')[0])-1;
+                    colVal = -1;
+                    tolRow = (Number(selectionVal.split(':')[1]-selectionVal.split(':')[0]))+1;
+                    tolCol = 1000;
+                break;
+                case "COLUMN":
+                    tolRow = 1000;
+                    tolCol = 1;
+                break;
+                case "COLUMNRANGE":
+                    var rangeVal1 = selectionVal.split(':')[0];
+                    var rangeVal2 = selectionVal.split(':')[1];
+                    rowVal = -1;
+                    colVal = this.lettersToNumber(rangeVal1);
+                    tolRow = 1000;
+                    tolCol = (Number(this.lettersToNumber(rangeVal2)-colVal)+1);
+                break;
+                case "CELL":
+                    tolRow = 1;
+                    tolCol = 1;
+                break;
+                case "CELLRANGE":
+                    let rangeValueArr = selectionVal.split(':'),
+                        colStringVal1 = rangeValueArr[0].replace(/[0-9]/g, ''),
+                        rowVal1 = Number(rangeValueArr[0].replace(/\D/g, ''))-1,
+                        colVal1 = this.lettersToNumber(colStringVal1);
+                    
+                    let colStringVal2 = rangeValueArr[1].replace(/[0-9]/g, ''),
+                        rowVal2 = Number(rangeValueArr[1].replace(/\D/g, ''))-1,
+                        colVal2 = this.lettersToNumber(colStringVal2);
+                    
+                    rowVal = rowVal1;
+                    colVal = colVal1;
+                    tolRow = (rowVal2-rowVal1)+1;
+                    tolCol = (colVal2-colVal1)+1;
+                break;
+                case "SHEET":
+                    rowVal = -1;
+                    colVal = -1;
+                    tolRow = 1000;
+                    tolCol = 1000;
+                break;
+            }
+            newSelections = {
+                0: {
+                    row: rowVal,
+                    rowCount: tolRow,
+                    col: colVal,
+                    colCount: tolCol
+                }
+            }
+        }
+        
+        var ssData;
+        try {
+            ssData = JSON.parse(data);
+        } catch(e){
+            ssData = data;
+        }
+        
+        if(ssData && ssData.sheets && ssData.sheets.TMail21){
+            ssData.sheets.TMail21.selections = newSelections;
+        }
+        return JSON.stringify(ssData);
+    }
+
+    lettersToNumber(letters){
+        var chrs = ' ABCDEFGHIJKLMNOPQRSTUVWXYZ', mode = chrs.length - 1, number = 0;
+        for(var p = 0; p < letters.length; p++){
+            number = number * mode + chrs.indexOf(letters[p]);
+        }
+        return number-1;
+    }
 
     configSectionModal(){
         var section = this.state.section,
@@ -115,7 +203,10 @@ export default class Sections extends React.Component {
         }else if(section.type == "spreadsheet"){
             setTimeout(() => {
                 section.sectionContent = section.sectionContent.split("/common-static/spreadJs/css/images/lock-icon.png").join("plugins/spreadjs/lock-icon.png");
-                window.onLoadInitializeSpreadSheet("modal-content-container", section.sectionContent, process.env.npm_package_config_SPREADJS_LICENSE);
+
+                var ssData = this.getSelections(section.sectionContent, section.selectionType, section.selectionVal);
+
+                window.onLoadInitializeSpreadSheet("modal-content-container", ssData, process.env.npm_package_config_SPREADJS_LICENSE);
             }, 500);
             sectionHTML = <span className='modal-content-container-span'>loading...</span>;
         }else if(section.type == "task_list"){
@@ -486,6 +577,15 @@ export default class Sections extends React.Component {
                         
                         // should remove attr after get value
                         te.parents(".section-el").find("a")[0].removeAttribute("data-tasknum");
+                    }
+                } else if(section.type == "spreadsheet"){
+                    if(te && te.parents(".section-el") && te.parents(".section-el").find("a")[0]){
+                        section.selectionType = te.parents(".section-el").find("a")[0].getAttribute("data-selectiontype");
+                        section.selectionVal = te.parents(".section-el").find("a")[0].getAttribute("data-selectionval");
+                        
+                        // should remove attr after get value
+                        te.parents(".section-el").find("a")[0].removeAttribute("data-selectiontype");
+                        te.parents(".section-el").find("a")[0].removeAttribute("data-selectionval");
                     }
                 }
 
