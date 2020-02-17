@@ -261,7 +261,7 @@ export default class Sections extends React.Component {
                 contentLabel="Section Modal">
                 <div className={(section.type == "file" ? "modal-file-container" : "modal-container")}>
                     <div className="modal-header">
-                        <div className="fl modal-section-title">{section.title}</div>
+                        <div className="fl modal-section-title">{section.title+' at v'+section.version}</div>
                         <div className="fr btn-close" onClick={this.closeModal} />
                         {downloadBtnHTML}
                     </div>

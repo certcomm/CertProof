@@ -75,7 +75,7 @@ export default class Thread extends React.Component {
     renderHeader(headerData, isForwarded){
         if(!headerData) return null;
 
-        var ttnLink = "[ "+headerData.ttn + ", "+headerData.subject+ ", "+headerData.ttnURL+" ]";
+        var ttnLink = '[ Thread "'+headerData.subject+ '", '+headerData.ttnURL+' ]';
         return(
             <div className="top-container">
                 <div className="header-container">
