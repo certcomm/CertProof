@@ -204,12 +204,15 @@ export default class Sections extends React.Component {
             setTimeout(() => {
                 section.sectionContent = section.sectionContent.split("/common-static/spreadJs/css/images/lock-icon.png").join("plugins/spreadjs/lock-icon.png");
 
-                if(section.selectionType && section.selectionVal)
+                var isLinkClicked = false;
+                if(section.selectionType && section.selectionVal) {
+                    isLinkClicked = true;
                     var ssData = this.getSelections(section.sectionContent, section.selectionType, section.selectionVal);
-                else
+                } else {
                     var ssData = section.sectionContent;
+                }
 
-                window.onLoadInitializeSpreadSheet("modal-content-container", ssData, process.env.npm_package_config_SPREADJS_LICENSE);
+                window.onLoadInitializeSpreadSheet("modal-content-container", ssData, isLinkClicked, process.env.npm_package_config_SPREADJS_LICENSE);
             }, 500);
             sectionHTML = <span className='modal-content-container-span'>loading...</span>;
         }else if(section.type == "task_list"){
@@ -582,13 +585,16 @@ export default class Sections extends React.Component {
                         te.parents(".section-el").find("a")[0].removeAttribute("data-tasknum");
                     }
                 } else if(section.type == "spreadsheet"){
-                    if(te && te.parents(".section-el") && te.parents(".section-el").find("a")[0]){
-                        section.selectionType = te.parents(".section-el").find("a")[0].getAttribute("data-selectiontype");
-                        section.selectionVal = te.parents(".section-el").find("a")[0].getAttribute("data-selectionval");
-                        
-                        // should remove attr after get value
-                        te.parents(".section-el").find("a")[0].removeAttribute("data-selectiontype");
-                        te.parents(".section-el").find("a")[0].removeAttribute("data-selectionval");
+                    if(te){
+                        try {
+                            section.selectionType = te.parents(".-comment-section-container ")[0].getAttribute("data-selectiontype");
+                            section.selectionVal = te.parents(".-comment-section-container ")[0].getAttribute("data-selectionval");
+                        } catch(e) {
+                            if(te.parents(".section-el") && te.parents(".section-el").find("a")[0]){
+                                section.selectionType = te.parents(".section-el").find("a")[0].getAttribute("data-selectiontype");
+                                section.selectionVal = te.parents(".section-el").find("a")[0].getAttribute("data-selectionval");
+                            }
+                        }
                     }
                 }
 

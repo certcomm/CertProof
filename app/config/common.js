@@ -527,6 +527,8 @@ export const comments = {
 		url = "<div class='t-url-dialog-icon'></div> <span title='"+url+"'>"+url+"</span>";
 		
 		if(el.parents(psEl).find("a")[0]){
+			el.parents(psEl).find("a")[0].setAttribute("data-selectiontype", selectionType);
+			el.parents(psEl).find("a")[0].setAttribute("data-selectionval", selectionVal);
 			this.scrollIntoViewIfNeeded(el.parents(psEl));
 		}else if(el.length > 0){
 			var secTitle = el[0].getAttribute("data-section-title");
@@ -535,7 +537,7 @@ export const comments = {
 			alert("Section "+v+" does not exist in this thread.");
 		}
 	},
-    viewSpreadSheetSection: function(data, v, inThread, subType) {
+    viewSpreadSheetSection: function(data, v, subType) {
         var inc = 0,
             fwdttn = 0,
             splitValArr = v.split(":");
@@ -543,45 +545,37 @@ export const comments = {
             fwdttn = splitValArr[0];
             inc = 1;
         }
-        var secNum = splitValArr[inc],
-            sectionVersion = splitValArr[inc+1],
-            wnum = splitValArr[inc+2],
+        var secNum = Number(splitValArr[inc]),
+            sectionVersion = Number(splitValArr[inc+1]),
+            wnum = Number(splitValArr[inc+2]),
             selectionType = splitValArr[inc+3],
             selectionVal = splitValArr[inc+4];
         if(selectionType === 'ROWRANGE' || selectionType === 'COLUMNRANGE' || selectionType === 'CELLRANGE')
             selectionVal = selectionVal+':'+splitValArr[inc+5];
 
-        var pEl = '',
-            psEl = "div.section-el ",
-            vnum = "NA",
-            tmailtype = "undefined";
+        var pEl = '';
         if (subType == "forward-") {
 			pEl = ".forwarded-item-wrapper .section-container";
-			this.scrollIntoViewIfNeeded($(pEl));
         }
 
-        var el = $(pEl + "[data-sectionnum='" + secNum + "']");
+        var el = $(pEl + " [data-sectionnum='" + secNum + "']" + "[data-version='" + sectionVersion + "']");
+		this.scrollIntoViewIfNeeded($(el));
 
-        var url = this.ttnURL + "#" + subType + "spreadsheet-selection="+(fwdttn ? fwdttn + ":" : "") +secNum+":"+sectionVersion+":"+wnum+":"+selectionType+":"+selectionVal;
-        url = "<div class='t-url-dialog-icon'></div> <span qtip='" + url + "'>" + url + "</span>";
-
-        if (el.parents(psEl).find("a")[0]) {
-            if (el[0].getAttribute("data-section-type") == "spreadsheet") {
-				if(subType == "forward-"){
-					vnum = el[0].getAttribute("data-version");
+        // var url = this.ttnURL + "#" + subType + "spreadsheet-selection="+(fwdttn ? fwdttn + ":" : "") +secNum+":"+sectionVersion+":"+wnum+":"+selectionType+":"+selectionVal;
+		setTimeout(() => {
+			if (el.find(".section-title")[0]) {
+				if (el[0].getAttribute("data-section-type") == "spreadsheet") {
+					el[0].setAttribute("data-selectiontype", selectionType);
+					el[0].setAttribute("data-selectionval", selectionVal);
+					el.find(".section-title").click();
+				} else {
+					var secTitle = el[0].getAttribute("data-section-title");
+					alert('Section "' + secTitle + '" is deleted.');
 				}
-				tmailtype = el[0].getAttribute("data-tmailType");
-
-				el[0].setAttribute("data-selectiontype", selectionType);
-				el[0].setAttribute("data-selectionval", selectionVal);
-				el[0].firstElementChild.click();
-            } else {
-                var secTitle = el[0].getAttribute("data-section-title");
-                alert(url, '<i>Section</i> "' + secTitle + '" is deleted.');
-            }
-        } else {
-            alert(url, "<i>Section</i> " + secNum + " does not exist in this thread.");
-        }
+			} else {
+				alert("Section " + secNum + " does not exist in this thread.");
+			}
+		}, 500);
     },
 	viewTask: function(data, v, subType){
 		var splitValArr = v.split(":"),
