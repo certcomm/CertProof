@@ -47,7 +47,7 @@
 		}
 	},
 	"scripts": {
-		"postinstall": "install-app-deps",
+		"postinstall": "electron-builder install-app-deps",
 		"start": "electron .",
 		"dev": "electron . --debug",
 		"test": "mocha --recursive ./app/**/test*.js",
