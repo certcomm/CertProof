@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.65",
+	"version": "1.0.64",
 	"description": "CertProof",
 	"config": {
 		"GIT_COMMIT": "initialName",
@@ -47,7 +47,7 @@
 		}
 	},
 	"scripts": {
-		"postinstall": "build install-app-deps",
+		"postinstall": "electron-builder install-app-deps",
 		"start": "electron .",
 		"dev": "electron . --debug",
 		"test": "mocha --recursive ./app/**/test*.js",
