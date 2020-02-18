@@ -32,8 +32,6 @@ addons:
 
 install:
   - nvm install 9
-  - npm cache clean
-  - rm -rf node_modules && rm ./package-lock.json
   - npm install electron-builder@next
   - npm install
   - export DISPLAY=':99.0'
