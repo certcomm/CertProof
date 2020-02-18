@@ -11,7 +11,7 @@ install:
   - set CI=true
   - npm install -g npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
-  - yarn install
+  - npm install
   - set COMMIT_SHORT=%APPVEYOR_REPO_COMMIT:~0,7%
 matrix:
   fast_finish: true
