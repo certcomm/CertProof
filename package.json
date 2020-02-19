@@ -52,7 +52,7 @@
 		"dev": "electron . --debug",
 		"test": "mocha --recursive ./app/**/test*.js",
 		"pack": "build --dir",
-		"dist": "npm run packages && build",
+		"dist": "npm run packages && electron-builder",
 		"prove": "node ./app/prove/index.js",
 		"proof-tests": "node ./app/prove/proof-tests/bulktester.js",
 		"packages": "npm-run-all package:*",
