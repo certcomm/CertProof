@@ -568,6 +568,8 @@ export const comments = {
 					el[0].setAttribute("data-selectiontype", selectionType);
 					el[0].setAttribute("data-selectionval", selectionVal);
 					try{
+						el[1].setAttribute("data-selectiontype", selectionType);
+						el[1].setAttribute("data-selectionval", selectionVal);
 						el.find(".section-title")[1].click();
 					} catch(e) {
 						el.find(".section-title")[0].click();

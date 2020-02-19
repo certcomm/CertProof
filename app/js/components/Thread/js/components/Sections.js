@@ -164,8 +164,8 @@ export default class Sections extends React.Component {
             ssData = data;
         }
         
-        if(ssData && ssData.sheets && ssData.sheets.TMail21){
-            ssData.sheets.TMail21.selections = newSelections;
+        if(ssData && ssData.sheets && ssData.sheets[Object.keys(ssData.sheets)[0]]){
+            ssData.sheets[Object.keys(ssData.sheets)[0]].selections = newSelections;
         }
         return JSON.stringify(ssData);
     }
