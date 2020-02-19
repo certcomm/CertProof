@@ -567,7 +567,11 @@ export const comments = {
 				if (el[0].getAttribute("data-section-type") == "spreadsheet") {
 					el[0].setAttribute("data-selectiontype", selectionType);
 					el[0].setAttribute("data-selectionval", selectionVal);
-					el.find(".section-title").click();
+					try{
+						el.find(".section-title")[1].click();
+					} catch(e) {
+						el.find(".section-title")[0].click();
+					}
 				} else {
 					var secTitle = el[0].getAttribute("data-section-title");
 					alert('Section "' + secTitle + '" is deleted.');
