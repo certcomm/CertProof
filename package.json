@@ -3,7 +3,7 @@
 	"homepage": "https://certcomm.io",
 	"license": "Apache-2.0",
 	"productName": "CertProof",
-	"version": "1.0.64",
+	"version": "1.0.65",
 	"description": "CertProof",
 	"config": {
 		"GIT_COMMIT": "initialName",
