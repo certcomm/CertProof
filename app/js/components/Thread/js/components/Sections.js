@@ -595,6 +595,13 @@ export default class Sections extends React.Component {
                                 section.selectionVal = te.parents(".section-el").find("a")[0].getAttribute("data-selectionval");
                             }
                         }
+                        try {
+                            // should remove attr after get value
+                            $(".-comment-section-container ")[0].removeAttribute("data-selectiontype");
+                            $(".-comment-section-container ")[0].removeAttribute("data-selectionval");
+                            $(".section-el").find("a")[0].removeAttribute("data-selectiontype");
+                            $(".section-el").find("a")[0].removeAttribute("data-selectionval");
+                        } catch(e) {}
                     }
                 }
 

@@ -527,8 +527,6 @@ export const comments = {
 		url = "<div class='t-url-dialog-icon'></div> <span title='"+url+"'>"+url+"</span>";
 		
 		if(el.parents(psEl).find("a")[0]){
-			el.parents(psEl).find("a")[0].setAttribute("data-selectiontype", selectionType);
-			el.parents(psEl).find("a")[0].setAttribute("data-selectionval", selectionVal);
 			this.scrollIntoViewIfNeeded(el.parents(psEl));
 		}else if(el.length > 0){
 			var secTitle = el[0].getAttribute("data-section-title");
@@ -563,7 +561,7 @@ export const comments = {
 
         // var url = this.ttnURL + "#" + subType + "spreadsheet-selection="+(fwdttn ? fwdttn + ":" : "") +secNum+":"+sectionVersion+":"+wnum+":"+selectionType+":"+selectionVal;
 		setTimeout(() => {
-			if (el.find(".section-title")[0]) {
+			if(el.find(".section-title")[0]) {
 				if (el[0].getAttribute("data-section-type") == "spreadsheet") {
 					el[0].setAttribute("data-selectiontype", selectionType);
 					el[0].setAttribute("data-selectionval", selectionVal);
