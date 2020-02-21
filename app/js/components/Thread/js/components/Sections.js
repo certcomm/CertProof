@@ -587,21 +587,18 @@ export default class Sections extends React.Component {
                 } else if(section.type == "spreadsheet"){
                     if(te){
                         try {
-                            section.selectionType = te.parents(".-comment-section-container ")[0].getAttribute("data-selectiontype");
-                            section.selectionVal = te.parents(".-comment-section-container ")[0].getAttribute("data-selectionval");
+                            section.selectionType = te.parents(".-comment-section-container")[0].getAttribute("data-selectiontype");
+                            section.selectionVal = te.parents(".-comment-section-container")[0].getAttribute("data-selectionval");
+                            
+                            // should remove attr after get value
+                            $(".-comment-section-container").removeAttribute("data-selectiontype");
+                            $(".-comment-section-container").removeAttribute("data-selectionval");
                         } catch(e) {
                             if(te.parents(".section-el") && te.parents(".section-el").find("a")[0]){
                                 section.selectionType = te.parents(".section-el").find("a")[0].getAttribute("data-selectiontype");
                                 section.selectionVal = te.parents(".section-el").find("a")[0].getAttribute("data-selectionval");
                             }
                         }
-                        try {
-                            // should remove attr after get value
-                            $(".-comment-section-container ")[0].removeAttribute("data-selectiontype");
-                            $(".-comment-section-container ")[0].removeAttribute("data-selectionval");
-                            $(".section-el").find("a")[0].removeAttribute("data-selectiontype");
-                            $(".section-el").find("a")[0].removeAttribute("data-selectionval");
-                        } catch(e) {}
                     }
                 }
 

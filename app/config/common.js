@@ -561,10 +561,8 @@ export const comments = {
 
         // var url = this.ttnURL + "#" + subType + "spreadsheet-selection="+(fwdttn ? fwdttn + ":" : "") +secNum+":"+sectionVersion+":"+wnum+":"+selectionType+":"+selectionVal;
 		setTimeout(() => {
-			if(el.find(".section-title")[0]) {
-				if (el[0].getAttribute("data-section-type") == "spreadsheet") {
-					el[0].setAttribute("data-selectiontype", selectionType);
-					el[0].setAttribute("data-selectionval", selectionVal);
+			if(el.find(".section-title")[1]) {
+				if (el[1].getAttribute("data-section-type") == "spreadsheet") {
 					try{
 						el[1].setAttribute("data-selectiontype", selectionType);
 						el[1].setAttribute("data-selectionval", selectionVal);
@@ -573,7 +571,7 @@ export const comments = {
 						el.find(".section-title")[0].click();
 					}
 				} else {
-					var secTitle = el[0].getAttribute("data-section-title");
+					var secTitle = el[1].getAttribute("data-section-title");
 					alert('Section "' + secTitle + '" is deleted.');
 				}
 			} else {
