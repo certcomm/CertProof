@@ -35,6 +35,10 @@ export default class Thread extends React.Component {
         this.store.setData(this.data);
     }
 
+    componentWillUnmount() {
+        $("body").off();
+    }
+
     componentDidMount(){
         $("body").on("click", function(event, target) {
             if (event.target.tagName == 'A') {
