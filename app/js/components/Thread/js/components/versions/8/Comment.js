@@ -91,7 +91,11 @@ class Comment extends React.Component {
                         <div className="contribute-data">
                             <div className="contribute-info">
                                 <div className="num">#{comment.changeNum}</div>
-                                <div className="writer-nm">{(comment.creator ? comment.creator.firstName+" "+comment.creator.lastName : "")}</div>
+                                <div className="writer-nm">
+                                    {
+                                        (comment.creator ? (comment.creator.firstName ? comment.creator.firstName+" "+comment.creator.lastName : comment.creator.name) : "")
+                                    }
+                                </div>
                                 <span title={tooltipDate}>{formatedDate}</span>
                             </div>
                         </div>
