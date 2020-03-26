@@ -9,6 +9,7 @@ export default class Writers extends React.Component {
         this.type = props.type;
         this.visibleToOrg = props.visibleToOrg;
         this.orgRestricted = props.orgRestricted;
+        this.isCertified = props.isCertified || false;
         this.domainName = props.domainName;
     }
     
@@ -135,15 +136,18 @@ export default class Writers extends React.Component {
 					}else{
 						orgVisibleToolTipHtml = <div class='orgVisibleTooltipContainer'><div class='infor'>Only users in <b>{this.domainName}</b> can be added</div><div class='writersBlueBg'>Writers</div></div>
 					}
-				}
+				} else if(!this.isCertified && this.domainName !== "tmail21.com") {
+                    orgVisibleToolTipHtml = <div class='orgVisibleTooltipContainer'><div class='infor'>A writer can add anyone to this thread</div><div class='writersBlueBg'>Writers</div></div>
+                }
                 writerPrefixHtml = <div data-tip data-for="writers-header-tooltip">
                     <div className="writers-count-wrapper">
                         {
                             this.orgRestricted ? (
                                 this.visibleToOrg ? (
                                     <li className="globe-org margin-8"></li>
-                                ) : <li className="globe-org disabled-globe-org margin-8"></li>
-                            ) : <div className="h-inner-wrapper"><span className="h-users-icon"></span></div>
+                                ) : <div className="h-inner-wrapper"><span className="h-users-icon"></span></div>
+                            ) : !this.isCertified && this.domainName !== "tmail21.com" ? <li className="globe-thread"></li>
+                            : <div className="h-inner-wrapper"><span className={"h-users-icon"}></span></div>
                         }
                     </div>
                     <ReactTooltip className="tooltip-container" id="writers-header-tooltip" aria-haspopup='true' type="light" effect="solid" place="bottom">
@@ -162,7 +166,7 @@ export default class Writers extends React.Component {
                 if(this.visibleToOrg){
                     writerPrefixHtml = <li title={'This thread is visible to anyone in my organization ('+this.domainName+')'} className="globe-org"></li>
                 }else{
-                    writerPrefixHtml = <li title={'Only users in '+this.domainName+' can be added as writers'} className="globe-org disabled-globe-org"></li>
+                    // writerPrefixHtml = <li title={'Only users in '+this.domainName+' can be added as writers'} className="globe-org disabled-globe-org"></li>
                 }
             }
 

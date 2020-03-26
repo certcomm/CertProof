@@ -703,6 +703,9 @@ ul li.writer-rounded.w-list-view div.w-info .w-name + .w-address {
 .globe-org {
     position: relative; margin-top: 12px !important;
 }
+.globe-thread {
+    position: relative; margin-top: 6px !important;
+}
 .margin-8 {
     margin-top: 8px !important;
 }
@@ -711,6 +714,9 @@ ul li.writer-rounded.w-list-view div.w-info .w-name + .w-address {
 }
 .globe-org:before {
     color: #18A689; content: "i"; font-family: tmail; font-size: 16px;
+}
+.globe-thread:before {
+    color: #676a6c; content: "6"; font-family: tmail; font-size: 20px;
 }
 .orgVisibleTooltipContainer {
     padding: 0px 10px 10px 10px; line-height: 20px;
