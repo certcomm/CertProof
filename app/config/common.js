@@ -175,7 +175,7 @@ export const comments = {
 
 			var match = splitArr[0].replace(/&quot;/g, '"').match(/"([^"]*)"/);
 			if(match) {
-				title = match[1];
+				title = unescape(match[1]);
 			}
 
 			var copiedLinkTTN = href.match(/\d{3}\-\d{4}\-\d{4}/g);

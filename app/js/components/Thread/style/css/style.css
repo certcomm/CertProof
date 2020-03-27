@@ -77,7 +77,7 @@ div.writers-count-wrapper .h-inner-wrapper {
 	float: left; padding: 0px 10px 0px 6px; max-width: 62%; width: 62%;
 }
 .thread-container div.header-container .header-title {
-	float: left; color: #2F4050; font-size: 20px !important; font-weight: 600 !important; max-width: 59%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+	float: left; color: #2F4050; font-size: 20px !important; font-weight: 600 !important; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .thread-container div.header-container .incompatible-evidence {
 	float: left; background-color: #ffa500; border-radius: 4px; margin-right: 4px; margin-top: 2px; padding: 3px 10px; color: #FFFFFF;
