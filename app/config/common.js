@@ -144,6 +144,20 @@ export const comments = {
 	htmlDecode: function(value){
 		return unescape(value);
 	},
+    stripEndQuotes: function(s) {
+        var t=s.length;
+        try {
+            s = s.replace(/"/g, '&quot;');
+            if(s.split("titled")[1]) {
+                s = s.replace('&quot; in &quot;', '" in "');
+            }
+            s = s.replace("&quot;", '"');
+            s = s.substring(1, s.length-6)+'"';
+        } catch(e) {
+            console.log("e", e);
+        }
+        return s;
+    },
 	replaceURLContent: function(v, ttn){
 		var me = this;
 		if(v == "" || v == undefined || v == null || v == "undefined" || v == "null") return "";
@@ -173,10 +187,17 @@ export const comments = {
 			// should return same value if href/url not found
 			if(href == '') return v;
 
-			var match = splitArr[0].replace(/&quot;/g, '"').match(/"([^"]*)"/);
-			if(match) {
-				title = unescape(match[1]);
-			}
+            var replacedArr = me.stripEndQuotes(splitArr[0]);
+            var match = replacedArr.match(/"([^"]*)"/);
+            // var match = splitArr[0].replace(/&quot;/g, '"').match(/"([^"]*)"/);
+            if (match) {
+                title = match[1].replace(/&quot;/g, '"');
+                try {
+                    title = title.split('" in THREAD "')[0];
+                } catch(e) {
+                    console.log("e", e);
+                }
+            }
 
 			var copiedLinkTTN = href.match(/\d{3}\-\d{4}\-\d{4}/g);
 			copiedLinkTTN = copiedLinkTTN ? copiedLinkTTN[0] : '';
@@ -273,6 +294,17 @@ export const comments = {
 						hoverTitle = "", titledText = "";
 					if( tsectitleArr && isNewTaskItemLink ) {
 						tsectitle = tsectitleArr[1];
+                        if(tsectitle.replace(/"/g, '') === '') {
+                            try {
+                                var tsectitlearr = splitArr[0].match("&quot; in &quot;(.*?)&quot; in THREAD &quot;");
+                                if(tsectitlearr === null){
+                                    tsectitlearr = splitArr[0].match('" in "(.*?)" in THREAD "');
+                                }
+                                tsectitle = '"'+tsectitlearr[1]+'"';
+                            } catch(e) {
+
+                            }
+                        }
 						titledText = ' titled "'+me.htmlDecode(title).replace(/(^.{30}).*$/,'$1...')+' "';
 						hoverTitle = ' titled "'+me.htmlEncode(me.htmlDecode(title));
 					}
@@ -339,6 +371,17 @@ export const comments = {
 						hoverTitle = "", titledText = "";
 					if( tsectitleArr && isNewTaskItemLink ) {
 						tsectitle = tsectitleArr[1];
+                        if(tsectitle.replace(/"/g, '') === '') {
+                            try {
+                                var tsectitlearr = splitArr[0].match("&quot; in &quot;(.*?)&quot; in THREAD &quot;");
+                                if(tsectitlearr === null){
+                                    tsectitlearr = splitArr[0].match('" in "(.*?)" in THREAD "');
+                                }
+                                tsectitle = '"'+tsectitlearr[1]+'"';
+                            } catch(e) {
+
+                            }
+                        }
 						titledText = ' titled "'+me.htmlDecode(title).replace(/(^.{30}).*$/,'$1...')+' "';
 						hoverTitle = ' titled "'+me.htmlEncode(me.htmlDecode(title));
 					}
