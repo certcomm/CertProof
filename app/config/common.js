@@ -79,42 +79,42 @@ export const comments = {
 									$(this).html('COMMENT ' +val+threadttn4);
 								break;
 								case "section":
-									$(this).attr("title", me.htmlEncode('SECTION ' +val+fullThreadttn));
+									$(this).attr("title", 'SECTION ' +val+fullThreadttn);
 									$(this).html("SECTION "+val+threadttn4);
 								break;
 								case "task":
 									var TaskValArray = val.split(":");
 
-									$(this).attr("title", me.htmlEncode("TASK "+TaskValArray[1]+" in SECTION "+TaskValArray[0]+fullThreadttn));
+									$(this).attr("title", "TASK "+TaskValArray[1]+" in SECTION "+TaskValArray[0]+fullThreadttn);
 									$(this).html("TASK "+TaskValArray[1]+" in SECTION "+TaskValArray[0]+threadttn4);
 								break;
 								case "attachment":
 									var AttachmentValArray = val.split(":");
 									
-									$(this).attr("title", me.htmlEncode("ATTACHMENT "+AttachmentValArray[1]+" in COMMENT "+AttachmentValArray[0]+fullThreadttn));
+									$(this).attr("title", "ATTACHMENT "+AttachmentValArray[1]+" in COMMENT "+AttachmentValArray[0]+fullThreadttn);
 									$(this).html("ATTACHMENT "+AttachmentValArray[1]+" in COMMENT "+AttachmentValArray[0]+threadttn4);
 								break;
 								case "sectionversion":
-									$(this).attr("title", me.htmlEncode("SECTION VERSION "+val+fullThreadttn));
+									$(this).attr("title", "SECTION VERSION "+val+fullThreadttn);
 									$(this).html("SECTION VERSION "+val);
 								break;
 								case "release":
 									$(this).html("RELEASE "+val);
 								break;
 								case "forwarded-comment":
-									$(this).attr("title", me.htmlEncode("FORWARDED COMMENT "+val+" in "+fwdTTN+fullThreadttn));
+									$(this).attr("title", "FORWARDED COMMENT "+val+" in "+fwdTTN+fullThreadttn);
 									$(this).html("FORWARDED COMMENT "+val+" in "+fwdTTN+threadttn4);
 								break;
 								case "forwarded-section":
-									$(this).attr("title", me.htmlEncode("FORWARDED SECTION "+val+" in "+fwdTTN+fullThreadttn));
+									$(this).attr("title", "FORWARDED SECTION "+val+" in "+fwdTTN+fullThreadttn);
 									$(this).html("FORWARDED SECTION "+val+" in "+fwdTTN+threadttn4);
 								break;
 								case "forwarded-task":
-									$(this).attr("title", me.htmlEncode("FORWARDED TASK "+val+" in SECTION "+val2+" in "+fwdTTN+fullThreadttn));
+									$(this).attr("title", "FORWARDED TASK "+val+" in SECTION "+val2+" in "+fwdTTN+fullThreadttn);
 									$(this).html("FORWARDED TASK "+val+" in SECTION "+val2+" in "+fwdTTN+threadttn4);
 								break;
 								case "forwarded-attachment":
-									$(this).attr("title", me.htmlEncode("FORWARDED ATTACHMENT "+val+" in COMMENT "+val2+" in "+fwdTTN+fullThreadttn));
+									$(this).attr("title", "FORWARDED ATTACHMENT "+val+" in COMMENT "+val2+" in "+fwdTTN+fullThreadttn);
 									$(this).html("FORWARDED ATTACHMENT "+val+" in COMMENT "+val2+" in "+fwdTTN+threadttn4);
 								break;
 							}
@@ -306,7 +306,7 @@ export const comments = {
                             }
                         }
 						titledText = ' titled "'+title.replace(/(^.{30}).*$/,'$1...')+' "';
-						hoverTitle = ' titled "'+me.htmlEncode(title);
+						hoverTitle = ' titled "'+title;
 					}
 					
 					var showedText = 'TASK '+val+titledText+' in SECTION '+tsectitle+threadttn4,
@@ -383,7 +383,7 @@ export const comments = {
                             }
                         }
 						titledText = ' titled "'+title.replace(/(^.{30}).*$/,'$1...')+' "';
-						hoverTitle = ' titled "'+me.htmlEncode(title);
+						hoverTitle = ' titled "'+title;
 					}
 					var commentText = changenum > 0 ? " in COMMENT "+changenum : "";
 					
@@ -527,7 +527,11 @@ export const comments = {
 	},
 	viewThread: function(){
 		$('.middle-container').animate({ scrollTop: 0 }, 500);
-		this.blinkElement($(".header-lhs"));
+		let el = $(".header-lhs");
+		if($(".header-lhs").parents('.forwarded-item-wrapper').length > 0){
+			el = $(".header-lhs")[1];
+		}
+		this.blinkElement(el);
 	},
 	viewForwardedLinks: function(){
 		//  check if forwarded area expanded or collapsed
