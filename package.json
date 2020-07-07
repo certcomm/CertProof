@@ -115,7 +115,7 @@
 		"babel-preset-stage-1": "^6.24.1",
 		"babelify": "^8.0.0",
 		"browserify": "^16.1.0",
-		"electron": "3.0.2",
+		"electron": "9.1.0",
 		"electron-builder": "^20.28.4",
 		"electron-packager": "12.1.2",
 		"envify": "^4.1.0",
